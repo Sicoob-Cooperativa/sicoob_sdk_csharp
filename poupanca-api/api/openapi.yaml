@@ -1,0 +1,705 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: marco.martins@sicoob.com.br
+    name: Suporte portal develops
+  description: |
+    <pre>[ Base URL: https://api.sicoob.com.br/poupanca/v3 ]</pre>
+    # Poupança API
+    Sistema que faz a gestão das contas de poupança através de transãções como Aplicação, Resgate, Saldo, Extrato e Controle de Rentabilidade.
+  title: Poupança
+  version: 3.0.4.0
+  x-ibm-name: poupanca-api
+servers:
+- url: https://api.sicoob.com.br/poupanca/v3
+security:
+- oauth2:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+paths:
+  /resgates:
+    post:
+      description: Realiza um resgate de uma conta poupança para uma conta corrente
+        vinculadas com os parametros informados.
+      operationId: resgates
+      parameters:
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transferencia"
+        description: Parametros a serem preenchidos com os dados do resgate
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoTransferencia"
+          description: Resgate realizado com sucesso
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Ocorreu um erro na operação
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Resgatar de uma conta poupança vinculada
+      tags:
+      - resgate poupanca
+      x-sicoob-category: Financeira
+      x-codegen-request-body-name: aplicacao
+  /aplicacoes:
+    post:
+      description: Realiza uma aplicacao de uma conta corrente vinculada para uma
+        conta conta poupança com os parametros informados.
+      operationId: aplicacao
+      parameters:
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transferencia"
+        description: Parametros a serem preenchidos com os dados da aplicacao
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoTransferencia"
+          description: Aplicacao realizado com sucesso
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Ocorreu um erro na operação
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Aplicação de uma conta vinculada
+      tags:
+      - Aplicacao poupanca
+      x-sicoob-category: Financeira
+      x-codegen-request-body-name: aplicacao
+  /contas/{contaPoupanca}/saldo:
+    get:
+      description: Consulta o saldo atual de uma conta poupança.
+      operationId: obterSaldoContaPoupanca
+      parameters:
+      - description: Número da conta poupança
+        in: path
+        name: contaPoupanca
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Saldo"
+          description: Retorna o saldo atual da conta poupança informada.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Conta poupança não encontrada.  [Página de erros](/#!/erros)"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Erro interno. [Página de erros](/#!/erros)"
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Serviço indisponível. [Página de erros](/#!/erros)"
+      summary: Consulta de Saldo
+      tags:
+      - Saldo
+      x-sicoob-category: Não Financeira
+  /contas/{contaPoupanca}/extrato:
+    get:
+      description: Consulta o extrato de um mês e ano de uma conta poupança.
+      operationId: obterExtratoContaPoupanca
+      parameters:
+      - description: Número da conta poupança
+        in: path
+        name: contaPoupanca
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: Mês de consulta do extrato
+        in: query
+        name: mes
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: Ano de consulta do extrato
+        in: query
+        name: ano
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Extrato"
+          description: Retorna o extrato da conta poupança informada no devido mês
+            e ano.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Conta poupança não encontrada. [Página de erros](/#!/erros)"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Erro interno. [Página de erros](/#!/erros)"
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Serviço indisponível. [Página de erros](/#!/erros)"
+      summary: Consulta de Extrato
+      tags:
+      - Extrato
+      x-sicoob-category: Não Financeira
+  /contas:
+    get:
+      description: Pesquisa as contas de poupança que pertencem a um CPF ou CNPJ.
+      operationId: listarContasPoupancaPorInstituicaoEContaCorrente
+      parameters:
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListaContas"
+          description: Retorna as contas de poupança do cliente.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "O cliente informado não possui conta poupança. [Página de\
+            \ erros](/#!/erros)"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Erro interno. [Página de erros](/#!/erros)"
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: "Serviço indisponível. [Página de erros](/#!/erros)"
+      summary: Consulta de Contas de Poupança
+      tags:
+      - Contas
+      x-sicoob-category: Apoio
+components:
+  schemas:
+    Transferencia:
+      example:
+        date: date
+        descricaoObservacaoComplementar: descricaoObservacaoComplementar
+        debtorAccount:
+          number: number
+          accountType: accountType
+          personType: personType
+          issuer: issuer
+        amount: 0.8008281904610115
+        idUsuario: idUsuario
+        numeroCooperativaMovimento: 5
+        numeroContaCredito: 3.616076749251911
+        valor: 5.962133916683182
+        codCanal: 1
+        numeroCooperativaDebito: 2
+        ObservacaoLancamento: ObservacaoLancamento
+        autenticacao: autenticacao
+        numeroContaDebito: 7.061401241503109
+        dataLancamento: dataLancamento
+        numeroCpfCnpjRemetente: numeroCpfCnpjRemetente
+        idProduto: 6.027456183070403
+        creditorAccount:
+          number: number
+          accountType: accountType
+          personType: personType
+          issuer: issuer
+        numeroCooperativaCredito: 9
+        descAutenticacaoDigital: descAutenticacaoDigital
+        nomeArquivoCNAB: nomeArquivoCNAB
+        numeroCpfCnpjFavorecido: numeroCpfCnpjFavorecido
+      properties:
+        date:
+          description: Data em que deve ser realizada a operação (yyyy-MM-dd)
+          type: string
+        amount:
+          description: Valor da operação
+          type: number
+        debtorAccount:
+          $ref: "#/components/schemas/Transferencia_debtorAccount"
+        creditorAccount:
+          $ref: "#/components/schemas/Transferencia_debtorAccount"
+        idUsuario:
+          description: Usuário que realizou a operação
+          type: string
+        idProduto:
+          description: Identificador do Produto que efetuou a operação
+          type: number
+        codCanal:
+          description: O identificador do canal cadastrado no CTR
+          type: integer
+        valor:
+          description: Valor da operação
+          type: number
+        dataLancamento:
+          description: Data em que deve ser realizada a operação
+          type: string
+        numeroCooperativaMovimento:
+          description: Numero da cooperativa responsavel pela operacao
+          type: integer
+        numeroCooperativaDebito:
+          description: Numero da cooperativa da conta de débito
+          type: integer
+        numeroContaDebito:
+          description: Número da conta onde será feito o débito
+          type: number
+        numeroCooperativaCredito:
+          description: Numero da cooperativa da conta de crédito
+          type: integer
+        numeroContaCredito:
+          description: Número da conta onde será feito o crédito
+          type: number
+        nomeArquivoCNAB:
+          description: Nome do arquivo CNAB a ser repassado para o sistema de conta
+            corrente
+          type: string
+        autenticacao:
+          description: Código de autenticação registrado pelo canal
+          type: string
+        ObservacaoLancamento:
+          description: Observação do lançamento
+          type: string
+        descricaoObservacaoComplementar:
+          description: Observação complementar PLD
+          type: string
+        numeroCpfCnpjRemetente:
+          description: Numero do CPF/CNPJ do remetente
+          type: string
+        numeroCpfCnpjFavorecido:
+          description: Numero do CPF/CNPJ do favorecido
+          type: string
+        descAutenticacaoDigital:
+          description: Hash identificador de transações
+          type: string
+      required:
+      - amount
+      - codCanal
+      - creditorAccount
+      - dataLancamento
+      - date
+      - debtorAccount
+      - idProduto
+      - idUsuario
+      - numeroContaCredito
+      - numeroContaDebito
+      - numeroCooperativaCredito
+      - numeroCooperativaDebito
+      - numeroCooperativaMovimento
+      - valor
+      type: object
+    RetornoTransferencia:
+      description: Dados de retorno de uma operação de transferência
+      example:
+        contaCredito: 5.637376656633329
+        cooperativaCredito: 5
+        numAutenticacaoSp: 6.027456183070403
+        dataRegistro: dataRegistro
+        valor: 1.4658129805029452
+        nomeTitularContaCredito: nomeTitularContaCredito
+        idAgendamento: 0.8008281904610115
+        dataLancamento: dataLancamento
+      properties:
+        idAgendamento:
+          description: Codigo do agendamento realizado
+          type: number
+        numAutenticacaoSp:
+          description: Codigo do agendamento no sistema legado
+          type: number
+        dataLancamento:
+          description: Data em que foi realizado o lancamento
+          type: string
+        dataRegistro:
+          description: Data de cadastro da transacao
+          type: string
+        valor:
+          description: Valor da transacao
+          type: number
+        cooperativaCredito:
+          description: Cooperativa de credito da transacao
+          type: integer
+        contaCredito:
+          description: Conta credito da transacao
+          type: number
+        nomeTitularContaCredito:
+          description: nome titular da conta
+          type: string
+      type: object
+    MensagensErro:
+      example:
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          description: Array com todas as mensagem de erro encontradas.
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+      required:
+      - mensagens
+      type: object
+    SicoobMensagem:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem de retorno que pode ser informativa ou de erro
+          type: string
+        codigo:
+          description: Código padrão de erro
+          type: string
+      required:
+      - codigo
+      - mensagem
+      type: object
+    ListaContas:
+      description: Lista de contas de poupança do cliente
+      example:
+        resultado:
+        - 0
+        - 0
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+        resultado:
+          items:
+            type: integer
+          type: array
+      required:
+      - resultado
+      type: object
+    Saldo:
+      description: Objeto de retorno com o Saldo atual da conta poupança
+      example:
+        resultado:
+          saldoDisponivel: 1.4658129805029452
+          data: 2000-01-23T04:56:07.000+00:00
+          saldoBloqueado: 6.027456183070403
+          saldoTotal: 0.8008281904610115
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+        resultado:
+          $ref: "#/components/schemas/Saldo_resultado"
+      type: object
+    Extrato:
+      description: Objeto de retorno com o Extrato solicitado
+      example:
+        resultado:
+          transacoes:
+          - observacaoLancamento: observacaoLancamento
+            tipo: DEBITO
+            data: 2000-01-23T04:56:07.000+00:00
+            descricaoAutenticacaoDigital: descricaoAutenticacaoDigital
+            valor: 5.962133916683182
+            descricao: descricao
+            descricaoNomeOrigemDestino: descricaoNomeOrigemDestino
+          - observacaoLancamento: observacaoLancamento
+            tipo: DEBITO
+            data: 2000-01-23T04:56:07.000+00:00
+            descricaoAutenticacaoDigital: descricaoAutenticacaoDigital
+            valor: 5.962133916683182
+            descricao: descricao
+            descricaoNomeOrigemDestino: descricaoNomeOrigemDestino
+          resumo:
+            saldoDisponivel: 1.4658129805029452
+            saldoBloqueado: 6.027456183070403
+            dataExtrato: 2000-01-23T04:56:07.000+00:00
+            dataInicial: 2000-01-23T04:56:07.000+00:00
+            saldoTotal: 0.8008281904610115
+            dataFinal: 2000-01-23T04:56:07.000+00:00
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+        resultado:
+          $ref: "#/components/schemas/Extrato_resultado"
+      type: object
+    ResumoExtrato:
+      example:
+        saldoDisponivel: 1.4658129805029452
+        saldoBloqueado: 6.027456183070403
+        dataExtrato: 2000-01-23T04:56:07.000+00:00
+        dataInicial: 2000-01-23T04:56:07.000+00:00
+        saldoTotal: 0.8008281904610115
+        dataFinal: 2000-01-23T04:56:07.000+00:00
+      properties:
+        dataExtrato:
+          description: data da solicitacao do extrato
+          format: date-time
+          type: string
+        dataInicial:
+          description: data inicial do extrato
+          format: date-time
+          type: string
+        dataFinal:
+          description: data final do extrato
+          format: date-time
+          type: string
+        saldoTotal:
+          description: valor do saldo sem bloqueios
+          format: double
+          type: number
+        saldoBloqueado:
+          description: valor dos bloqueios
+          format: double
+          type: number
+        saldoDisponivel:
+          description: valor do saldo total descontando dos bloqueios
+          format: double
+          type: number
+      required:
+      - dataExtrato
+      - dataFinal
+      - dataInicial
+      - saldoBloqueado
+      - saldoDisponivel
+      - saldoTotal
+      type: object
+    Transacao:
+      example:
+        observacaoLancamento: observacaoLancamento
+        tipo: DEBITO
+        data: 2000-01-23T04:56:07.000+00:00
+        descricaoAutenticacaoDigital: descricaoAutenticacaoDigital
+        valor: 5.962133916683182
+        descricao: descricao
+        descricaoNomeOrigemDestino: descricaoNomeOrigemDestino
+      properties:
+        tipo:
+          description: Tipo da transação que pode ser CREDITO ou DEBITO
+          enum:
+          - DEBITO
+          - CREDITO
+          type: string
+        valor:
+          description: Valor da transação
+          format: double
+          type: number
+        data:
+          description: Data em que ocorreu a transação
+          format: date-time
+          type: string
+        descricao:
+          description: Detalhe sobre a transação
+          type: string
+        descricaoAutenticacaoDigital:
+          description: Autenticação utilizada no lançamento
+          type: string
+        observacaoLancamento:
+          description: Descrição do lançamento gerado
+          type: string
+        descricaoNomeOrigemDestino:
+          description: Descrição da origem ou destino do recurso
+          type: string
+      required:
+      - data
+      - descricao
+      - tipo
+      - valor
+      type: object
+    Transferencia_debtorAccount:
+      example:
+        number: number
+        accountType: accountType
+        personType: personType
+        issuer: issuer
+      properties:
+        issuer:
+          description: Id Instituicao ou Numero Cooperativa
+          type: string
+        number:
+          description: Numero da Conta
+          type: string
+        accountType:
+          description: "Codigo tipo conta - NATURAL_PERSON (Pessoa Física), LEGAL_PERSON\
+            \ (Pessao Juridica)"
+          type: string
+        personType:
+          description: "Codigo tipo pessoa, CACC (Current, Conta Corrente), SLRY (Salary,\
+            \ Conta-Salário), SVGS (Savings, Conta de Poupança), TRAN (TransactingAccount,\
+            \ Conta de Pagamento pré-paga)"
+          type: string
+      type: object
+    Saldo_resultado:
+      description: Propriedade que contem o resultado da requisição
+      example:
+        saldoDisponivel: 1.4658129805029452
+        data: 2000-01-23T04:56:07.000+00:00
+        saldoBloqueado: 6.027456183070403
+        saldoTotal: 0.8008281904610115
+      properties:
+        data:
+          description: data da solicitacao do saldo
+          format: date-time
+          type: string
+        saldoTotal:
+          description: valor do saldo sem bloqueios
+          format: double
+          type: number
+        saldoBloqueado:
+          description: valor dos bloqueios
+          format: double
+          type: number
+        saldoDisponivel:
+          description: valor do saldo total descontando dos bloqueios
+          format: double
+          type: number
+      required:
+      - data
+      - saldoBloqueado
+      - saldoDisponivel
+      - saldoTotal
+      type: object
+    Extrato_resultado:
+      description: Propriedade que contem o resultado da requisição
+      example:
+        transacoes:
+        - observacaoLancamento: observacaoLancamento
+          tipo: DEBITO
+          data: 2000-01-23T04:56:07.000+00:00
+          descricaoAutenticacaoDigital: descricaoAutenticacaoDigital
+          valor: 5.962133916683182
+          descricao: descricao
+          descricaoNomeOrigemDestino: descricaoNomeOrigemDestino
+        - observacaoLancamento: observacaoLancamento
+          tipo: DEBITO
+          data: 2000-01-23T04:56:07.000+00:00
+          descricaoAutenticacaoDigital: descricaoAutenticacaoDigital
+          valor: 5.962133916683182
+          descricao: descricao
+          descricaoNomeOrigemDestino: descricaoNomeOrigemDestino
+        resumo:
+          saldoDisponivel: 1.4658129805029452
+          saldoBloqueado: 6.027456183070403
+          dataExtrato: 2000-01-23T04:56:07.000+00:00
+          dataInicial: 2000-01-23T04:56:07.000+00:00
+          saldoTotal: 0.8008281904610115
+          dataFinal: 2000-01-23T04:56:07.000+00:00
+      properties:
+        resumo:
+          $ref: "#/components/schemas/ResumoExtrato"
+        transacoes:
+          description: Lista com as transações efetivadas de uma conta poupança em
+            determinado mês e ano
+          items:
+            $ref: "#/components/schemas/Transacao"
+          type: array
+      required:
+      - resumo
+      - transacoes
+      type: object
+  securitySchemes:
+    oauth2:
+      flows:
+        clientCredentials:
+          scopes:
+            cco_transferencias: Transferências
+            cco_consulta: Consulta
+            openid: OpenID
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+x-original-swagger-version: "2.0"
+

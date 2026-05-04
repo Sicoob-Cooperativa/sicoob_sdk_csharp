@@ -1,0 +1,680 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: rayana.silva@sicoob.com.br
+    name: Rayana Dantas E Silva
+  description: |-
+    <pre>[ Base URL: https://api.sicoob.com.br/spb/v2 ]</pre>
+    A API tem como propósito fornecer serviços para envio de TEDs.
+  title: SPB Transferências
+  version: 1.0.4.2
+  x-ibm-name: spb-transferencias
+servers:
+- url: https://api.sicoob.com.br/spb/v2
+security:
+- oauth2:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+tags:
+- description: Serviços para os dados da TED.
+  name: TEDs
+paths:
+  /transferencias:
+    post:
+      description: Envio de TED entre clientes.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: "Codigo de controle idpotencia no padrão UUIDV4, deve ser unico\
+          \ para cada requisição."
+        in: header
+        name: x-idempotency-key
+        required: true
+        schema:
+          default: 657e23a0-d14c-481e-a11c-3c718ff5b3c0
+          type: string
+      - description: Token JWT(id_token) gerado na autenticação.
+        in: header
+        name: id_token
+        required: true
+        schema:
+          default: xxxx-xxxx-xxxx
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentTransaction"
+        description: Objeto contendo dados para realização do agendamento de pagamento
+          de convênio.
+        required: true
+      responses:
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentTransactionRetorno"
+          description: TED enviada.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+          description: Não foi possivel o envio da TED.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+          description: Ocorreu um erro no servidor.
+      summary: Envio de TED entre clientes.
+      tags:
+      - TEDs
+      x-codegen-request-body-name: Transferencia
+  /transferencias/{codigo}:
+    get:
+      description: Retorna as informações de uma TED.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Token JWT(id_token) gerado na autenticação.
+        in: header
+        name: id_token
+        required: true
+        schema:
+          default: xxxx-xxxx-xxxx
+          type: string
+      - description: O codigo corresponde ao numeroControleIf.
+        in: path
+        name: codigo
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_transferencias__codigo__get_200_response"
+          description: TED encontrada.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+          description: TED não encontrada.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+          description: Ocorreu um erro no servidor.
+      summary: Consulta TED pelo atributo numeroControleIf.
+      tags:
+      - TEDs
+  /transferencias/agendamentos/{idAgendamento}:
+    delete:
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: "Codigo de controle idpotencia UUIDV4, deve ser unico para cada\
+          \ requisição."
+        in: header
+        name: x-idempotency-key
+        required: true
+        schema:
+          default: 657e23a0-d14c-481e-a11c-3c718ff5b3c0
+          type: string
+      - description: Token JWT(id_token) gerado na autenticação.
+        in: header
+        name: id_token
+        required: true
+        schema:
+          default: xxxx-xxxx-xxxx
+          type: string
+      - description: O codigo corresponde ao idAgendamento.
+        in: path
+        name: idAgendamento
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_transferencias_agendamentos__idAgendamento__delete_200_response"
+          description: TED encontrada.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+          description: TED não encontrada.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+          description: Ocorreu um erro no servidor.
+      summary: Cancela uma TED com o status de agendada.
+      tags:
+      - TEDs
+components:
+  schemas:
+    Errors:
+      items:
+        $ref: "#/components/schemas/Error"
+      type: array
+    Error:
+      example:
+        code: code
+        detail: detail
+        title: title
+      properties:
+        code:
+          description: Código padrão de erro.
+          type: string
+        title:
+          description: Titulo do erro.
+          type: string
+        detail:
+          description: Detalhamento do erro.
+          type: string
+      type: object
+    PaymentTransaction:
+      example:
+        date: 0000-00-00
+        debtorAccount:
+          number: xxxxx
+          accountType: CACC
+          personType: NATURAL_PERSON
+          issuer: xxxx
+        amount: 0.0
+        numeroPa: "0"
+        finalidade: "00000"
+        creditorAccount:
+          number: xxxxx
+          accountType: CACC
+          personType: NATURAL_PERSON
+          ispb: xxxxxxxxxxxxxx
+          issuer: 0.0
+        historico: xxxxxxxxxx
+        creditor:
+          name: xxxxxxxxxxxxx
+          cpfCnpj: XXXXXXXXXXX
+          personType: NATURAL_PERSON
+      properties:
+        debtorAccount:
+          $ref: "#/components/schemas/PaymentTransaction_debtorAccount"
+        creditorAccount:
+          $ref: "#/components/schemas/PaymentTransaction_creditorAccount"
+        creditor:
+          $ref: "#/components/schemas/PaymentTransaction_creditor"
+        date:
+          description: Data de movimento da TED
+          example: 0000-00-00
+          type: string
+        amount:
+          description: Valor da ted.
+          example: 0.0
+          type: number
+        finalidade:
+          description: "Codigo da finalidade da TED permitidos pelo SSPB, encontrado\
+            \ nos anexos do manual de integração."
+          example: "00000"
+          type: string
+        numeroPa:
+          description: Número do PA.
+          example: "0"
+          type: string
+        historico:
+          description: Campo descritivo de histórico.
+          example: xxxxxxxxxx
+          type: string
+      required:
+      - amount
+      - creditor
+      - creditorAccount
+      - date
+      - debtorAccount
+      - finalidade
+      - numeroPa
+      type: object
+    PaymentTransactionRetorno:
+      example:
+        date: 0000-00-00
+        debtorAccount:
+          number: xxxxx
+          accountType: CACC
+          personType: NATURAL_PERSON
+          ispb: xxxxxxxxxxxxxx
+          issuer: xxxx
+        amount: "0.00"
+        finalidade: "00000"
+        historico: xxxxxxxxxx
+        numeroControleIF: "00000"
+        idAgendamento: 0.0
+        mensagemErro: xxxxxxxxxx
+        numeroBancoFavorecido: "0"
+        situação: xxxxxxxxxx
+        tipoPessoaDebito: x
+        numeroPa: "0"
+        nomePessoaDebito: xxxxxxxxxx
+        creditorAccount:
+          number: xxxxx
+          accountType: CACC
+          personType: NATURAL_PERSON
+          ispb: xxxxxxxxxxxxxx
+          issuer: 0.0
+        numeroCPFCNPJDebito: "00000000000000"
+        creditor:
+          name: xxxxxxxxxxxxx
+          cpfCnpj: XXXXXXXXXXX
+          personType: NATURAL_PERSON
+        codigoSituacaoAgendamento: 0.0
+        agendamento: false
+      properties:
+        finalidade:
+          description: Finalidade da TED.
+          example: "00000"
+          type: string
+        numeroPa:
+          description: Número do PA.
+          example: "0"
+          type: string
+        numeroControleIF:
+          description: Numero de controle da IF.
+          example: "00000"
+          type: string
+        mensagemErro:
+          description: Mensagem de Erro.
+          example: xxxxxxxxxx
+          type: string
+        idAgendamento:
+          description: Codigo ID do agendamento.
+          example: 0.0
+          type: number
+        agendamento:
+          description: Status do agendamento.
+          example: false
+          type: boolean
+        situação:
+          description: Situação da TED.
+          example: xxxxxxxxxx
+          type: string
+        historico:
+          description: Campo descritivo de histórico.
+          example: xxxxxxxxxx
+          type: string
+        tipoPessoaDebito:
+          description: Tipo da pessoa debitada (F ou J).
+          example: x
+          type: string
+        nomePessoaDebito:
+          description: Nome da pessoa debitada.
+          example: xxxxxxxxxx
+          type: string
+        numeroCPFCNPJDebito:
+          description: Número do CPF ou CNPJ debitado.
+          example: "00000000000000"
+          type: string
+        numeroBancoFavorecido:
+          description: Número definido para a instituição favorecida.
+          example: "0"
+          type: string
+        codigoSituacaoAgendamento:
+          description: Codigo da Situação do agendamento.
+          example: 0.0
+          type: number
+        debtorAccount:
+          $ref: "#/components/schemas/PaymentTransactionRetorno_debtorAccount"
+        creditorAccount:
+          $ref: "#/components/schemas/PaymentTransactionRetorno_creditorAccount"
+        creditor:
+          $ref: "#/components/schemas/PaymentTransactionRetorno_creditor"
+        date:
+          description: Data de movimento da TED
+          example: 0000-00-00
+          type: string
+        amount:
+          description: Valor da ted.
+          example: "0.00"
+          type: string
+      type: object
+    CancelarTedAgendadaDTO:
+      properties:
+        numCooperativa:
+          description: Numero da cooperativa.
+          example: 0
+          type: integer
+        idAgendamento:
+          description: Numero do ID do agendamento.
+          example: 0.0
+          type: number
+        bolCancelaEfetivado:
+          description: Numero do ID do agendamento.
+          example: false
+          type: boolean
+      required:
+      - bolCancelaEfetivado
+      - idAgendamento
+      - numCooperativa
+      type: object
+    DadosRetornoTedCanceladaDTO:
+      example:
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem de retorno do cancelamento.
+          type: string
+      type: object
+    _transferencias__codigo__get_200_response:
+      example:
+        resultado:
+        - date: 0000-00-00
+          debtorAccount:
+            number: xxxxx
+            accountType: CACC
+            personType: NATURAL_PERSON
+            ispb: xxxxxxxxxxxxxx
+            issuer: xxxx
+          amount: "0.00"
+          finalidade: "00000"
+          historico: xxxxxxxxxx
+          numeroControleIF: "00000"
+          idAgendamento: 0.0
+          mensagemErro: xxxxxxxxxx
+          numeroBancoFavorecido: "0"
+          situação: xxxxxxxxxx
+          tipoPessoaDebito: x
+          numeroPa: "0"
+          nomePessoaDebito: xxxxxxxxxx
+          creditorAccount:
+            number: xxxxx
+            accountType: CACC
+            personType: NATURAL_PERSON
+            ispb: xxxxxxxxxxxxxx
+            issuer: 0.0
+          numeroCPFCNPJDebito: "00000000000000"
+          creditor:
+            name: xxxxxxxxxxxxx
+            cpfCnpj: XXXXXXXXXXX
+            personType: NATURAL_PERSON
+          codigoSituacaoAgendamento: 0.0
+          agendamento: false
+        - date: 0000-00-00
+          debtorAccount:
+            number: xxxxx
+            accountType: CACC
+            personType: NATURAL_PERSON
+            ispb: xxxxxxxxxxxxxx
+            issuer: xxxx
+          amount: "0.00"
+          finalidade: "00000"
+          historico: xxxxxxxxxx
+          numeroControleIF: "00000"
+          idAgendamento: 0.0
+          mensagemErro: xxxxxxxxxx
+          numeroBancoFavorecido: "0"
+          situação: xxxxxxxxxx
+          tipoPessoaDebito: x
+          numeroPa: "0"
+          nomePessoaDebito: xxxxxxxxxx
+          creditorAccount:
+            number: xxxxx
+            accountType: CACC
+            personType: NATURAL_PERSON
+            ispb: xxxxxxxxxxxxxx
+            issuer: 0.0
+          numeroCPFCNPJDebito: "00000000000000"
+          creditor:
+            name: xxxxxxxxxxxxx
+            cpfCnpj: XXXXXXXXXXX
+            personType: NATURAL_PERSON
+          codigoSituacaoAgendamento: 0.0
+          agendamento: false
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/PaymentTransactionRetorno"
+          type: array
+      type: object
+    _transferencias_agendamentos__idAgendamento__delete_200_response:
+      example:
+        resultado:
+        - mensagem: mensagem
+        - mensagem: mensagem
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/DadosRetornoTedCanceladaDTO"
+          type: array
+      type: object
+    PaymentTransaction_debtorAccount:
+      description: Objeto com os dados da conta do Debitor.
+      example:
+        number: xxxxx
+        accountType: CACC
+        personType: NATURAL_PERSON
+        issuer: xxxx
+      properties:
+        issuer:
+          description: Numero da agência.
+          example: xxxx
+          type: string
+        number:
+          description: Numero da conta.
+          example: xxxxx
+          type: string
+        accountType:
+          description: "Identifica o tito da conta como CACC(Conta-Corrente), SLRY(Conta-Salario),\
+            \ SVGS(Conta-Poupanca) e TRAN(Conta-Pagamento)"
+          enum:
+          - CACC
+          - SLRY
+          - SVGS
+          - TRAN
+          type: string
+        personType:
+          description: Identifica o tipo da pessoa Fisica(NATURAL_PERSON) ou Juridica(LEGAL_PERSON).
+          enum:
+          - NATURAL_PERSON
+          - LEGAL_PERSON
+          type: string
+      required:
+      - accountType
+      - issuer
+      - number
+      - personType
+      type: object
+    PaymentTransaction_creditorAccount:
+      description: Objeto com os dados da Conta do Creditor.
+      example:
+        number: xxxxx
+        accountType: CACC
+        personType: NATURAL_PERSON
+        ispb: xxxxxxxxxxxxxx
+        issuer: 0.0
+      properties:
+        ispb:
+          description: Numero do ISPB.
+          example: xxxxxxxxxxxxxx
+          type: string
+        issuer:
+          description: Numero da agência.
+          example: 0.0
+          type: number
+        number:
+          description: Numero da conta.
+          example: xxxxx
+          type: string
+        accountType:
+          description: "Identifica o tito da conta como CACC(Conta-Corrente), SLRY(Conta-Salario),\
+            \ SVGS(Conta-Poupanca) e TRAN(Conta-Pagamento)"
+          enum:
+          - CACC
+          - SLRY
+          - SVGS
+          - TRAN
+          type: string
+        personType:
+          description: Identifica o tipo da pessoa Fisica(NATURAL_PERSON) ou Juridica(LEGAL_PERSON).
+          enum:
+          - NATURAL_PERSON
+          - LEGAL_PERSON
+          type: string
+      required:
+      - accountType
+      - ispb
+      - issuer
+      - number
+      - personType
+      type: object
+    PaymentTransaction_creditor:
+      description: Objeto com os dados do Creditor.
+      example:
+        name: xxxxxxxxxxxxx
+        cpfCnpj: XXXXXXXXXXX
+        personType: NATURAL_PERSON
+      properties:
+        personType:
+          description: Identifica o tipo da pessoa Fisica(NATURAL_PERSON) ou Juridica(LEGAL_PERSON).
+          enum:
+          - NATURAL_PERSON
+          - LEGAL_PERSON
+          type: string
+        cpfCnpj:
+          description: CPF ou CNPJ.
+          example: XXXXXXXXXXX
+          type: string
+        name:
+          description: Nome da creditor.
+          example: xxxxxxxxxxxxx
+          type: string
+      required:
+      - cpfCnpj
+      - name
+      - personType
+      type: object
+    PaymentTransactionRetorno_debtorAccount:
+      description: Objeto com os dados da conta do Debitor.
+      example:
+        number: xxxxx
+        accountType: CACC
+        personType: NATURAL_PERSON
+        ispb: xxxxxxxxxxxxxx
+        issuer: xxxx
+      properties:
+        ispb:
+          description: Numero do ISPB.
+          example: xxxxxxxxxxxxxx
+          type: string
+        issuer:
+          description: Numero da agência.
+          example: xxxx
+          type: string
+        number:
+          description: Numero da conta.
+          example: xxxxx
+          type: string
+        accountType:
+          description: "Identifica o tito da conta como CACC(Conta-Corrente), SLRY(Conta-Salario),\
+            \ SVGS(Conta-Poupanca) e TRAN(Conta-Pagamento)"
+          enum:
+          - CACC
+          - SLRY
+          - SVGS
+          - TRAN
+          type: string
+        personType:
+          description: Identifica o tipo da pessoa Fisica(NATURAL_PERSON) ou Juridica(LEGAL_PERSON).
+          enum:
+          - NATURAL_PERSON
+          - LEGAL_PERSON
+          type: string
+      type: object
+    PaymentTransactionRetorno_creditorAccount:
+      description: Objeto com os dados da Conta do Creditor.
+      example:
+        number: xxxxx
+        accountType: CACC
+        personType: NATURAL_PERSON
+        ispb: xxxxxxxxxxxxxx
+        issuer: 0.0
+      properties:
+        ispb:
+          description: Numero do ISPB.
+          example: xxxxxxxxxxxxxx
+          type: string
+        issuer:
+          description: Numero da agência.
+          example: 0.0
+          type: number
+        number:
+          description: Numero da conta.
+          example: xxxxx
+          type: string
+        accountType:
+          description: "Identifica o tito da conta como CACC(Conta-Corrente), SLRY(Conta-Salario),\
+            \ SVGS(Conta-Poupanca) e TRAN(Conta-Pagamento)"
+          enum:
+          - CACC
+          - SLRY
+          - SVGS
+          - TRAN
+          type: string
+        personType:
+          description: Identifica o tipo da pessoa Fisica(NATURAL_PERSON) ou Juridica(LEGAL_PERSON).
+          enum:
+          - NATURAL_PERSON
+          - LEGAL_PERSON
+          type: string
+      type: object
+    PaymentTransactionRetorno_creditor:
+      description: Objeto com os dados do Creditor.
+      example:
+        name: xxxxxxxxxxxxx
+        cpfCnpj: XXXXXXXXXXX
+        personType: NATURAL_PERSON
+      properties:
+        personType:
+          description: Identifica o tipo da pessoa Fisica(NATURAL_PERSON) ou Juridica(LEGAL_PERSON).
+          enum:
+          - NATURAL_PERSON
+          - LEGAL_PERSON
+          type: string
+        cpfCnpj:
+          description: CPF ou CNPJ.
+          example: XXXXXXXXXXX
+          type: string
+        name:
+          description: Nome da creditor.
+          example: xxxxxxxxxxxxx
+          type: string
+      type: object
+  securitySchemes:
+    oauth2:
+      flows:
+        clientCredentials:
+          scopes:
+            cco_transferencias: Transferências
+            cco_consulta: Consulta
+            openid: OpenID
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+x-original-swagger-version: "2.0"
+

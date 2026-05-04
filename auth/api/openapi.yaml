@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  description: API independente para geração de tokens de acesso mTLS via Client Credentials.
+  title: Sicoob Autenticação
+  version: 1.0.0
+servers:
+- url: https://auth.sicoob.com.br
+paths:
+  /auth/realms/cooperado/protocol/openid-connect/token:
+    post:
+      description: Endpoint para geração de token de acesso via Client Credentials
+        com mTLS.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/_auth_realms_cooperado_protocol_openid_connect_token_post_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_auth_realms_cooperado_protocol_openid_connect_token_post_200_response"
+          description: Token gerado com sucesso
+      security: []
+      servers:
+      - url: https://auth.sicoob.com.br
+      summary: Gerar token de acesso
+      tags:
+      - Autenticação
+components:
+  schemas:
+    _auth_realms_cooperado_protocol_openid_connect_token_post_200_response:
+      example:
+        access_token: access_token
+        refresh_expires_in: 6
+        not-before-policy: 1
+        scope: scope
+        token_type: token_type
+        expires_in: 0
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: integer
+        refresh_expires_in:
+          type: integer
+        token_type:
+          type: string
+        not-before-policy:
+          type: integer
+        scope:
+          type: string
+      type: object
+    _auth_realms_cooperado_protocol_openid_connect_token_post_request:
+      properties:
+        grant_type:
+          default: client_credentials
+          type: string
+        client_id:
+          type: string
+        scope:
+          default: cco_transferencias cco_consulta openid
+          type: string
+      required:
+      - client_id
+      - grant_type
+      - scope
+      type: object
+

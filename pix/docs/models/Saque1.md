@@ -1,0 +1,14 @@
+# Sicoob.Pix.Model.Saque1
+Informações relacionadas ao saque
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**Valor** | **string** | Valor do saque efetuado | 
+**ModalidadeAgente** | **string** | ##### Modalidade do Agente &lt;table&gt;&lt;tr&gt;&lt;th&gt;SIGLA&lt;/th&gt;&lt;th&gt;Descrição&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AGTEC&lt;/td&gt;&lt;td&gt;Agente Estabelecimento Comercial&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AGTOT&lt;/td&gt;&lt;td&gt;Agente Outra Espécie de Pessoa Jurídica ou Correspondente no País&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AGPSS&lt;/td&gt;&lt;td&gt;Agente Facilitador de Serviço de Saque (&lt;b&gt;ATENÇÃO&lt;/b&gt;: no mapeamento para o campo &#39;modalidadeAgente&#39;, da pacs.008, esse valor deve ser substituído por &lt;b&gt;AGFSS&lt;/b&gt;)&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;  | 
+**PrestadorDoServicoDeSaque** | **string** | ISPB do Facilitador de Serviço de Saque | 
+**ModalidadeAlteracao** | **int** | Modalidade de alteração de valor do saque. Quando não preenchido o valor assumido é o 0 (zero). | [optional] [default to 0]
+
+[[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
+

@@ -1,0 +1,1476 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: tiago.emerick@sicoob.com.br
+    name: Tiago Emerick
+  description: "<pre>[ Base URL: https://api.sicoob.com.br/investimentos/v2 ]</pre>\
+    \ API dedicada a retornar os investimentos de um determinado cliente em várias\
+    \ etapas. Primeira a partir apenas do CPF, depois por carteira e por fim por modalidade"
+  license:
+    name: Sicoob
+    url: http://www.sicoob.com.br/licenses/LICENSE-2.0.html
+  title: Investimentos
+  version: 1.0.3.3
+  x-ibm-name: investimentos
+servers:
+- url: https://api.sicoob.com.br/investimentos/v2
+security:
+- oauth:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+paths:
+  /renda-fixa/saldos:
+    get:
+      description: "Retorna sumarizado todos os investimentos LCA, RDC e DAP do cliente\
+        \ juntos."
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número da Cooperativa.
+        in: query
+        name: numeroCooperativa
+        required: true
+        schema:
+          type: integer
+      - description: Número da Conta Corrente.
+        in: query
+        name: numeroContaCorrente
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_saldos_get_200_response"
+          description: Aplicações encontradas
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Aplicações não encontradas
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Aplicações não encontradas
+      security:
+      - oauth:
+        - investimentos_consulta
+        client_id: []
+      summary: Busca os investimentos do cliente
+      tags:
+      - investimentos
+      x-sicoob-category: Apoio
+  /renda-fixa/carteiras:
+    get:
+      description: "Retorna sumarizado todos os investimentos LCA, RDC e DAP do cliente\
+        \ separado por carteira"
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número da Cooperativa.
+        in: query
+        name: numeroCooperativa
+        required: true
+        schema:
+          type: integer
+      - description: Número da Conta Corrente.
+        in: query
+        name: numeroContaCorrente
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_carteiras_get_200_response"
+          description: Carteiras encontradas
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Carteiras não encontradas
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Carteiras não encontradas
+      security:
+      - oauth:
+        - investimentos_consulta
+        client_id: []
+      summary: Busca os investimentos do cliente sumarizados por carteira
+      tags:
+      - investimentos
+      x-sicoob-category: Apoio
+  /renda-fixa/carteiras/{idCarteira}/modalidades:
+    get:
+      description: Retorna todos os investimentos de uma determinada carteira do cliente
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número da Cooperativa.
+        in: query
+        name: numeroCooperativa
+        required: true
+        schema:
+          type: integer
+      - description: Número da Conta Corrente.
+        in: query
+        name: numeroContaCorrente
+        required: true
+        schema:
+          type: integer
+      - description: ID da carteira
+        in: path
+        name: idCarteira
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_carteiras__idCarteira__modalidades_get_200_response"
+          description: Investimentos da carteira encontrados
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Investimentos da Carteiras não encontradas
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Investimentos da Carteiras não encontradas
+      security:
+      - oauth:
+        - investimentos_consulta
+        client_id: []
+      summary: Busca os investimentos do cliente pela carteira
+      tags:
+      - investimentos
+      x-sicoob-category: Apoio
+  /renda-fixa/carteiras/{idCarteira}/modalidades/{idModalidade}/aplicacoes:
+    get:
+      description: Retorna todas as aplicações de uma determinada carteira e modalidade
+        do cliente
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número da Cooperativa.
+        in: query
+        name: numeroCooperativa
+        required: true
+        schema:
+          type: integer
+      - description: Número da Conta Corrente.
+        in: query
+        name: numeroContaCorrente
+        required: true
+        schema:
+          type: integer
+      - description: ID da carteira
+        in: path
+        name: idCarteira
+        required: true
+        schema:
+          type: integer
+      - description: ID da modalidade
+        in: path
+        name: idModalidade
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_carteiras__idCarteira__modalidades__idModalidade__aplicacoes_get_200_response"
+          description: Aplicações da modalidade encontradas
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Aplicações da modalidade não encontradas
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Aplicações da modalidade não encontradas
+      security:
+      - oauth:
+        - investimentos_consulta
+        client_id: []
+      summary: Busca os dados da aplicação pela carteira e modalidade passadas
+      tags:
+      - investimentos
+      x-sicoob-category: Apoio
+  /renda-fixa/extrato/{numeroContaCorrente}/{idAplicacao}/{idModalidade}:
+    get:
+      description: Retorna o extrato da aplicação
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número da Cooperativa.
+        in: query
+        name: numeroCooperativa
+        required: true
+        schema:
+          type: integer
+      - description: Número da Conta Corrente.
+        in: path
+        name: numeroContaCorrente
+        required: true
+        schema:
+          type: integer
+      - description: ID da modalidade
+        in: path
+        name: idModalidade
+        required: true
+        schema:
+          type: integer
+      - description: ID da aplicação
+        in: path
+        name: idAplicacao
+        required: true
+        schema:
+          type: integer
+      - description: Data do lote
+        in: query
+        name: dataLote
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_extrato__numeroContaCorrente___idAplicacao___idModalidade__get_200_response"
+          description: Extrato da aplicação encontrada
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Aplicações da modalidade não encontradas
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro negocial
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno do servidor
+      security:
+      - oauth:
+        - investimentos_consulta
+        client_id: []
+      summary: "Busca o extrato da aplicação pela modalidade, data, conta e aplicaç\
+        ão passadas"
+      tags:
+      - investimentos
+      x-sicoob-category: Apoio
+  /renda-fixa/resgates:
+    post:
+      description: "A partir da cooperativa, conta da pessoa logada e valor passado\
+        \ é realizado um resgaste inteligente."
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResgateInteligenteCapRem"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_resgates_post_200_response"
+          description: Resgate realizado
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Mensagem negocial
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Usuário não autenticado
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Erro interno do servidor
+      security:
+      - oauth:
+        - investimentos_resgate
+        client_id: []
+      summary: Realiza um resgate inteligente na cooperativa e conta da pessoa logada.
+      tags:
+      - resgate
+      x-sicoob-category: Financeira
+      x-codegen-request-body-name: ResgateInteligenteCapRem
+  /renda-fixa/modalidades:
+    get:
+      description: Realiza uma busca de modalidades ativas para a instituição e conta-corrente
+        da pessoa logada considerando canal SISBR.
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_modalidades_get_200_response"
+          description: Modalidades encontradas.
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Modalidades inteligentes não puderam ser recuperadas.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Mensagem negocial
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Usuário não autenticado
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Erro interno do servidor
+      security:
+      - oauth:
+        - investimentos_consulta
+        client_id: []
+      summary: Realiza uma busca de modalidades ativas para a instituição e conta-corrente
+        da pessoa logada considerando canal SISBR.
+      tags:
+      - modalidades
+      x-sicoob-category: Apoio
+  /renda-fixa/aportes:
+    post:
+      description: "A partir da cooperativa, conta da pessoa logada e da modalidade\
+        \ e valor informados é realizado uma aplicação."
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AplicacaoInteligente"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_renda_fixa_resgates_post_200_response"
+          description: Aplicação inteligente feita com sucesso
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Mensagem negocial
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Usuário não autenticado
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Unsupported Media Type
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          description: Erro interno do servidor
+      security:
+      - oauth:
+        - investimentos_aplicacao
+        client_id: []
+      summary: "Realiza uma aplicação inteligente na cooperativa, conta da pessoa\
+        \ logada e modalidade informada."
+      tags:
+      - aplicação
+      x-sicoob-category: Financeira
+      x-codegen-request-body-name: AplicacaoInteligente
+components:
+  schemas:
+    InformacoesInvestimentos:
+      properties:
+        carteira:
+          description: "Valor fixo: Renda fixa"
+          example: Renda fixa
+          format: string
+          maxLength: 10
+          type: string
+        valorBruto:
+          description: Valor bruto sumarizado de todas as carteiras de investimento
+          example: 1550.32
+          format: BigDecimal
+          type: number
+      required:
+      - carteira
+      - valorBruto
+      type: object
+    InformacoesInvestimentosPorCarteira:
+      items:
+        $ref: "#/components/schemas/_renda_fixa_carteiras_get_200_response_resultado_inner"
+      type: array
+    LinhaInvestimentosPorCarteira:
+      items:
+        $ref: "#/components/schemas/_renda_fixa_carteiras__idCarteira__modalidades_get_200_response_resultado_inner"
+      type: array
+    LinhaInvestimentosPorModalidade:
+      items:
+        $ref: "#/components/schemas/_renda_fixa_carteiras__idCarteira__modalidades__idModalidade__aplicacoes_get_200_response_resultado_inner"
+      type: array
+    ExtratoLancamentoAplicacao:
+      items:
+        $ref: "#/components/schemas/ExtratoLancamentoAplicacao_inner"
+      type: array
+    MensagensErro:
+      example:
+        mensagens:
+        - codigo: 0
+          mensagem: mensagem
+        - codigo: 0
+          mensagem: mensagem
+      properties:
+        mensagens:
+          description: Array com todas as mensagem de erro encontradas.
+          items:
+            $ref: "#/components/schemas/MensagensErro_mensagens_inner"
+          type: array
+      required:
+      - mensagens
+      type: object
+    CapRemSicoobMensagemErro:
+      example:
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          description: Array com todas as mensagem de erro encontradas.
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagem"
+          type: array
+      required:
+      - mensagens
+      type: object
+    CapRemSicoobMensagem:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem que descreve o erro.
+          type: string
+        codigo:
+          description: Código interno que identifica o erro.
+          type: string
+      required:
+      - codigo
+      - mensagem
+      type: object
+    AporteSucesso:
+      properties:
+        resultado:
+          description: Aplicação inteligente realizada com sucesso.
+          example: Aplicação inteligente realizada com sucesso.
+          type: string
+      type: string
+    ResgateSucesso:
+      properties:
+        resultado:
+          description: Resgate inteligente realizado com sucesso.
+          example: Resgate inteligente realizado com sucesso.
+          type: string
+      type: string
+    Modalidades:
+      example:
+        valorMinimoAplicacao: "100"
+        sigla: RDC - Longo CDI
+        valorMinimoSaldo: "100"
+        indice: CDI
+        valorMinimoResgate: "20"
+        prazoCarencia: "30"
+        tabelaDeRendimentos:
+        - criterioTaxaRemuneracao:
+            name: POR_MODALIDADE
+            ordinal: 1
+          prazoIndices:
+          - percTaxaMinima: "100"
+            prazoTaxa: "5000"
+            percIndice: "105"
+            percTaxaMaxima: "100"
+          - percTaxaMinima: "100"
+            prazoTaxa: "5000"
+            percIndice: "105"
+            percTaxaMaxima: "100"
+          tipoPapel: POS_FIXADO
+          aplicaChequeEspecial: true
+          pu: "0.01"
+          carenciaNoVencimento: false
+          valorAte: "8000.01"
+          permiteResgateAutomatico: true
+          valorDe: "8000.01"
+          posComTaxaBruta: false
+          escalonado: false
+          idTipoCarteira: "1"
+          dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+          alteraRentabilidade: true
+          tipoCarteira: RDC
+          saldoTaxaRemuneracao: "8000.01"
+        - criterioTaxaRemuneracao:
+            name: POR_MODALIDADE
+            ordinal: 1
+          prazoIndices:
+          - percTaxaMinima: "100"
+            prazoTaxa: "5000"
+            percIndice: "105"
+            percTaxaMaxima: "100"
+          - percTaxaMinima: "100"
+            prazoTaxa: "5000"
+            percIndice: "105"
+            percTaxaMaxima: "100"
+          tipoPapel: POS_FIXADO
+          aplicaChequeEspecial: true
+          pu: "0.01"
+          carenciaNoVencimento: false
+          valorAte: "8000.01"
+          permiteResgateAutomatico: true
+          valorDe: "8000.01"
+          posComTaxaBruta: false
+          escalonado: false
+          idTipoCarteira: "1"
+          dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+          alteraRentabilidade: true
+          tipoCarteira: RDC
+          saldoTaxaRemuneracao: "8000.01"
+        id: "1"
+        dataProduto: 2024-01-12T00:00:00.000Z
+        prazoMinimoAplicacao: "60"
+        prazoMaximoAplicacao: "360"
+      properties:
+        id:
+          description: Identificador da aplicação
+          example: "1"
+          type: string
+        sigla:
+          description: Sigla da Modalidade
+          example: RDC - Longo CDI
+          type: string
+        indice:
+          description: Indice
+          example: CDI
+          type: string
+        dataProduto:
+          description: Data do produto
+          example: 2024-01-12T00:00:00.000Z
+          type: string
+        prazoCarencia:
+          description: Prazo em dias para resgate com rendimentos
+          example: "30"
+          type: string
+        prazoMaximoAplicacao:
+          description: Prazo máximo em dias da aplicação
+          example: "360"
+          type: string
+        valorMinimoAplicacao:
+          description: Valor mínimo que pode ser aplicado
+          example: "100"
+          type: string
+        valorMinimoResgate:
+          description: Valor mínimo que pode ser resgatado de cada vez
+          example: "20"
+          type: string
+        valorMinimoSaldo:
+          description: Valor mínimo saldo
+          example: "100"
+          type: string
+        prazoMinimoAplicacao:
+          description: Prazo mínimo até que se possa resgatar a aplicação
+          example: "60"
+          type: string
+        tabelaDeRendimentos:
+          items:
+            $ref: "#/components/schemas/TabelaDeRendimentos"
+          type: array
+      type: object
+    TabelaDeRendimentos:
+      example:
+        criterioTaxaRemuneracao:
+          name: POR_MODALIDADE
+          ordinal: 1
+        prazoIndices:
+        - percTaxaMinima: "100"
+          prazoTaxa: "5000"
+          percIndice: "105"
+          percTaxaMaxima: "100"
+        - percTaxaMinima: "100"
+          prazoTaxa: "5000"
+          percIndice: "105"
+          percTaxaMaxima: "100"
+        tipoPapel: POS_FIXADO
+        aplicaChequeEspecial: true
+        pu: "0.01"
+        carenciaNoVencimento: false
+        valorAte: "8000.01"
+        permiteResgateAutomatico: true
+        valorDe: "8000.01"
+        posComTaxaBruta: false
+        escalonado: false
+        idTipoCarteira: "1"
+        dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+        alteraRentabilidade: true
+        tipoCarteira: RDC
+        saldoTaxaRemuneracao: "8000.01"
+      properties:
+        dataValidadeTaxa:
+          description: Data validade taxa
+          example: 2024-01-12T00:00:00.000Z
+          type: string
+        valorDe:
+          description: Valor de
+          example: "8000.01"
+          type: string
+        valorAte:
+          description: Valor até
+          example: "8000.01"
+          type: string
+        prazoIndices:
+          items:
+            $ref: "#/components/schemas/PrazoIndicesModalidades"
+          type: array
+        permiteResgateAutomatico:
+          description: Permite resgate automático
+          example: true
+          type: boolean
+        aplicaChequeEspecial:
+          description: Permite cheque especial
+          example: true
+          type: boolean
+        alteraRentabilidade:
+          description: Altera rentabilidade
+          example: true
+          type: boolean
+        criterioTaxaRemuneracao:
+          $ref: "#/components/schemas/CriterioTaxaRemuneracaoModalidades"
+        saldoTaxaRemuneracao:
+          description: Saldo taxa remuneração
+          example: "8000.01"
+          type: string
+        pu:
+          description: PU
+          example: "0.01"
+          type: string
+        posComTaxaBruta:
+          description: Pós com taxa bruta
+          example: false
+          type: boolean
+        escalonado:
+          description: Escalonado
+          example: false
+          type: boolean
+        tipoPapel:
+          description: Tipo papel
+          example: POS_FIXADO
+          type: string
+        tipoCarteira:
+          description: Tipo carteira
+          example: RDC
+          type: string
+        carenciaNoVencimento:
+          description: Carência no vencimento
+          example: false
+          type: boolean
+        idTipoCarteira:
+          description: ID Tipo carteira
+          example: "1"
+          type: string
+      type: object
+    CriterioTaxaRemuneracaoModalidades:
+      example:
+        name: POR_MODALIDADE
+        ordinal: 1
+      properties:
+        ordinal:
+          description: Ordinal
+          example: 1
+          format: integer
+          type: integer
+        name:
+          description: Name
+          example: POR_MODALIDADE
+          type: string
+      type: object
+    PrazoIndicesModalidades:
+      example:
+        percTaxaMinima: "100"
+        prazoTaxa: "5000"
+        percIndice: "105"
+        percTaxaMaxima: "100"
+      properties:
+        percIndice:
+          description: Percentual Indice
+          example: "105"
+          type: string
+        prazoTaxa:
+          description: Prazo da taxa
+          example: "5000"
+          type: string
+        percTaxaMinima:
+          description: Taxa mínima
+          example: "100"
+          type: string
+        percTaxaMaxima:
+          description: Taxa máxima
+          example: "100"
+          type: string
+      type: object
+    ResgateInteligenteCapRem:
+      example:
+        valor: 100.5
+      properties:
+        valor:
+          description: Valor a ser resgatado.
+          example: 100.5
+          format: float
+          type: number
+      type: object
+    AplicacaoInteligente:
+      example:
+        valor: 100.5
+        modalidade: 42.0
+      properties:
+        modalidade:
+          description: ID da modalidade a ser aplicada.
+          example: 42.0
+          format: int32
+          type: number
+        valor:
+          description: Valor a ser aplicado.
+          example: 100.5
+          format: float
+          type: number
+      type: object
+    SicoobMensagem:
+      properties:
+        mensagem:
+          description: Mensagem que descreve o erro.
+          type: string
+        codigo:
+          description: Código interno que identifica o erro.
+          type: integer
+      required:
+      - codigo
+      - mensagem
+      type: object
+    _renda_fixa_saldos_get_200_response_resultado:
+      example:
+        valorBruto: 1550.32
+        carteira: Renda fixa
+      properties:
+        carteira:
+          description: "Valor fixo: Renda fixa"
+          example: Renda fixa
+          format: string
+          maxLength: 10
+          type: string
+        valorBruto:
+          description: Valor bruto sumarizado de todas as carteiras de investimento
+          example: 1550.32
+          format: BigDecimal
+          type: number
+      required:
+      - carteira
+      - valorBruto
+      type: object
+    _renda_fixa_saldos_get_200_response:
+      example:
+        resultado:
+          valorBruto: 1550.32
+          carteira: Renda fixa
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_renda_fixa_saldos_get_200_response_resultado"
+      type: object
+    _renda_fixa_carteiras_get_200_response_resultado_inner:
+      example:
+        valorBruto: 1550.24
+        carteira: RDC
+        participacaoCarteira: 100.0
+        idCarteira: 1
+      properties:
+        idCarteira:
+          description: ID da carteira de investimento
+          example: 1
+          format: integer
+          type: integer
+        carteira:
+          description: Nome da carteira de investimentos
+          example: RDC
+          format: string
+          type: string
+        valorBruto:
+          description: Valor bruto de cada carteira de investimento
+          example: 1550.24
+          format: BigDecimal
+          type: number
+        participacaoCarteira:
+          description: Participação na carteira
+          example: 100.0
+          format: BigDecimal
+          type: number
+      required:
+      - carteira
+      - idCarteira
+      - participacaoCarteira
+      - valorBruto
+      type: object
+    _renda_fixa_carteiras_get_200_response:
+      example:
+        resultado:
+        - valorBruto: 1550.24
+          carteira: RDC
+          participacaoCarteira: 100.0
+          idCarteira: 1
+        - valorBruto: 1550.24
+          carteira: RDC
+          participacaoCarteira: 100.0
+          idCarteira: 1
+        mensagens:
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          type: array
+        resultado:
+          items:
+            $ref: "#/components/schemas/_renda_fixa_carteiras_get_200_response_resultado_inner"
+          type: array
+      type: object
+    _renda_fixa_carteiras__idCarteira__modalidades_get_200_response_resultado_inner:
+      example:
+        valorAplicacao: 197866.54
+        valorRendimento: 1647.5
+        valorLiquido: 136649.92
+        valorBruto: 136950.24
+        carteira: RDC
+        idModalidade: 1
+        idCarteira: 1
+        modalidade: Renda fixa RDC - Longo Pós CDI
+      properties:
+        carteira:
+          description: Sigla da carteira
+          example: RDC
+          format: string
+          type: string
+        valorBruto:
+          description: Valor bruto
+          example: 136950.24
+          format: BigDecimal
+          type: number
+        idCarteira:
+          description: ID da carteira de investimentos
+          example: 1
+          format: integer
+          type: integer
+        modalidade:
+          description: Nome da modalidade da carteira de investimentos
+          example: Renda fixa RDC - Longo Pós CDI
+          format: string
+          type: string
+        idModalidade:
+          description: ID da modalidade da carteira de investimentos
+          example: 1
+          format: integer
+          type: integer
+        valorAplicacao:
+          description: Valor aplicação
+          example: 197866.54
+          format: BigDecimal
+          type: number
+        valorLiquido:
+          description: Valor líquido
+          example: 136649.92
+          format: BigDecimal
+          type: number
+        valorRendimento:
+          description: Valor rendimento
+          example: 1647.5
+          format: BigDecimal
+          type: number
+      required:
+      - carteira
+      - idCarteira
+      - idModalidade
+      - modalidade
+      - valorAplicacao
+      - valorBruto
+      - valorLiquido
+      - valorRendimento
+      type: object
+    _renda_fixa_carteiras__idCarteira__modalidades_get_200_response:
+      example:
+        resultado:
+        - valorAplicacao: 197866.54
+          valorRendimento: 1647.5
+          valorLiquido: 136649.92
+          valorBruto: 136950.24
+          carteira: RDC
+          idModalidade: 1
+          idCarteira: 1
+          modalidade: Renda fixa RDC - Longo Pós CDI
+        - valorAplicacao: 197866.54
+          valorRendimento: 1647.5
+          valorLiquido: 136649.92
+          valorBruto: 136950.24
+          carteira: RDC
+          idModalidade: 1
+          idCarteira: 1
+          modalidade: Renda fixa RDC - Longo Pós CDI
+        mensagens:
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          type: array
+        resultado:
+          items:
+            $ref: "#/components/schemas/_renda_fixa_carteiras__idCarteira__modalidades_get_200_response_resultado_inner"
+          type: array
+      type: object
+    _renda_fixa_carteiras__idCarteira__modalidades__idModalidade__aplicacoes_get_200_response_resultado_inner:
+      example:
+        valorAplicacao: 1550.32
+        valorRendimento: 200.0
+        valorLiquido: 1400.0
+        valorBruto: 1600.0
+        idModalidade: 1
+        idCarteira: 1
+        modalidade: Renda fixa RDC - Longo Pós CDI
+      properties:
+        idCarteira:
+          description: ID da carteira de investimentos
+          example: 1
+          format: integer
+          type: integer
+        modalidade:
+          description: Nome da modalidade da carteira de investimentos
+          example: Renda fixa RDC - Longo Pós CDI
+          format: string
+          type: string
+        idModalidade:
+          description: ID da modalidade da carteira de investimentos
+          example: 1
+          format: integer
+          type: integer
+        valorAplicacao:
+          description: Valor da aplicação
+          example: 1550.32
+          format: BigDecimal
+          type: number
+        valorBruto:
+          description: Valor bruto da aplicação
+          example: 1600.0
+          format: BigDecimal
+          type: number
+        valorLiquido:
+          description: Valor líquido da aplicação
+          example: 1400.0
+          format: BigDecimal
+          type: number
+        valorRendimento:
+          description: Valor do rendimento da aplicação
+          example: 200.0
+          format: BigDecimal
+          type: number
+      required:
+      - idCarteira
+      - idModalidade
+      - modalidade
+      - valorAplicacao
+      - valorBruto
+      - valorLiquido
+      - valorRendimento
+      type: object
+    _renda_fixa_carteiras__idCarteira__modalidades__idModalidade__aplicacoes_get_200_response:
+      example:
+        resultado:
+        - valorAplicacao: 1550.32
+          valorRendimento: 200.0
+          valorLiquido: 1400.0
+          valorBruto: 1600.0
+          idModalidade: 1
+          idCarteira: 1
+          modalidade: Renda fixa RDC - Longo Pós CDI
+        - valorAplicacao: 1550.32
+          valorRendimento: 200.0
+          valorLiquido: 1400.0
+          valorBruto: 1600.0
+          idModalidade: 1
+          idCarteira: 1
+          modalidade: Renda fixa RDC - Longo Pós CDI
+        mensagens:
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          type: array
+        resultado:
+          items:
+            $ref: "#/components/schemas/_renda_fixa_carteiras__idCarteira__modalidades__idModalidade__aplicacoes_get_200_response_resultado_inner"
+          type: array
+      type: object
+    _renda_fixa_extrato__numeroContaCorrente___idAplicacao___idModalidade__get_200_response:
+      example:
+        resultado:
+        - - dataLote: 15/07/2024
+            creditos: 1550.32
+            descHistorico: Aplicação financeira
+            saldoLiquido: 1400.0
+            debitos: 1600.0
+          - dataLote: 15/07/2024
+            creditos: 1550.32
+            descHistorico: Aplicação financeira
+            saldoLiquido: 1400.0
+            debitos: 1600.0
+        - - dataLote: 15/07/2024
+            creditos: 1550.32
+            descHistorico: Aplicação financeira
+            saldoLiquido: 1400.0
+            debitos: 1600.0
+          - dataLote: 15/07/2024
+            creditos: 1550.32
+            descHistorico: Aplicação financeira
+            saldoLiquido: 1400.0
+            debitos: 1600.0
+        mensagens:
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          type: array
+        resultado:
+          items:
+            $ref: "#/components/schemas/ExtratoLancamentoAplicacao"
+          type: array
+      type: object
+    _renda_fixa_resgates_post_200_response:
+      example:
+        resultado: resultado
+        mensagens:
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          type: array
+        resultado:
+          type: string
+      type: object
+    _renda_fixa_modalidades_get_200_response:
+      example:
+        resultado:
+        - valorMinimoAplicacao: "100"
+          sigla: RDC - Longo CDI
+          valorMinimoSaldo: "100"
+          indice: CDI
+          valorMinimoResgate: "20"
+          prazoCarencia: "30"
+          tabelaDeRendimentos:
+          - criterioTaxaRemuneracao:
+              name: POR_MODALIDADE
+              ordinal: 1
+            prazoIndices:
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            tipoPapel: POS_FIXADO
+            aplicaChequeEspecial: true
+            pu: "0.01"
+            carenciaNoVencimento: false
+            valorAte: "8000.01"
+            permiteResgateAutomatico: true
+            valorDe: "8000.01"
+            posComTaxaBruta: false
+            escalonado: false
+            idTipoCarteira: "1"
+            dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+            alteraRentabilidade: true
+            tipoCarteira: RDC
+            saldoTaxaRemuneracao: "8000.01"
+          - criterioTaxaRemuneracao:
+              name: POR_MODALIDADE
+              ordinal: 1
+            prazoIndices:
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            tipoPapel: POS_FIXADO
+            aplicaChequeEspecial: true
+            pu: "0.01"
+            carenciaNoVencimento: false
+            valorAte: "8000.01"
+            permiteResgateAutomatico: true
+            valorDe: "8000.01"
+            posComTaxaBruta: false
+            escalonado: false
+            idTipoCarteira: "1"
+            dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+            alteraRentabilidade: true
+            tipoCarteira: RDC
+            saldoTaxaRemuneracao: "8000.01"
+          id: "1"
+          dataProduto: 2024-01-12T00:00:00.000Z
+          prazoMinimoAplicacao: "60"
+          prazoMaximoAplicacao: "360"
+        - valorMinimoAplicacao: "100"
+          sigla: RDC - Longo CDI
+          valorMinimoSaldo: "100"
+          indice: CDI
+          valorMinimoResgate: "20"
+          prazoCarencia: "30"
+          tabelaDeRendimentos:
+          - criterioTaxaRemuneracao:
+              name: POR_MODALIDADE
+              ordinal: 1
+            prazoIndices:
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            tipoPapel: POS_FIXADO
+            aplicaChequeEspecial: true
+            pu: "0.01"
+            carenciaNoVencimento: false
+            valorAte: "8000.01"
+            permiteResgateAutomatico: true
+            valorDe: "8000.01"
+            posComTaxaBruta: false
+            escalonado: false
+            idTipoCarteira: "1"
+            dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+            alteraRentabilidade: true
+            tipoCarteira: RDC
+            saldoTaxaRemuneracao: "8000.01"
+          - criterioTaxaRemuneracao:
+              name: POR_MODALIDADE
+              ordinal: 1
+            prazoIndices:
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            - percTaxaMinima: "100"
+              prazoTaxa: "5000"
+              percIndice: "105"
+              percTaxaMaxima: "100"
+            tipoPapel: POS_FIXADO
+            aplicaChequeEspecial: true
+            pu: "0.01"
+            carenciaNoVencimento: false
+            valorAte: "8000.01"
+            permiteResgateAutomatico: true
+            valorDe: "8000.01"
+            posComTaxaBruta: false
+            escalonado: false
+            idTipoCarteira: "1"
+            dataValidadeTaxa: 2024-01-12T00:00:00.000Z
+            alteraRentabilidade: true
+            tipoCarteira: RDC
+            saldoTaxaRemuneracao: "8000.01"
+          id: "1"
+          dataProduto: 2024-01-12T00:00:00.000Z
+          prazoMinimoAplicacao: "60"
+          prazoMaximoAplicacao: "360"
+        mensagens:
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+        - mensagens:
+          - codigo: codigo
+            mensagem: mensagem
+          - codigo: codigo
+            mensagem: mensagem
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/CapRemSicoobMensagemErro"
+          type: array
+        resultado:
+          items:
+            $ref: "#/components/schemas/Modalidades"
+          type: array
+      type: object
+    ExtratoLancamentoAplicacao_inner:
+      example:
+        dataLote: 15/07/2024
+        creditos: 1550.32
+        descHistorico: Aplicação financeira
+        saldoLiquido: 1400.0
+        debitos: 1600.0
+      properties:
+        dataLote:
+          description: Data do lote
+          example: 15/07/2024
+          format: string
+          type: string
+        descHistorico:
+          description: Histórico
+          example: Aplicação financeira
+          format: string
+          type: string
+        creditos:
+          description: Créditos
+          example: 1550.32
+          format: BigDecimal
+          type: number
+        debitos:
+          description: Débitos
+          example: 1600.0
+          format: BigDecimal
+          type: number
+        saldoLiquido:
+          description: Saldo líquido da aplicação
+          example: 1400.0
+          format: BigDecimal
+          type: number
+      required:
+      - creditos
+      - dataLote
+      - debitos
+      - descHistorico
+      - saldoLiquido
+      type: object
+    MensagensErro_mensagens_inner:
+      example:
+        codigo: 0
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem que descreve o erro.
+          type: string
+        codigo:
+          description: Código interno que identifica o erro.
+          type: integer
+      required:
+      - codigo
+      - mensagem
+      type: object
+  securitySchemes:
+    oauth:
+      flows:
+        clientCredentials:
+          scopes:
+            investimentos_consulta: escopo que permite a consulta de investimentos
+              do cliente
+            investimentos_resgate: escopo que permite o resgate de investimentos do
+              cliente
+            investimentos_aplicacao: escopo que permite a aplicação em investimentos
+              do cliente
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+      x-ibm-oauth-provider: sso-cooperado
+    client_id:
+      in: header
+      name: client_id
+      type: apiKey
+      x-key-type: client_id
+x-ibm-configuration:
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+    - gatewayscript:
+        version: 2.0.0
+        title: client-cert
+        source: "const apim = require('apim');\nconst xClientCert = apim.getvariable('request.headers.X-Client-Certificate');\n\
+          if (!xClientCert) {\n    apim.error('Error', 400, 'Bad Request', 'Client\
+          \ certificate is missing');   \n}"
+    - invoke:
+        version: 2.2.0
+        title: invoke
+        backend-type: json
+        header-control:
+          type: blocklist
+          values: []
+        parameter-control:
+          type: allowlist
+          values: []
+        http-version: HTTP/1.1
+        timeout: 60
+        verb: keep
+        chunked-uploads: true
+        persistent-connection: true
+        cache-response: protocol
+        cache-ttl: 900
+        stop-on-error: []
+        websocket-upgrade: false
+        target-url: $(target-url)$(api.operation.path)$(request.search)
+        inject-proxy-headers: false
+        keep-payload: true
+    finally: []
+  properties:
+    target-url:
+      value: http://backofficeinvestimentocluster.sicoob.com.br:9080/capremrenovacao-api/api
+      description: The URL of the target service
+      encoded: false
+  application-authentication:
+    certificate: false
+  activity-log:
+    enabled: true
+    error-content: header
+    success-content: activity
+  cors:
+    enabled: true
+x-original-swagger-version: "2.0"
+

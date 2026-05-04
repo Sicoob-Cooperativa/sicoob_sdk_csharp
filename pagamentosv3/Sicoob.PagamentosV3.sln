@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+VisualStudioVersion = 12.0.0.0
+MinimumVisualStudioVersion = 10.0.0.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sicoob.PagamentosV3", "src\Sicoob.PagamentosV3\Sicoob.PagamentosV3.csproj", "{987DEA30-331B-4287-96BF-945665E6D117}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sicoob.PagamentosV3.Test", "src\Sicoob.PagamentosV3.Test\Sicoob.PagamentosV3.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{987DEA30-331B-4287-96BF-945665E6D117}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{987DEA30-331B-4287-96BF-945665E6D117}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{987DEA30-331B-4287-96BF-945665E6D117}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{987DEA30-331B-4287-96BF-945665E6D117}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

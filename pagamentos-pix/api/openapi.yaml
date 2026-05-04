@@ -1,0 +1,1414 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: eduardod.silva@fornecedores.sicoob.com.br
+    name: Eduardo De Almeida Da Silva
+  description: |-
+    <pre>[ Base URL: https://api.sicoob.com.br/pix-pagamentos/v2 ]</pre>
+    API de pagamentos.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  title: Pagamentos PIX
+  version: 2.0.24.6
+  x-ibm-name: pagamentos-pix
+servers:
+- url: https://api.sicoob.com.br/pix-pagamentos/v2
+security:
+- oauth-mtls-sso:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+tags:
+- description: Reúne endpoints utilizados pela API de pagamentos PIX
+  name: API de Pagamentos PIX
+  x-displayName: Reúne endpoints utilizados pela API de pagamentos PIX
+paths:
+  /pagamentos/{id}:
+    get:
+      description: Endpoint para consultar um pagamento Pix através de um e2eid.
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          $ref: "#/components/schemas/EndToEndId"
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoPagamento"
+          description: Dados do Pix efetuado.
+        "403":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/AcessoNegadoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição de participante autenticado que viola alguma regra
+            de autorização.
+        "404":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/NaoEncontradoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Recurso solicitado não foi encontrado.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Consultar pagamento pix através do endToEndId.
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+  /pagamentos:
+    post:
+      description: Iniciar pagamento por meio de chave DICT
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequisicaoLancamentoIniciacao"
+        description: Objeto que contem um lancamento a ser efetivado
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagamentoIniciadoDict"
+          description: Pagamento iniciciado com sucesso.
+        "400":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Iniciar pagamento por meio de chave DICT
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+  /pagamentos/qrcode:
+    post:
+      description: |
+        Realiza o pagamento de Pix Copia e Cola (Imediato ou Vencimento) com execução direta. O processamento dispensa confirmação adicional ao validar automaticamente se:
+          1. O valor original coincide com o valor decodificado (sem juros/multa ou desconto).
+          2. A aplicação de juros/multa está autorizada.
+          3. O CNPJ do favorecido é idêntico ao registrado no payload.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PagamentoIniciadoQRCodeBody"
+        description: Objeto que contém pagamento via QRCode
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagamentoIniciadoQRCodeResponse"
+          description: Pagamento Iniciado com QRCode
+        "400":
+          content:
+            application/problem+json:
+              examples:
+                requisicao1:
+                  $ref: "#/components/examples/RequisicaoInvalidaPagamentosExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição com formato inválido.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Realizar pagamento por meio de código QRCode
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+  /pagamentos/confirmacao:
+    post:
+      description: Efetivar um pagamento iniciado pela API de pagamentos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequisicaoLancamentoEfetivacao"
+        description: Objeto que contem um lancamento a ser efetivado
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoPagamento"
+          description: Pagamento foi criado com sucesso.
+        "400":
+          content:
+            application/problem+json:
+              examples:
+                requisicao1:
+                  $ref: "#/components/examples/RequisicaoInvalidaPagamentosExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição com formato inválido.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Efetivar um pagamento iniciado pela API de pagamentos
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+  /pagamentos/webhook:
+    delete:
+      description: |
+        Endpoint para cancelamento do webhook. Não é a única forma pela qual um webhook pode ser
+        removido.
+
+        O PSP recebedor está livre para remover unilateralmente um webhook que esteja associado
+        a uma chave que não pertence mais a este usuário recebedor.
+      responses:
+        "204":
+          description: Webhook para notificações Pix foi cancelado.
+        "403":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/AcessoNegadoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição de participante autenticado que viola alguma regra
+            de autorização.
+        "404":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/NaoEncontradoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Recurso solicitado não foi encontrado.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Cancelar o webhook Pix.
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+    get:
+      description: |
+        Endpoint para recuperação de informações sobre o Webhook Pix.
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/webhookResponse1"
+              schema:
+                $ref: "#/components/schemas/WebhookCompleto"
+          description: Dados do webhook.
+        "403":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/AcessoNegadoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição de participante autenticado que viola alguma regra
+            de autorização.
+        "404":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/NaoEncontradoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Recurso solicitado não foi encontrado.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Exibir informações acerca do Webhook Pix.
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+    put:
+      callbacks:
+        lancamento:
+          '{$request.body#/pagamentos/webhookUrl}/lancamento':
+            post:
+              description: |
+                O callback deve ser acionado sempre que um Pix for enviado
+                pelo usuário pagador e desde que tenha um webhook cadastrado.
+              operationId: LancamentoLancamentoPost
+              requestBody:
+                $ref: "#/components/requestBodies/WebhookPixBody"
+              responses:
+                "200":
+                  description: Notificação recebida com sucesso
+              x-callback-request: true
+      description: |
+        Endpoint para configuração do serviço de notificações acerca de Pix enviados.
+      requestBody:
+        $ref: "#/components/requestBodies/WebhookConfigBody"
+      responses:
+        "200":
+          description: Webhook para notificações acerca de Pix enviados.
+        "400":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/RequisicaoInvalidaWebhookExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição com formato inválido.
+        "403":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/AcessoNegadoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Requisição de participante autenticado que viola alguma regra
+            de autorização.
+        "404":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/NaoEncontradoExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Recurso solicitado não foi encontrado.
+        "503":
+          content:
+            application/problem+json:
+              examples:
+                exemplo1:
+                  $ref: "#/components/examples/ServicoIndisponivelExample1"
+              schema:
+                $ref: "#/components/schemas/Problema"
+          description: Serviço não está disponível no momento. Serviço solicitado
+            pode estar em manutenção ou fora da janela de funcionamento.
+      summary: Configurar o Webhook Pix.
+      tags:
+      - API de Pagamentos PIX
+      x-sicoob-category: Financeira
+components:
+  examples:
+    RequisicaoInvalidaCobExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/CobOperacaoInvalida
+        title: Cobrança inválida.
+        status: 400
+        detail: A requisição que busca alterar ou criar uma cobrança para pagamento
+          imediato não respeita o schema ou está semanticamente errada.
+        violacoes:
+        - razao: O campo cob.valor.original não respeita o schema.
+          propriedade: cob.valor.original
+    OperacaoInvalidaCobExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/CobOperacaoInvalida
+        title: Operação inválida.
+        status: 400
+        detail: A requisição que busca alterar ou criar uma cobrança para pagamento
+          imediato não respeita o schema ou está semanticamente errada.
+    RequisicaoInvalidaCobVExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/CobVOperacaoInvalida
+        title: Cobrança inválida.
+        status: 400
+        detail: A requisição que busca alterar ou criar uma cobrança com vencimento
+          não respeita o schema ou está semanticamente errada.
+        violacoes:
+        - razao: O objeto cobv.devedor não respeita o schema.
+          propriedade: cobv.devedor
+    OperacaoInvalidaCobVExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/CobVOperacaoInvalida
+        title: Operação inválida.
+        status: 400
+        detail: "Cobrança não encontra-se mais com o status ATIVA, somente cobranç\
+          as ativas podem ser revisadas."
+    RequisicaoInvalidaCobPayloadExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/CobPayloadNaoEncontrado
+        title: Cobrança não encontrada.
+        status: 404
+        detail: A cobrança em questão não foi encontrada para a location requisitada.
+    RequisicaoInvalidaLoteCobVExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/LoteCobVOperacaoInvalida
+        title: Lote de cobranças inválido.
+        status: 400
+        detail: A requisição que busca alterar ou criar um lote de cobranças com vencimento
+          não respeita o schema ou está semanticamente errada.
+        violacoes:
+        - razao: O objeto loteCobV.cobsV não respeita o schema.
+          propriedade: loteCobV.cobsV
+        - razao: O campo loteCobV.descricao não respeita o schema.
+          propriedade: loteCobV.descricao
+    RequisicaoInvalidaDevolucaoExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/PixDevolucaoInvalida
+        title: Devolução inválida.
+        status: 400
+        detail: A presente requisição de devolução não respeita o schema ou não faz
+          sentido semanticamente.
+    RequisicaoInvalidaWebhookExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/WebhookOperacaoInvalida
+        title: Webhook inválido.
+        status: 400
+        detail: "A presente requisição busca criar um webhook sem respeitar o schema\
+          \ ou, ainda, com sentido semanticamente inválido."
+    RequisicaoInvalidaLocationExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/PayloadLocationOperacaoInvalida
+        title: PayloadLocation inválido.
+        status: 400
+        detail: A presente requisição busca criar uma location sem respeitar o schema
+          estabelecido.
+    RequisicaoInvalidaPagamentosExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/RequisicaoInvalida
+        title: Requisição inválida.
+        status: 400
+        detail: A requisição possui dados inválidos.
+        violacoes:
+        - razao: Dados do campo 'origem' precisam ser preenchidos manualmente.
+          propriedade: origem
+    AcessoNegadoExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/AcessoNegado
+        title: Acesso Negado
+        status: 403
+        detail: Requisição de participante autenticado que viola alguma regra de autorização.
+    NaoEncontradoExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/NaoEncontrado
+        title: Não Encontrado
+        status: 404
+        detail: Entidade não encontrada.
+    ServicoIndisponivelExample1:
+      summary: Exemplo de erro da requisição 1
+      value:
+        type: https://pix.bcb.gov.br/api/v2/error/ServicoIndisponivel
+        title: Serviço Indisponível
+        status: 503
+        detail: Serviço não está disponível no momento. Serviço solicitado pode estar
+          em manutenção ou fora da janela de funcionamento.
+    getWebhook1:
+      summary: Exemplo de retorno da consulta de Webhooks 1
+      value:
+        parametros:
+          inicio: 2020-04-01T00:00:00Z
+          fim: 2020-04-01T23:59:59Z
+          paginacao:
+            paginaAtual: 0
+            itensPorPagina: 100
+            quantidadeDePaginas: 1
+            quantidadeTotalDeItens: 1
+        webhooks:
+        - allOf:
+          - $ref: "#/components/examples/webhookResponse1/value"
+    webhookBody1:
+      summary: Exemplo de configuração de Webhook 1
+      value:
+        webhookUrl: https://pix.example.com/api/webhook/
+    webhookResponse1:
+      summary: Exemplo de consulta de Webhook 1
+      value:
+        webhookUrl: https://pix.example.com/api/webhook/
+        criacao: 2020-11-11T10:15:00.358Z
+    pixWebhook1:
+      summary: Exemplo de Webhook Pix 1
+      value:
+        id: E12345678202009091221kkkkkkkkkkk
+        status: FINALIZADO_SUCESSO
+        valor: "110.00"
+    pixWebhook2:
+      summary: Exemplo de Webhook Pix 1
+      value:
+        id: E12345678202009091221kkkkkkkkkkk
+        status: FINALIZADO_REJEICAO
+        valor: "110.00"
+        detalheRejeicao: Pagamento rejeitado pelo PSP do recebedor
+  parameters:
+    paginaAtual:
+      explode: true
+      in: query
+      name: paginacao.paginaAtual
+      required: false
+      schema:
+        default: 0
+        description: "Página a ser retornada pela consulta. Se não for informada,\
+          \ o PSP assumirá que será 0."
+        format: int32
+        minimum: 0
+        title: Página atual
+        type: integer
+      style: form
+    itensPorPagina:
+      explode: true
+      in: query
+      name: paginacao.itensPorPagina
+      required: false
+      schema:
+        default: 100
+        description: Quantidade máxima de registros retornados em cada página. Apenas
+          a última página pode conter uma quantidade menor de registros.
+        format: int32
+        maximum: 1000
+        minimum: 1
+        title: Itens por Página
+        type: integer
+      style: form
+  requestBodies:
+    WebhookConfigBody:
+      content:
+        application/json:
+          examples:
+            exemplo1:
+              $ref: "#/components/examples/webhookBody1"
+          schema:
+            $ref: "#/components/schemas/WebhookSolicitado"
+      required: true
+    WebhookPixBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/_pagamentos_webhook_post_request"
+      description: Dados para notificação dos Pix.
+      required: true
+  responses:
+    RequisicaoInvalida:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+      description: Problemas na requisição.
+    NaoEncontrado:
+      content:
+        application/problem+json:
+          examples:
+            exemplo1:
+              $ref: "#/components/examples/NaoEncontradoExample1"
+          schema:
+            $ref: "#/components/schemas/Problema"
+      description: Recurso solicitado não foi encontrado.
+    AcessoNegado:
+      content:
+        application/problem+json:
+          examples:
+            exemplo1:
+              $ref: "#/components/examples/AcessoNegadoExample1"
+          schema:
+            $ref: "#/components/schemas/Problema"
+      description: Requisição de participante autenticado que viola alguma regra de
+        autorização.
+    ServicoIndisponivel:
+      content:
+        application/problem+json:
+          examples:
+            exemplo1:
+              $ref: "#/components/examples/ServicoIndisponivelExample1"
+          schema:
+            $ref: "#/components/schemas/Problema"
+      description: Serviço não está disponível no momento. Serviço solicitado pode
+        estar em manutenção ou fora da janela de funcionamento.
+  schemas:
+    EndToEndId:
+      description: "EndToEndIdentification que transita na PACS002, PACS004 e PACS008"
+      maxLength: 32
+      minLength: 32
+      pattern: "^[a-zA-Z0-9]{32}$"
+      title: Id fim a fim da transação
+      type: string
+    PagamentoIniciadoDict:
+      example:
+        tipo: CPF
+        proprietario:
+          tipo: FISICO
+          nome: nome
+          identificador: identificador
+        chave: "28133847044"
+        endToEndId: endToEndId
+      properties:
+        endToEndId:
+          description: "EndToEndIdentification que transita na PACS002, PACS004 e\
+            \ PACS008"
+          maxLength: 32
+          minLength: 32
+          pattern: "^[a-zA-Z0-9]{32}$"
+          title: Id fim a fim da transação
+          type: string
+        chave:
+          description: Chave de endereçamento para a conta transacional. (Identificador
+            da conta transacional)
+          example: "28133847044"
+          pattern: "^[0-9]{11}$|^[0-9]{14}$|^\\+[1-9][0-9]\\d{1,14}$|^[a-zA-Z0-9.!#$%&'*+\\\
+            /=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          type: string
+        tipo:
+          description: |-
+            Tipo da chave:
+              - `CPF` - Identificador de pessoa física
+              - `CNPJ` - Identificado de pessoa jurídica
+              - `EMAIL` - Email
+              - `TELEFONE` - Número de telefone no padrão internacional ('+' +  Código do País + DDD + Telefone) | *Exemplo: +5561999999999*
+              - `EVP` - Token gerado pelo BACEN no formato UUID v4
+          enum:
+          - CPF
+          - CNPJ
+          - EMAIL
+          - TELEFONE
+          - EVP
+          type: string
+        proprietario:
+          $ref: "#/components/schemas/PagamentoIniciadoDict_proprietario"
+      type: object
+    RequisicaoLancamentoIniciacao:
+      example:
+        chave: chave
+        dataAgendamento: 2021-06-30
+      properties:
+        chave:
+          description: Chave a ser consultada
+          type: string
+        dataAgendamento:
+          description: Data do agendamento para pagamentos pretendido
+          example: 2021-06-30
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+      required:
+      - chave
+      type: object
+    RequisicaoLancamentoEfetivacao:
+      example:
+        meioIniciacao: MANUAL
+        repeticao: true
+        valor: "199"
+        origem:
+          tipo: CORRENTE
+          conta: conta
+          chaveDict: chaveDict
+          nome: nome
+          cpfCnpj: cpfCnpj
+          ispb: ispb
+          agencia: agencia
+        dataAgendamento: 2021-06-30
+        destino:
+          tipo: CORRENTE
+          boolFavorecido: false
+          conta: conta
+          nome: nome
+          cpfCnpj: cpfCnpj
+          ispb: ispb
+          agencia: agencia
+        endToEndId: endToEndId
+        descricao: descricao
+      properties:
+        endToEndId:
+          description: "EndToEndIdentification que transita na PACS002, PACS004 e\
+            \ PACS008"
+          maxLength: 32
+          minLength: 32
+          pattern: "^[a-zA-Z0-9]{32}$"
+          title: Id fim a fim da transação
+          type: string
+        valor:
+          description: valor do lancamento
+          example: "199"
+          pattern: "^[0-9]{1,18}([,][0-9]{1,2})?$"
+          type: string
+        descricao:
+          description: descricao do lancamento
+          maxLength: 140
+          type: string
+        repeticao:
+          description: Flag para indicar pagamento repetido
+          type: boolean
+        meioIniciacao:
+          description: |-
+            Meio de iniciação Pix
+            - `CHAVE` - `MANUAL` - `QRCODE`
+          enum:
+          - CHAVE
+          - MANUAL
+          - QRCODE
+          example: MANUAL
+          type: string
+        dataAgendamento:
+          description: Data do agendamento para pagamentos pretendido
+          example: 2021-06-30
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+        origem:
+          $ref: "#/components/schemas/DadosContaUsuarioOrigem"
+        destino:
+          $ref: "#/components/schemas/DadosContaUsuarioDestino"
+      required:
+      - meioIniciacao
+      - valor
+      type: object
+    DadosContaUsuarioOrigem:
+      description: "Dados da conta de origem do lancamento. Este atributo é opcional,\
+        \ e aso os dados da conta de origem não sejam informados, será considerado\
+        \ os dados cadastrados no certificado de autenticação"
+      example:
+        tipo: CORRENTE
+        conta: conta
+        chaveDict: chaveDict
+        nome: nome
+        cpfCnpj: cpfCnpj
+        ispb: ispb
+        agencia: agencia
+      properties:
+        ispb:
+          description: Código ISPB da IF
+          maxLength: 8
+          minLength: 8
+          pattern: "[0-9]"
+          type: string
+        cpfCnpj:
+          description: CPF / CNPJ
+          pattern: "[0-9]{11}([0-9]{3}){0,1}"
+          type: string
+        nome:
+          description: Nome / Razao social
+          maxLength: 140
+          type: string
+        conta:
+          description: Número da conta
+          maxLength: 20
+          pattern: "[0-9]"
+          type: string
+        agencia:
+          description: Número da agencia
+          maxLength: 4
+          pattern: "[0-9]"
+          type: string
+        tipo:
+          description: Tipo da Conta
+          enum:
+          - CORRENTE
+          - POUPANCA
+          - SALARIO
+          - CONTAPAGAMENTO
+          type: string
+        chaveDict:
+          description: Chave cadastrada no DICT do Bacen
+          maxLength: 77
+          type: string
+      type: object
+    DadosContaUsuarioDestino:
+      description: "Dados da conta de destino do lancamento. Este atributo é obrigató\
+        rio apenas para o meio de iniciação MANUAL. Quando o meio de iniciação for\
+        \ CHAVE, os atributos deste objeto, se forem informados, serão validados com\
+        \ o retorno obtido na iniciação DICT (POST /pagamentos)"
+      example:
+        tipo: CORRENTE
+        boolFavorecido: false
+        conta: conta
+        nome: nome
+        cpfCnpj: cpfCnpj
+        ispb: ispb
+        agencia: agencia
+      properties:
+        ispb:
+          description: Código ISPB da IF
+          maxLength: 8
+          minLength: 8
+          pattern: "[0-9]"
+          type: string
+        cpfCnpj:
+          description: CPF / CNPJ
+          pattern: "[0-9]{11}([0-9]{3}){0,1}"
+          type: string
+        nome:
+          description: Nome / Razao social
+          maxLength: 140
+          type: string
+        conta:
+          description: Número da conta
+          maxLength: 20
+          pattern: "[0-9]"
+          type: string
+        agencia:
+          description: Número da agencia
+          maxLength: 4
+          pattern: "[0-9]"
+          type: string
+        tipo:
+          description: Tipo da Conta
+          enum:
+          - CORRENTE
+          - POUPANCA
+          - SALARIO
+          - CONTAPAGAMENTO
+          type: string
+        boolFavorecido:
+          default: false
+          description: Indica se o destinatário é favorecido ou não. Se o campo não
+            for passado o padrão será `false`
+          type: boolean
+      type: object
+    RetornoPagamento:
+      example:
+        estado: EM_PROCESSAMENTO
+        horario: ""
+        valor: 1.99
+        origem:
+          tipo: CORRENTE
+          conta: conta
+          chaveDict: chaveDict
+          nome: nome
+          cpfCnpj: cpfCnpj
+          ispb: ispb
+          agencia: agencia
+        dataAgendamento: 2021-06-30
+        destino:
+          tipo: CORRENTE
+          boolFavorecido: false
+          conta: conta
+          nome: nome
+          cpfCnpj: cpfCnpj
+          ispb: ispb
+          agencia: agencia
+        endToEndId: endToEndId
+        detalheRejeicao: detalheRejeicao
+        descricao: descricao
+      properties:
+        endToEndId:
+          description: Identificador fim a fim do lancamento
+          maxLength: 32
+          type: string
+        estado:
+          enum:
+          - NÃO_REALIZADO
+          - EM_PROCESSAMENTO
+          - FINALIZADO
+          - REJEITADO
+          example: EM_PROCESSAMENTO
+          type: string
+        valor:
+          description: valor do lancamento
+          example: 1.99
+          type: number
+        detalheRejeicao:
+          description: O motivo da recusa
+          type: string
+        descricao:
+          description: descricao do lancamento
+          maxLength: 140
+          type: string
+        horario:
+          description: A data e hora que o lançamento foi atualizado
+          format: date-time
+        origem:
+          $ref: "#/components/schemas/DadosContaUsuarioOrigem"
+        destino:
+          $ref: "#/components/schemas/DadosContaUsuarioDestino"
+        dataAgendamento:
+          description: Data do agendamento para pagamentos pretendido
+          example: 2021-06-30
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          type: string
+      required:
+      - destino
+      - endToEndId
+      - origem
+      - valor
+      type: object
+    Violacao:
+      properties:
+        razao:
+          description: Descrição do erro
+          example: Valor da cobrança não pode ser 0.00
+          title: Descrição do erro
+          type: string
+        propriedade:
+          description: Nome da propriedade
+          example: cob.chave
+          title: Nome da propriedade
+          type: string
+        valor:
+          description: Valor da propriedade
+          example: "061996671234"
+          title: Valor da propriedade
+          type: string
+      title: Violações
+      type: object
+    Problema:
+      properties:
+        type:
+          description: URI de referência que identifica o tipo de problema. De acordo
+            com a RFC 7807.
+          example: https://pix.bcb.gov.br/api/v2/error/NaoEncontrado
+          format: uri
+          type: string
+        title:
+          description: Descrição resumida do problema.
+          example: Not found
+          type: string
+        status:
+          description: Código HTTP do status retornado.
+          example: 404
+          type: integer
+        detail:
+          description: Descrição completa do problema.
+          type: string
+        correlationId:
+          description: Identificador de correlação do problema para fins de suporte
+          type: string
+        violacoes:
+          items:
+            $ref: "#/components/schemas/Violacao"
+          type: array
+      required:
+      - status
+      - title
+      - type
+      type: object
+    Inicio:
+      description: Filtra os registros cuja data de criação seja maior ou igual que
+        a data de início. Respeita RFC 3339.
+      format: date-time
+      title: Data de início
+      type: string
+    Fim:
+      description: Filtra os registros cuja data de criação seja menor ou igual que
+        a data de fim. Respeita RFC 3339.
+      format: date-time
+      title: Data de fim
+      type: string
+    WebhooksConsultados:
+      properties:
+        parametros:
+          $ref: "#/components/schemas/ParametrosConsultaWebhooks"
+        webhooks:
+          items:
+            allOf:
+            - $ref: "#/components/schemas/WebhookCompleto"
+          title: Lista de Webhooks consultados
+          type: array
+      required:
+      - webhooks
+      title: Webhooks Consultados
+      type: object
+    WebhookCompleto:
+      example:
+        criacao: 2000-01-23T04:56:07.000+00:00
+        webhookUrl: https://pix.example.com/api/webhook/
+      properties:
+        webhookUrl:
+          example: https://pix.example.com/api/webhook/
+          format: uri
+          type: string
+        criacao:
+          description: Data e hora em que o webhook foi cadastrado. Respeita RFC 3339.
+          format: date-time
+          readOnly: true
+          title: Data de Criação
+          type: string
+      required:
+      - criacao
+      - webhookUrl
+      title: Webhook
+      type: object
+    WebhookSolicitado:
+      example:
+        webhookUrl: https://pix.example.com/api/webhook/
+      properties:
+        webhookUrl:
+          example: https://pix.example.com/api/webhook/
+          format: uri
+          maxLength: 200
+          type: string
+      required:
+      - webhookUrl
+      title: Webhook
+      type: object
+    ParametrosConsultaWebhooks:
+      description: Parâmetros utilizados para a realização de uma consulta de Webhooks.
+      properties:
+        inicio:
+          description: Data inicial utilizada na consulta. Respeita RFC 3339.
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          title: Data de Início
+          type: string
+        fim:
+          description: Data de fim utilizada na consulta. Respeita RFC 3339.
+          example: 2020-12-01T17:00:00Z
+          format: date-time
+          title: Data de Fim
+          type: string
+        paginacao:
+          $ref: "#/components/schemas/Paginacao"
+      title: Parâmetros de Consulta de Webhooks
+      type: object
+    Pix:
+      properties:
+        id:
+          description: "EndToEndIdentification que transita na PACS002, PACS004 e\
+            \ PACS008"
+          maxLength: 32
+          minLength: 32
+          pattern: "^[a-zA-Z0-9]{32}$"
+          title: Id fim a fim da transação
+          type: string
+        estado:
+          description: Estado do lançamento.
+          enum:
+          - FINALIZADO_REJEICAO
+          - FINALIZADO_SUCESSO
+          title: Estado
+          type: string
+        valor:
+          description: Valor do Pix.
+          pattern: "^\\d{1,10}\\.\\d{2}$"
+          title: Valor do Pix.
+          type: string
+        detalheRejeicao:
+          description: Detalhe do motivo da rejeição do Pix. Somente quando for estado
+            `FINALIZADO_REJEICAO`
+          title: Detalhe do motivo da rejeição do Pix.
+          type: string
+      required:
+      - estado
+      - id
+      - valor
+      title: Pix
+      type: object
+    Paginacao:
+      properties:
+        paginaAtual:
+          description: Número da página recuperada.
+          minimum: 0
+          title: Página atual
+          type: integer
+        itensPorPagina:
+          description: Quantidade de registros retornado na página.
+          minimum: 1
+          title: Itens por página
+          type: integer
+        quantidadeDePaginas:
+          description: Quantidade de páginas disponíveis para consulta.
+          minimum: 1
+          title: Quantidade de páginas
+          type: integer
+        quantidadeTotalDeItens:
+          description: Quantidade total de itens disponíveis de acordo com os parâmetros
+            informados.
+          minimum: 0
+          title: Quantidade total de itens
+          type: integer
+      required:
+      - itensPorPagina
+      - paginaAtual
+      - quantidadeDePaginas
+      - quantidadeTotalDeItens
+      title: Paginação
+      type: object
+    TxId:
+      description: "# Identificador da transação\n\nO campo txid determina o identificador\
+        \ da transação.\nO objetivo desse campo é ser um elemento que possibilite\
+        \ ao PSP do recebedor apresentar ao usuário recebedor a funcionalidade de\
+        \ conciliação de pagamentos.\n\nNa pacs.008, é referenciado como `TransactionIdentification\
+        \ <txId>` ou `idConciliacaoRecebedor`.\n\nEm termos de fluxo de funcionamento,\
+        \ o txid é lido pelo aplicativo do PSP do pagador e, \ndepois de confirmado\
+        \ o pagamento, é enviado para o SPI via pacs.008. \nUma pacs.008 também é\
+        \ enviada ao PSP do recebedor, contendo, além de todas as informações usuais\
+        \ \ndo pagamento, o txid.\nAo perceber um recebimento dotado de txid, o PSP\
+        \ do recebedor está apto a se comunicar com o usuário recebedor, \ninformando\
+        \ que um pagamento específico foi liquidado.\n\nO txid é criado exclusivamente\
+        \ pelo usuário recebedor e está sob sua responsabilidade.\nO txid, no contexto\
+        \ de representação de uma cobrança, é único por CPF/CNPJ do usuário recebedor.\
+        \ Cabe ao \nPSP recebedor validar essa regra na API Pix.\n"
+      maxLength: 35
+      pattern: "^[a-zA-Z0-9]{26,35}$"
+      title: Id da Transação
+      type: string
+    DevolucaoId:
+      description: Id gerado pelo cliente para representar unicamente uma devolução.
+      pattern: "^[a-zA-Z0-9]{1,35}$"
+      title: Id da Devolução
+      type: string
+    PagamentoIniciadoQRCodeBody:
+      example:
+        repeticao: false
+        codMun: "5300108"
+        pagarComJurosMulta: true
+        qrcode: |
+          00020104141234567890123426660014BR.GOV.BCB.PIX014466756C616E6F32303139406578616D706C652E636F6D27300012
+          BR.COM.OUTRO011001234567895204000053039865406123.455802BR5915NOMEDORECEBEDOR6008BRASILIA61087007490062
+          530515RP12345678-201950300017BR.GOV.BCB.BRCODE01051.0.080450014BR.GOV.BCB.PIX0123PADRAO.URL.PIX/0123AB
+          CD81390012BR.COM.OUTRO01190123.ABCD.3456.WXYZ6304EB76
+        dataVencimento: 2026-03-23
+        valor: "100000.12"
+        origem:
+          tipo: CORRENTE
+          conta: conta
+          nome: nome
+          cpfCnpj: "10987654321"
+          ispb: 5AR908S4
+          agencia: agencia
+        dataAgendamento: 2026-03-23
+        destino:
+          cpfCnpj: "10987654321"
+      properties:
+        qrcode:
+          description: Código QRCode
+          example: |
+            00020104141234567890123426660014BR.GOV.BCB.PIX014466756C616E6F32303139406578616D706C652E636F6D27300012
+            BR.COM.OUTRO011001234567895204000053039865406123.455802BR5915NOMEDORECEBEDOR6008BRASILIA61087007490062
+            530515RP12345678-201950300017BR.GOV.BCB.BRCODE01051.0.080450014BR.GOV.BCB.PIX0123PADRAO.URL.PIX/0123AB
+            CD81390012BR.COM.OUTRO01190123.ABCD.3456.WXYZ6304EB76
+          minLength: 70
+          pattern: "[\\w\\W\\s]*"
+          title: Código Pix Copia e Cola
+          type: string
+        codMun:
+          description: |
+            Código baseado na Tabela de Códigos de Municípios do __[IBGE](https://www.ibge.gov.br/explica/codigos-dos-municipios.php)__ que apresenta a lista dos municípios brasileiros associados a um código composto de 7 dígitos, sendo os dois primeiros referentes ao código da Unidade da Federação.
+          example: "5300108"
+          pattern: "^\\d{7}$"
+          title: Código do Município
+          type: string
+        repeticao:
+          description: Flag para indicar pagamento repetido
+          example: false
+          title: Repetição
+          type: boolean
+        dataVencimento:
+          description: Data de vencimento do QRCode
+          example: 2026-03-23
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          title: Data de Vencimento
+          type: string
+        dataAgendamento:
+          description: Data de pagamento pretendida
+          example: 2026-03-23
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          title: Data de Agendamento
+          type: string
+        valor:
+          description: |
+            Valor original do pagamento. Atua como validador para QR Codes de valor fixo. Para QR Codes sem valor pré-definido, define o montante a ser processado no pagamento.
+            Será utilizado apenas para validar com a decodificação do QR Code, caso seja um estático e sem valor, ele será usado para pagar esse tipo de QR Code.
+          example: "100000.12"
+          maxLength: 19
+          minLength: 4
+          pattern: "^((\\d{1,16}\\.\\d{2}))$"
+          title: Valor Original
+          type: string
+        pagarComJurosMulta:
+          description: "Define a indicência de encargos moratórios. Se marcado como\
+            \ \"true\", o pagamento será atualizado com os valores de multa e juros\
+            \ acumulados até a data da transação."
+          example: true
+          title: Pagar com Juros e Multa
+          type: boolean
+        origem:
+          $ref: "#/components/schemas/Dados_do_Pagador"
+        destino:
+          $ref: "#/components/schemas/Dados_do_Destinat_rio"
+      required:
+      - destino
+      - origem
+      - pagarComJurosMulta
+      - qrcode
+      - repeticao
+      - valor
+      type: object
+    PagamentoIniciadoQRCodeResponse:
+      allOf:
+      - $ref: "#/components/schemas/RetornoPagamento"
+      - properties:
+          txId:
+            description: Identificador da requisicao de pagamentos (TxId)
+            example: E00038166201907261559y6j6
+            maxLength: 35
+            minLength: 1
+            type: string
+          valor:
+            description: Valor final da transação com 2 casas decimais.
+            example: "150.00"
+            maxLength: 19
+            minLength: 4
+            pattern: "^((\\d{1,16}\\.\\d{2}))$"
+            type: string
+          valorOriginal:
+            description: Valor original da transação com 2 casas decimais.
+            example: "135.00"
+            maxLength: 19
+            minLength: 4
+            pattern: "^((\\d{1,16}\\.\\d{2}))$"
+            type: string
+          abatimento:
+            description: Valor de abatimento com 2 casas decimais.
+            example: "16.00"
+            maxLength: 19
+            minLength: 4
+            pattern: "^((\\d{1,16}\\.\\d{2}))$"
+            type: string
+          desconto:
+            description: Valor de desconto com 2 casas decimais.
+            example: "9.12"
+            maxLength: 19
+            minLength: 4
+            pattern: "^((\\d{1,16}\\.\\d{2}))$"
+            type: string
+          multa:
+            description: Valor de multa com 2 casas decimais.
+            example: "23.54"
+            maxLength: 19
+            minLength: 4
+            pattern: "^((\\d{1,16}\\.\\d{2}))$"
+            type: string
+          juros:
+            description: Valor dos juros com 2 casas decimais.
+            example: "1.56"
+            maxLength: 19
+            minLength: 4
+            pattern: "^((\\d{1,16}\\.\\d{2}))$"
+            type: string
+          tipoQrcode:
+            description: Tipo do qrcode que originou o lançamento
+            enum:
+            - ESTATICO
+            - DINAMICO
+            example: ESTATICO
+            type: string
+        type: object
+      example:
+        estado: EM_PROCESSAMENTO
+        horario: ""
+        desconto: "9.12"
+        multa: "23.54"
+        juros: "1.56"
+        valor: "150.00"
+        origem:
+          tipo: CORRENTE
+          conta: conta
+          chaveDict: chaveDict
+          nome: nome
+          cpfCnpj: cpfCnpj
+          ispb: ispb
+          agencia: agencia
+        txId: E00038166201907261559y6j6
+        dataAgendamento: 2021-06-30
+        endToEndId: endToEndId
+        descricao: descricao
+        destino:
+          tipo: CORRENTE
+          boolFavorecido: false
+          conta: conta
+          nome: nome
+          cpfCnpj: cpfCnpj
+          ispb: ispb
+          agencia: agencia
+        valorOriginal: "135.00"
+        abatimento: "16.00"
+        detalheRejeicao: detalheRejeicao
+        tipoQrcode: ESTATICO
+    CpfCnpjPattern:
+      example: "10987654321"
+      pattern: "^([0-9]{11}|[0-9A-Z]{14})$"
+      type: string
+    IspbPattern:
+      example: 5AR908S4
+      pattern: "^[0-9A-Z]{8}$"
+      type: string
+    _pagamentos_webhook_post_request:
+      properties:
+        payload:
+          $ref: "#/components/schemas/Pix"
+    PagamentoIniciadoDict_proprietario:
+      example:
+        tipo: FISICO
+        nome: nome
+        identificador: identificador
+      properties:
+        identificador:
+          description: |-
+            O identificador deve ser preenchido com o CPF ou o CNPJ a quem o proprietário se refere.
+                - `CPF` - Em caso de Pessoa Física preencher com o CPF
+                - `CNPJ` - Em caso de Pessoa Jurídica preencher com o CNPJ
+          pattern: "^[0-9]{11}$|^[0-9]{14}$"
+          type: string
+        nome:
+          description: Nome da pessoa ou empresa a quem a proposta se refere.
+          maxLength: 120
+          pattern: "^([A-Za-zÀ-ÖØ-öø-ÿ' -]+)$|^([A-Za-zÀ-ÖØ-öø-ÿ,.@:&*+_<>()!?/\\\\\
+            $%\\d' -]+)$"
+          type: string
+        tipo:
+          description: |-
+            O tipo de proprietário pode ser de 2 tipos:
+              - `FISICO` - Pessoa física (CPF)
+              - `JURIDICO` - Pessoa Jurídica (CNPJ)
+          enum:
+          - FISICO
+          - JURIDICO
+          type: string
+      required:
+      - identificador
+      - nome
+      type: object
+    Dados_do_Pagador:
+      description: Detalhe da conta transacional envolvida no lancamento
+      example:
+        tipo: CORRENTE
+        conta: conta
+        nome: nome
+        cpfCnpj: "10987654321"
+        ispb: 5AR908S4
+        agencia: agencia
+      properties:
+        ispb:
+          example: 5AR908S4
+          pattern: "^[0-9A-Z]{8}$"
+          type: string
+        cpfCnpj:
+          example: "10987654321"
+          pattern: "^([0-9]{11}|[0-9A-Z]{14})$"
+          type: string
+        nome:
+          description: Nome / Razao social
+          maxLength: 150
+          type: string
+        conta:
+          description: Número da conta
+          maxLength: 20
+          pattern: "^[0-9]+$"
+          title: Conta
+          type: string
+        agencia:
+          description: Número da agencia
+          maxLength: 4
+          pattern: "^[0-9]+$"
+          title: Agência
+          type: string
+        tipo:
+          description: Tipo da Conta
+          enum:
+          - CORRENTE
+          - POUPANCA
+          - SALARIO
+          - CONTAPAGAMENTO
+          title: Tipo da Conta
+          type: string
+      required:
+      - agencia
+      - conta
+      - cpfCnpj
+      - ispb
+      - nome
+      - tipo
+      title: Dados do Pagador
+      type: object
+    Dados_do_Destinat_rio:
+      description: Detalhes da conta transacional envolvida no lancamento
+      example:
+        cpfCnpj: "10987654321"
+      properties:
+        cpfCnpj:
+          example: "10987654321"
+          pattern: "^([0-9]{11}|[0-9A-Z]{14})$"
+          type: string
+      required:
+      - cpfCnpj
+      title: Dados do Destinatário
+      type: object
+  securitySchemes:
+    oauth-mtls-sso:
+      flows:
+        clientCredentials:
+          scopes:
+            pixpagamentos_escrita: Permissão para alteração de pagamentos
+            pixpagamentos_consulta: Permissão para consulta de pagamentos
+            pixpagamentos_webhook: Acesso e alteração de dados do webhook
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+      x-ibm-oauth-provider: sso-cooperado
+x-ibm-endpoints:
+- url: https://api.sicoob.com.br/pix-pagamentos/v2
+  type:
+  - production
+  - development
+

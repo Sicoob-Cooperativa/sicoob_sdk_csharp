@@ -1,0 +1,3513 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: dev@sicoob.com.br
+    name: Área de Relacionamento
+  description: |-
+    <pre>[ Base URL: https://api.sicoob.com.br/convenios-pagamentos/v2 ]</pre>
+    A <b>API de Arrecadação de Convênios</b> disponibiliza serviços que permitem a liquidação de convênios de arrecadação firmados pelo Banco Sicoob com entes públicos ou concessionárias. Ao habilitar a API, cada usuário será atribuído a um perfil de acesso:
+
+    <b>Cooperado</b> – Perfil destinado a pequenos volumes de arrecadação.
+
+    <b>Parceiro Cooperativa</b> – Perfil com alta taxa de requisições dentro de um intervalo de tempo.
+
+    <b>Parceiro Banco</b> – Perfil com alta taxa de requisições dentro de um intervalo de tempo.
+
+    O cooperado ou correntista do Sicoob deverá verificar sua situação cadastral junto à cooperativa para aderir ao perfil que melhor se enquadra às suas necessidades. Para parceiros <b>Cooperativa</b> ou <b>Banco Sicoob</b>, que demandam o processamento de grandes volumes de transações de arrecadação de convênios, o acesso é segmentado, assegurando <b>performance</b> e <b>integridade</b> na execução.
+
+    <b>Regras para grandes volumes de arrecadação:</b> Parceiros que necessitam consumir uma alta taxa de requisições em intervalos de milissegundos devem observar o <b>Rate Limit</b> definido pelo serviço. Esse limite restringe a quantidade de chamadas permitidas por segundo, evitando bloqueios ou erros de excesso de requisições (<b>HTTP 429</b>).
+
+    Para otimizar o desempenho, parceiros que utilizam a API com grande volume ou múltiplas requisições por segundo serão caracterizados e tratados de forma diferenciada, garantindo uma abordagem adequada às suas demandas.
+
+    <b>Parceiros de grande volume serão classificados em dois tipos:</b>
+
+    <b>Parceiro Banco Sicoob</b>: parceiro com contrato de arrecadação de convênios ativo diretamente com o Banco Sicoob.
+
+    <b>Parceiro Cooperativa</b>: parceiro com contrato de arrecadação de convênios ativo com a Cooperativa e vinculado ao Banco Sicoob.
+
+    <b>Orientações de suporte:</b>
+    Em caso de necessidade de processamento de grandes volumes de requisições, recomendamos entrar em contato com a <b>Área de Relacionamento da sua Cooperativa</b> ou diretamente com a <b>Gerência de Operações Bancárias II</b>, por meio dos canais oficiais de comunicação disponíveis.
+
+    <b>Observação importante:</b>
+    <b>Exclusivo para o perfil “Parceiro Banco Sicoob”:</b> no serviço de arrecadação com <b>código de barras</b>, é obrigatório informar o atributo <b>NSU</b> na transação.
+
+    <b>Atenção:</b>
+    Outra maneira fácil de entrar em contato com o suporte de APIs do Sicoob é via WhatsApp. Basta escrever o termo <b>#API</b> e enviar para o número <b>61 4000-1111</b>. O time de suporte estará disponível para atendê-lo das 09h às 18h30 durante os dias úteis.
+  title: Convênios Pagamentos
+  version: 2.0.11.1
+  x-ibm-name: convenios-pagamentos
+servers:
+- url: https://api.sicoob.com.br/convenios-pagamentos/v2
+security:
+- oauth2:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+tags:
+- description: Serviços para arrecadação de convênios.
+  name: Arrecadação
+- description: O serviço de débito automático está disponível exclusivamente para
+    parceiros. Os cooperados devem utilizar o serviço já disponível nos demais canais
+    de atendimento.
+  name: Débitos Automáticos
+- description: Health check API
+  name: Health check
+paths:
+  /debito-automatico/optantes:
+    post:
+      description: "Realiza o cadastramento de optantes para débitos automático, padrã\
+        o FEBRABAN registro B."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_debito_automatico_optantes_post_request"
+        description: Requisição de cadastramento de optantes.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_debito_automatico_optantes_post_201_response"
+          description: Cadastro realizado com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Cadastramento de optantes para débito automático.
+      tags:
+      - Débitos Automáticos
+      x-codegen-request-body-name: optante
+  /debito-automatico/optantes/validacoes:
+    post:
+      description: "Realiza o validação das informações de optantes para débitos automá\
+        tico, padrão FEBRABAN registro B."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_debito_automatico_optantes_post_request"
+        description: Requisição de validação de de optantes.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_debito_automatico_optantes_validacoes_post_201_response"
+          description: Validação efetuada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Faz a validação de optantes para inclusão em débito automático.
+      tags:
+      - Débitos Automáticos
+      x-codegen-request-body-name: optante
+  /debito-automatico/optantes/ocorrencias:
+    post:
+      description: "Cadastramento de ocorrências de alteração do cadastro do cliente\
+        \ para débito automático, padrão FEBRABAN registro H."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_debito_automatico_optantes_ocorrencias_post_request"
+        description: Requisição de cadastramento de ocorrências.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_debito_automatico_optantes_post_201_response"
+          description: Cadastro realizado com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Cadastramento de ocorrências de alteração do cadastro do cliente.
+      tags:
+      - Débitos Automáticos
+      x-codegen-request-body-name: optante
+  /debito-automatico/optantes/alteracoes:
+    get:
+      description: "Consulta as alterações da identificação do cliente realizado pela\
+        \ Empresa para o Banco, conforme padrão Febraban Registro D"
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: "Data de movimento. Utilizar padrão: yyyy-MM-dd."
+        in: query
+        name: data
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoAlteracoesOptante"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: "Alterações da identificação do cliente realizado pela Empresa para\
+        \ o Banco, conforme padrão Febraban"
+      tags:
+      - Débitos Automáticos
+  /health:
+    get:
+      description: Health Check API
+      responses:
+        "200":
+          content: {}
+          description: Consulta realizada com sucesso.
+        "400":
+          content: {}
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content: {}
+          description: Erro interno.
+      summary: Health Check API
+      tags:
+      - Health check
+      x-sicoob-category: Apoio
+  /debito-automatico/optantes/recusas:
+    get:
+      description: "Consulta as recusas dos cadastros de optantes, registro enviado\
+        \ da Empresa para o Banco, conforme padrão Febraban Registro C"
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: "Data de movimento. Utilizar padrão: yyyy-MM-dd."
+        in: query
+        name: data
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OcorrenciasCadastroOptante"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Recusas dos cadastros de optantes por parte da empresa
+      tags:
+      - Débitos Automáticos
+  /debito-automatico/optantes/convenios:
+    get:
+      description: Lista os convênios que estão aptos a trabalhar com débito automático.
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: |
+          Parâmetro que indica a listagem completa dos convenios ou apenas os convênios que permitem o cadastro de optante
+           * `true` - LISTA TODOS OS CONVÊNIOS QUE ESTÃO DISPONÍVEIS NA API
+           * `false` - APENAS OS CONVÊNIOS QUE PERMITEM O CADASTRO DE OPTANTE
+        in: query
+        name: todosConvenios
+        schema:
+          default: false
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Convenios"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Lista de convênios
+      tags:
+      - Débitos Automáticos
+  /debito-automatico/debitos/movimentacoes:
+    get:
+      description: Consulta as informações de movimentação dos débitos automáticos
+        por data de movimento.
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: Número da página. Quando não utilizar o query parameter data
+          é obrigatório que seja sempre repassado o valor 1 neste query parameter.
+          Quando utilizar o query parameter data a página deverá estar contidada dentro
+          do retorno do objeto paginação atributo 'totalPaginas'.
+        in: query
+        name: pagina
+        required: true
+        schema:
+          type: number
+      - description: "Data de movimento. Utilizar padrão: yyyy-MM-dd."
+        in: query
+        name: data
+        required: true
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DebitosMovimento"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta a movimentação dos débitos.
+      tags:
+      - Débitos Automáticos
+    post:
+      description: Serviço para o envio de registros tipo F (padrão FEBRABAN) de débitos
+        automáticos em lote. Com um limite de 100 registros por requisição.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DebitosMovimentacaoLote"
+        description: Cadastro do retorno de débitos automáticos.
+        required: true
+      responses:
+        "207":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoDebitoAutomaticoLote"
+          description: Solicitação recebida com sucesso. Verifique o status de cada
+            registro no retorno.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Retorno de débitos automáticos em lote.
+      tags:
+      - Débitos Automáticos
+      x-codegen-request-body-name: respostaDebitosLote
+  /debito-automatico/debitos:
+    get:
+      description: "Consulta os débitos em conta gerados pela Empresa para o Banco,\
+        \ conforme padrão Febraban Registro E"
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: Número da página. Quando não utilizar o query parameter data
+          é obrigatório que seja sempre repassado o valor 1 neste query parameter.
+          Quando utilizar o query parameter data a página deverá estar contidada dentro
+          do retorno do objeto paginação atributo 'totalPaginas'.
+        in: query
+        name: pagina
+        required: true
+        schema:
+          type: number
+      - description: "Data de movimento. Utilizar padrão: yyyy-MM-dd."
+        in: query
+        name: data
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Debitos"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta de débitos em conta gerados pela Empresa para o Banco.
+      tags:
+      - Débitos Automáticos
+    post:
+      description: "Cadastramento de retorno do débito automático enviado pela empresa\
+        \ (tipo E), padrão FEBRABAN registro F."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_debito_automatico_debitos_post_request"
+        description: Requisição para o cadastramento do retorno do débito automático.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_debito_automatico_debitos_post_201_response"
+          description: Retorno de débito cadastrado com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Cadastramento do retorno do débito automático.
+      tags:
+      - Débitos Automáticos
+      x-codegen-request-body-name: debito
+  /debito-automatico/debitos/{autenticacao}:
+    get:
+      description: Consulta os dados de retorno de um débito automático usando a chave
+        de autenticação.
+      parameters:
+      - description: Chave de autenticacao.
+        in: path
+        name: autenticacao
+        required: true
+        schema:
+          type: string
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoDebitoAutomatico"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta o retorno de um débito automático.
+      tags:
+      - Débitos Automáticos
+  /debito-automatico/debitos/conciliacoes:
+    get:
+      description: Retorna as informações de conciliação das arrecadações por data
+        de movimento.
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: "Data do movimento. Formato RFC 3339, seção 5.6."
+        in: query
+        name: data
+        required: true
+        schema:
+          type: number
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConciliacaoDebitoAutomatico"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta de conciliação das arrecadações.
+      tags:
+      - Débitos Automáticos
+  /debito-automatico/optantes/historico:
+    get:
+      description: "Retorna as informações de registros B, C, E e F (código de registros\
+        \ segundo o leiaute FEBRABAN) de optantes. As informações serão retornadas\
+        \ por ano.  Exemplo: Ano igual 2021 retornará os registros de Janeiro a Dezembro\
+        \ de 2021."
+      parameters:
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: Identificador do cliente na empresa.
+        in: query
+        name: identificadorClienteEmpresa
+        required: true
+        schema:
+          type: string
+      - description: Código do convênio.
+        in: query
+        name: convenio
+        required: true
+        schema:
+          type: string
+      - description: Identificador do cliente no banco.
+        in: query
+        name: identificadorClienteBanco
+        schema:
+          type: string
+      - description: "Ano de pesquisa, usar o padrão AAAA."
+        in: query
+        name: ano
+        schema:
+          type: number
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Historico"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta de histórico de optantes.
+      tags:
+      - Débitos Automáticos
+  /arrecadacao/codigo-barras/{codigoBarras}/pagamentos:
+    get:
+      description: "Este serviço tem como objetivo a consulta de informações de um\
+        \ código de barras. \n\nPara parceiros do \"**Parceiro Banco Sicoob**\", o\
+        \ atributo nsu (Número Sequencial Único), obrigatório para a transação de\
+        \ pagamento.\n\n\n **Exclusivo para o perfil \"Parceiro Banco Sicoob\":**\n\
+        \  - O atributo 'recebimentoViaCaixa' uso exclusivo por este perfil."
+      parameters:
+      - description: Número do código de barras (sem dígito verificador).
+        in: path
+        name: codigoBarras
+        required: true
+        schema:
+          type: string
+      - description: "Número identificador da instituição: para os cooperados, este\
+          \ campo deve conter o número da cooperativa. Para os parceiros, solicitamos\
+          \ que verifiquem com a área gestora o valor a ser informado."
+        in: query
+        name: instituicao
+        required: true
+        schema:
+          type: number
+      - description: Código identificador da transação do parceiro.
+        in: query
+        name: transacao
+        schema:
+          type: number
+      - description: "Data de movimento. Formato RFC 3339, seção 5.6."
+        in: query
+        name: dataMovimento
+        required: true
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetornoCodigoBarras"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta informações sobre o pagamento associado ao código de barras
+        e à data de movimentação.
+      tags:
+      - Arrecadação
+    post:
+      description: "Este serviço tem como objetivo a arrecadação de convênios por\
+        \ meio de código de barras. \n\n**Recomendação:**\n  - Consultar o serviç\
+        o '/arrecadacao/convenios-habilitados' para verificar quais convênios estã\
+        o disponíveis através desta API.\n\n\n**Exclusivo para o perfil \"Parceiro\
+        \ Banco Sicoob\":**\n  - O atributo nsu (Número Sequencial Único), obrigató\
+        rio para a execução deste serviço.\n  - Deverá consultar o serviço '/arrecadacao/codigo-barras/{codigoBarras}'\n\
+        \  - O atributo 'recebimentoViaCaixa' somente poderá ser informado por este\
+        \ perfil."
+      parameters:
+      - description: Número do código de barras (sem dígito verificador).
+        in: path
+        name: codigoBarras
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_arrecadacao_codigo_barras__codigoBarras__pagamentos_post_request"
+        description: Metadados para arrecadação de convênios.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_arrecadacao_codigo_barras__codigoBarras__pagamentos_post_200_response"
+          description: Pagamento realizado com sucesso.
+        "202":
+          content: {}
+          description: A transação esta pendente de assinatura.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Arrecadação de convênios por meio de código de barras
+      tags:
+      - Arrecadação
+      x-codegen-request-body-name: arrecadacao
+  /arrecadacao/codigo-barras/{codigoBarras}:
+    get:
+      description: |-
+        Este serviço tem como objetivo a consulta de informações de um código de barras e data de pagamento.
+
+        **Recomendação:**
+          - Consultar o serviço '/arrecadacao/convenios-habilitados' para verificar quais convênios estão disponíveis através desta API.
+
+
+        **Exclusivo para o perfil "Parceiro Banco Sicoob":**
+          - O atributo 'recebimentoViaCaixa' somente poderá ser informado por este perfil.
+      parameters:
+      - description: Número do código de barras (sem dígito verificador).
+        in: path
+        name: codigoBarras
+        required: true
+        schema:
+          type: string
+      - description: "Data de pagamento. Formato RFC 3339, seção 5.6 (yyyy-mm-dd)."
+        in: query
+        name: dataPagamento
+        required: true
+        schema:
+          format: date
+          type: string
+      - description: Indica se o pagamento foi realizado via caixa.
+        in: query
+        name: recebimentoViaCaixa
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_arrecadacao_codigo_barras__codigoBarras__get_200_response"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta informações do código de barras
+      tags:
+      - Arrecadação
+  /arrecadacao/pagamentos/{nsu}/comprovante:
+    get:
+      description: "Este serviço tem como objeto o retorno das informações de uma\
+        \ arrecadação contendo a segunda via do comprovante. \n\n\n **Exclusivo para\
+        \ o perfil \"Parceiro Banco Sicoob\":**\n  - O atributo 'recebimentoViaCaixa'\
+        \ uso exclusivo por este perfil.\n  "
+      parameters:
+      - description: "Número sequencial único: código que identifica a transação de\
+          \ arrecadação realizada."
+        in: path
+        name: nsu
+        required: true
+        schema:
+          type: number
+      - description: "Número identificador da instituição: para os cooperados, este\
+          \ campo deve conter o número da cooperativa. Para os parceiros, solicitamos\
+          \ que verifiquem com a área gestora o valor a ser informado."
+        in: query
+        name: instituicao
+        required: true
+        schema:
+          type: number
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_arrecadacao_pagamentos__nsu__comprovante_get_200_response"
+          description: Retorno da segunda via do comprovante de pagamento.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta de segunda via de pagamento.
+      tags:
+      - Arrecadação
+  /arrecadacao/conciliacoes:
+    get:
+      description: Este serviço tem como objeto a consulta de informações sintéticas
+        das arrecadações realizadas em uma data de movimento.
+      parameters:
+      - description: "Data de movimento. Formato RFC 3339, seção 5.6."
+        in: query
+        name: dataMovimento
+        required: true
+        schema:
+          format: date
+          type: string
+      - description: "Número identificador da instituição: para os cooperados, este\
+          \ campo deve conter o número da cooperativa. Para os parceiros, solicitamos\
+          \ que verifiquem com a área gestora o valor a ser informado."
+        in: query
+        name: instituicao
+        required: true
+        schema:
+          type: number
+      - description: Número identificador da unidade.
+        in: query
+        name: unidade
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conciliacao"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio ao exibir as informações de convênios.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta de conciliação das arrecadações.
+      tags:
+      - Arrecadação
+  /arrecadacao/convenios-habilitados:
+    get:
+      description: '''Este serviço tem como objetivo retornar uma listagem contendo
+        os convênios habilitados para arrecadação nesta API''.'
+      parameters:
+      - description: Código identificador da transação do cliente.
+        in: query
+        name: transacao
+        required: true
+        schema:
+          type: number
+      - description: "Número identificador da instituição: para os cooperados, este\
+          \ campo deve conter o número da cooperativa. Para os parceiros, solicitamos\
+          \ que verifiquem com a área gestora o valor a ser informado."
+        in: query
+        name: instituicao
+        required: true
+        schema:
+          type: number
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConveniosHabilitados"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Listagem de convênios habilitados.
+      tags:
+      - Arrecadação
+components:
+  schemas:
+    Conciliacao:
+      example:
+        resultado:
+        - situacao: Aceito
+          siglaConvenio: SiG
+          valorTotal: 1171.23
+          convenio: "1"
+          quantidade: 0.8008281904610115
+        - situacao: Aceito
+          siglaConvenio: SiG
+          valorTotal: 1171.23
+          convenio: "1"
+          quantidade: 0.8008281904610115
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/Conciliacao_resultado_inner"
+          type: array
+      type: object
+    Optante:
+      properties:
+        convenio:
+          description: Identificador do convênio.
+          example: "80600547"
+          type: string
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "183390172928"
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito.\
+            \ Informar o número de conta corrente do parceiro no Sicoob."
+          example: "00100200344"
+          type: string
+        dataOpcao:
+          description: "'Data da opção/exclusão. Utilizar padrão: yyyyMMdd.'"
+          example: 20211201
+          type: integer
+        codigoMovimento:
+          description: |
+            Código movimento:
+             * `1` - Exclusão de optante pelo débito automático.
+             * `2` - Inclusão de optante pelo débito automático.
+          enum:
+          - 1
+          - 2
+          format: int32
+          type: integer
+      required:
+      - codigoMovimento
+      - convenio
+      - dataOpcao
+      - identificadorClienteBanco
+      - identificadorClienteEmpresa
+      type: object
+    OcorrenciaOptante:
+      properties:
+        identificadorClienteEmpresaAnterior:
+          description: Identificador do cliente na empresa - Anterior.
+          example: "80600547"
+          type: string
+        identificadorClienteEmpresaAtual:
+          description: Identificador do cliente na empresa - Atual.
+          example: "183390172928"
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito.\
+            \ Informar o número de conta corrente do parceiro no Sicoob."
+          example: "00100200344"
+          type: string
+        ocorrencia:
+          description: Mensagem explicativa da ocorrência.
+          example: "117112"
+          type: string
+        codigoMovimento:
+          description: |
+            Código movimento:
+             * `0` - Alteração da Identificação do Cliente na Empresa.
+             * `1` -  Exclusão de optante do Débito Automático, solicitado pela Empresa, conforme clausulas contratuais do convênio
+          enum:
+          - 0
+          - 1
+          format: int32
+          type: integer
+        convenio:
+          description: Identificador do convênio.
+          example: "80600547"
+          type: string
+        codigoOcorrenciaEspecial1:
+          description: "Código da ocorrência especial 1, em conformidade com o padrã\
+            o FEBRABAN - Registro H."
+          example: "97"
+          type: string
+        codigoOcorrenciaEspecial2:
+          description: "Código da ocorrência especial 2, em conformidade com o padrã\
+            o FEBRABAN - Registro H."
+          example: DT
+          type: string
+        codigoOcorrenciaEspecial3:
+          description: "Código da ocorrência especial 3, em conformidade com o padrã\
+            o FEBRABAN - Registro H."
+          example: CH
+          type: string
+        codigoOcorrenciaEspecial4:
+          description: "Código da ocorrência especial 4, em conformidade com o padrã\
+            o FEBRABAN - Registro H."
+          example: PV
+          type: string
+        sequencial:
+          description: Identificador sequencial do registro.
+          example: 1
+          type: integer
+      required:
+      - codigoMovimento
+      - convenio
+      - identificadorClienteBanco
+      - identificadorClienteEmpresaAnterior
+      - identificadorClienteEmpresaAtual
+      - ocorrencia
+      - sequencial
+      type: object
+    Debitos:
+      example:
+        resultado:
+          paginacao:
+            totalRegistros: 20
+            numeroPagina: 20
+            tamanhoPagina: 20
+            totalPaginas: 20
+          debitos:
+          - identificadorClienteEmpresa: "80600547"
+            numeroSequencialDebito: 11
+            opcaoChequeEspecial: "{}"
+            tipoIdentificacao: 0
+            identificacao: "90453275000173"
+            dataVencimentoOriginal: 2000-01-23
+            convenio: "80600547"
+            usoDaEmpresa: usoDaEmpresa
+            valorDebito: 1171.23
+            numeroIdentificadorRegistro: 134
+            tipoOperacao: "{}"
+            identificadorClienteBanco: "00100200344"
+            situacaoDebito: Em aberto
+            opcaoDebitoParcial: "{}"
+            dataVencimento: 2000-01-23
+            codigoRegistro: E
+            movimento: "{}"
+            dataPesquisa: 2000-01-23
+          - identificadorClienteEmpresa: "80600547"
+            numeroSequencialDebito: 11
+            opcaoChequeEspecial: "{}"
+            tipoIdentificacao: 0
+            identificacao: "90453275000173"
+            dataVencimentoOriginal: 2000-01-23
+            convenio: "80600547"
+            usoDaEmpresa: usoDaEmpresa
+            valorDebito: 1171.23
+            numeroIdentificadorRegistro: 134
+            tipoOperacao: "{}"
+            identificadorClienteBanco: "00100200344"
+            situacaoDebito: Em aberto
+            opcaoDebitoParcial: "{}"
+            dataVencimento: 2000-01-23
+            codigoRegistro: E
+            movimento: "{}"
+            dataPesquisa: 2000-01-23
+      properties:
+        resultado:
+          $ref: "#/components/schemas/Debitos_resultado"
+      type: object
+    DebitosMovimento:
+      example:
+        resultado:
+          paginacao:
+            totalRegistros: 20
+            numeroPagina: 20
+            tamanhoPagina: 20
+            totalPaginas: 20
+          debitos:
+          - identificadorClienteEmpresa: "80600547"
+            numeroSequencialDebito: 11
+            identificadorConvenio: "80600547"
+            siglaConvenio: Convenio 001
+            dataVencimentoOriginal: 2000-01-23
+            valorDebito: 1171.23
+            numeroIdentificadorRegistro: 134
+            autenticacao: 32174809-DC04-472A-B702-5E16E83342BF
+            codigoRetorno: "00"
+            identificadorClienteBanco: "00100200344"
+            descricaoRetorno: Débito efetuado
+            dataVencimento: 2000-01-23
+            movimento: Débito normal
+          - identificadorClienteEmpresa: "80600547"
+            numeroSequencialDebito: 11
+            identificadorConvenio: "80600547"
+            siglaConvenio: Convenio 001
+            dataVencimentoOriginal: 2000-01-23
+            valorDebito: 1171.23
+            numeroIdentificadorRegistro: 134
+            autenticacao: 32174809-DC04-472A-B702-5E16E83342BF
+            codigoRetorno: "00"
+            identificadorClienteBanco: "00100200344"
+            descricaoRetorno: Débito efetuado
+            dataVencimento: 2000-01-23
+            movimento: Débito normal
+      properties:
+        resultado:
+          $ref: "#/components/schemas/DebitosMovimento_resultado"
+      type: object
+    OcorrenciasCadastroOptante:
+      example:
+        resultado:
+        - identificadorClienteEmpresa: "000123456"
+          ocorrencia: Cliente cadastrado em outro Banco
+          codigoRegistro: C
+          codigoConvenio: "00067561"
+          movimento: "{}"
+          identificadorClienteBanco: "00100200344"
+          dataPesquisa: 2000-01-23
+        - identificadorClienteEmpresa: "000123456"
+          ocorrencia: Cliente cadastrado em outro Banco
+          codigoRegistro: C
+          codigoConvenio: "00067561"
+          movimento: "{}"
+          identificadorClienteBanco: "00100200344"
+          dataPesquisa: 2000-01-23
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/OcorrenciasCadastroOptante_resultado_inner"
+          type: array
+      type: object
+    RetornoAlteracoesOptante:
+      example:
+        resultado:
+        - sequencial: 1
+          identificadorClienteEmpresaAtual: "183390172928"
+          convenio: "80600547"
+          ocorrenciaEspecial1:
+            codigo: "0"
+            mensagem: Para contrato onde não houve alteração da opção na instituição
+              destinatária.
+          ocorrenciaEspecial2:
+            codigo: "0"
+            mensagem: Para contrato onde não houve alteração da opção na instituição
+              destinatária.
+          identificadorClienteBanco: "00100200344"
+          dataVencimentoContrato: 99999999
+          identificadorClienteEmpresaAnterior: "80600547"
+          agenciaDebito: 1234
+          ocorrencia: ocorrencia
+          numeroConta: 117112
+          codigoRegistro: D
+          codigoMovimento: 0
+          movimento:
+            codigo: "0"
+            mensagem: Alteração de dados cadastrais do cliente na Instituição Depositária
+        - sequencial: 1
+          identificadorClienteEmpresaAtual: "183390172928"
+          convenio: "80600547"
+          ocorrenciaEspecial1:
+            codigo: "0"
+            mensagem: Para contrato onde não houve alteração da opção na instituição
+              destinatária.
+          ocorrenciaEspecial2:
+            codigo: "0"
+            mensagem: Para contrato onde não houve alteração da opção na instituição
+              destinatária.
+          identificadorClienteBanco: "00100200344"
+          dataVencimentoContrato: 99999999
+          identificadorClienteEmpresaAnterior: "80600547"
+          agenciaDebito: 1234
+          ocorrencia: ocorrencia
+          numeroConta: 117112
+          codigoRegistro: D
+          codigoMovimento: 0
+          movimento:
+            codigo: "0"
+            mensagem: Alteração de dados cadastrais do cliente na Instituição Depositária
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/RetornoAlteracoesOptante_resultado_inner"
+          type: array
+      type: object
+    RetornoDebitoAutomatico:
+      example:
+        resultado:
+          retornoDebitoAutomatico:
+            identificadorClienteEmpresa: "000123456"
+            numeroIdentificadorRegistroTipoE: 99876541
+            numeroSequencialDebito: 11
+            dataPagamento: 2000-01-23
+            siglaConvenio: Tim
+            retornoDebito: 00 - Débito Efetivado
+            dataVencimento: 2000-01-23
+            codigoConvenio: "024756"
+            valorDebito: 100.99
+            identificadorClienteBanco: "00100200344"
+      properties:
+        resultado:
+          $ref: "#/components/schemas/RetornoDebitoAutomatico_resultado"
+      type: object
+    Historico:
+      example:
+        resultado:
+          registrosB:
+          - identificadorClienteEmpresa: "00080600547"
+            dataRecebeParceiro: 2000-01-23
+            autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+            movimento: 1 - EXCLUSÃO
+            identificadorClienteBanco: "00100200344"
+          - identificadorClienteEmpresa: "00080600547"
+            dataRecebeParceiro: 2000-01-23
+            autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+            movimento: 1 - EXCLUSÃO
+            identificadorClienteBanco: "00100200344"
+          registrosC:
+          - identificadorClienteEmpresa: "00080600547"
+            ocorrencia: Ocorrência recebida
+            dataRecepcaoEmpresa: 2000-01-23
+            dataParceiro: 2000-01-23
+            movimento: 1 - EXCLUSÃO
+            identificadorClienteBanco: "00100200344"
+          - identificadorClienteEmpresa: "00080600547"
+            ocorrencia: Ocorrência recebida
+            dataRecepcaoEmpresa: 2000-01-23
+            dataParceiro: 2000-01-23
+            movimento: 1 - EXCLUSÃO
+            identificadorClienteBanco: "00100200344"
+          registrosD:
+          - identificadorClienteEmpresa: "00080600547"
+            identificadorClienteEmpresaAnterior: "00090600547"
+            ocorrencia: Ocorrência recebida
+            dataRecepcaoEmpresa: 2000-01-23
+            dataParceiro: 2000-01-23
+            movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+            identificadorClienteBanco: "00100200344"
+          - identificadorClienteEmpresa: "00080600547"
+            identificadorClienteEmpresaAnterior: "00090600547"
+            ocorrencia: Ocorrência recebida
+            dataRecepcaoEmpresa: 2000-01-23
+            dataParceiro: 2000-01-23
+            movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+            identificadorClienteBanco: "00100200344"
+          identificacao:
+            identificadorClienteEmpresa: "80600547"
+            siglaConvenio: Convenio 001
+            convenio: "80600547"
+            identificadorClienteBanco: "100200344"
+          registrosE:
+          - identificadorClienteEmpresa: "00080600547"
+            situacao: 00 - Débito Efetuado
+            identificadorRegistro: 8283451032
+            dataVencimento: 2000-01-23
+            dataRecepcaoEmpresa: 2000-01-23
+            dataParceiro: 2000-01-23
+            movimento: 0 - Débito Normal
+            identificadorClienteBanco: "00100200344"
+          - identificadorClienteEmpresa: "00080600547"
+            situacao: 00 - Débito Efetuado
+            identificadorRegistro: 8283451032
+            dataVencimento: 2000-01-23
+            dataRecepcaoEmpresa: 2000-01-23
+            dataParceiro: 2000-01-23
+            movimento: 0 - Débito Normal
+            identificadorClienteBanco: "00100200344"
+          registrosF:
+          - identificadorClienteEmpresa: "00080600547"
+            identificadorRegistroE: 8283451032
+            situacao: 00 - Débito Efetuado
+            data: 2000-01-23
+            envioParceiro: false
+            dataVencimento: 2000-01-23
+            autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+            movimento: 0 - Débito Normal
+            identificadorClienteBanco: "00100200344"
+          - identificadorClienteEmpresa: "00080600547"
+            identificadorRegistroE: 8283451032
+            situacao: 00 - Débito Efetuado
+            data: 2000-01-23
+            envioParceiro: false
+            dataVencimento: 2000-01-23
+            autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+            movimento: 0 - Débito Normal
+            identificadorClienteBanco: "00100200344"
+          registrosH:
+          - identificadorClienteEmpresa: "00080600547"
+            identificadorClienteEmpresaAnterior: "00090600547"
+            ocorrencia: Ocorrência recebida
+            dataRecebeParceiro: 2000-01-23
+            autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+            movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+            identificadorClienteBanco: "00100200344"
+          - identificadorClienteEmpresa: "00080600547"
+            identificadorClienteEmpresaAnterior: "00090600547"
+            ocorrencia: Ocorrência recebida
+            dataRecebeParceiro: 2000-01-23
+            autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+            movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+            identificadorClienteBanco: "00100200344"
+      properties:
+        resultado:
+          $ref: "#/components/schemas/Historico_resultado"
+      type: object
+    ConveniosHabilitados:
+      example:
+        resultado:
+        - sigla: Sigla - 001
+          codigoFebraban: "0006"
+          segmento: 4.0
+          identificador: "0183390172928"
+        - sigla: Sigla - 001
+          codigoFebraban: "0006"
+          segmento: 4.0
+          identificador: "0183390172928"
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/ConveniosHabilitados_resultado_inner"
+          type: array
+      type: object
+    Convenios:
+      example:
+        resultado:
+        - codigoFebraban: "0012"
+          codigoModuloDV: 1
+          siglaConvenio: Ceb
+          nomeConvenio: Claro
+          codigoRegraIdentificadorOptante: 1
+          descricaoSegmento: TELECOMUNICAÇÕES
+          codigoConvenio: "00067561"
+          descricaoModuloDV: Módulo 10
+          cadastramentoOptante: Empresa
+          codigoSegmento: 4
+          permiteCaracterEspecial: true
+          descricaoRegraIdentificadorOptante: Somente números
+        - codigoFebraban: "0012"
+          codigoModuloDV: 1
+          siglaConvenio: Ceb
+          nomeConvenio: Claro
+          codigoRegraIdentificadorOptante: 1
+          descricaoSegmento: TELECOMUNICAÇÕES
+          codigoConvenio: "00067561"
+          descricaoModuloDV: Módulo 10
+          cadastramentoOptante: Empresa
+          codigoSegmento: 4
+          permiteCaracterEspecial: true
+          descricaoRegraIdentificadorOptante: Somente números
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/Convenios_resultado_inner"
+          type: array
+      type: object
+    ConciliacaoDebitoAutomatico:
+      example:
+        concialicao:
+          valorTotalAceito: 256.15
+          quantidadeRegistrosAceitos: 20
+          quantidadeRegistrosRecusados: 5
+          concialicaoDetalhada:
+          - descricaoRetorno: Débito não efetuado - Insuficiência de fundos
+            siglaConvenio: EMBRATEL
+            valorTotal: 120.99
+            codigoConvenio: "00067561"
+            codigoRetorno: "01"
+            quantidade: 1
+          - descricaoRetorno: Débito não efetuado - Insuficiência de fundos
+            siglaConvenio: EMBRATEL
+            valorTotal: 120.99
+            codigoConvenio: "00067561"
+            codigoRetorno: "01"
+            quantidade: 1
+          valorTotalRecusado: 50.25
+      properties:
+        concialicao:
+          $ref: "#/components/schemas/ConciliacaoDebitoAutomatico_concialicao"
+      type: object
+    Movimento:
+      example:
+        codigo: "0"
+        mensagem: Alteração de dados cadastrais do cliente na Instituição Depositária
+      properties:
+        mensagem:
+          description: Mensagem informativa da ocorrência especial.
+          example: Alteração de dados cadastrais do cliente na Instituição Depositária
+          type: string
+        codigo:
+          description: Código da ocorrência especial.
+          enum:
+          - "0"
+          - "1"
+          example: "0"
+          type: string
+      type: object
+    OcorrenciaEspecial:
+      example:
+        codigo: "0"
+        mensagem: Para contrato onde não houve alteração da opção na instituição destinatária.
+      properties:
+        mensagem:
+          description: Mensagem informativa da ocorrência especial.
+          example: Para contrato onde não houve alteração da opção na instituição
+            destinatária.
+          type: string
+        codigo:
+          description: Código da ocorrência especial.
+          example: "0"
+          type: string
+      type: object
+    RetornoOptante:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+        autenticacao: 7fdf94f120c4f4ad8271a53de1d394a3
+      properties:
+        mensagem:
+          description: Mensagem de retorno da requisição.
+          type: string
+        codigo:
+          description: Código de retorno da requisição.
+          type: string
+        autenticacao:
+          description: Informa o número de autenticação digital da requisição.
+          example: 7fdf94f120c4f4ad8271a53de1d394a3
+          type: string
+      type: object
+    RespostaRetornoDebitoAutomatico:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+        autenticacao: 7fdf94f120c4f4ad8271a53de1d394a3
+      properties:
+        mensagem:
+          description: Mensagem de retorno da requisição.
+          type: string
+        codigo:
+          description: Código de retorno da requisição.
+          type: string
+        autenticacao:
+          description: Informa o número de autenticação digital da requisição.
+          example: 7fdf94f120c4f4ad8271a53de1d394a3
+          type: string
+      type: object
+    ValidacaoOptante:
+      example:
+        optanteValido: true
+      properties:
+        optanteValido:
+          description: indica se o optante de débito automático é valido ou não.
+          type: boolean
+      type: object
+    MensagensErro:
+      example:
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          description: Array com todas as mensagem de erro.
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+      required:
+      - mensagens
+      type: object
+    SicoobMensagem:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem de retorno que pode ser informativa ou de erro.
+          type: string
+        codigo:
+          description: Código padrão de erro.
+          type: string
+      required:
+      - codigo
+      - mensagem
+      type: object
+    RetornoDebito:
+      properties:
+        valorDebito:
+          description: Valor a ser debitado na conta.
+          example: 1171.23
+          format: double
+          type: number
+        codigoRetorno:
+          description: "Código do retorno do débito automático, deve ser obedecido\
+            \ o padrão FEBRABAN."
+          example: "00"
+          type: string
+        numeroIdentificadorRegistro:
+          description: Número identificador do registro.
+          example: 123456789
+          type: number
+      required:
+      - codigoRetorno
+      - numeroIdentificadorRegistro
+      - valorDebito
+      type: object
+    DebitosMovimentacaoLote:
+      example:
+        transacao: 123456789
+        debitos:
+        - codigoConvenio: "024756"
+          valorDebito: 1171.23
+          numeroIdentificadorRegistro: 123456789
+          codigoRetorno: "00"
+        - codigoConvenio: "024756"
+          valorDebito: 1171.23
+          numeroIdentificadorRegistro: 123456789
+          codigoRetorno: "00"
+      properties:
+        debitos:
+          items:
+            $ref: "#/components/schemas/DebitosMovimentacaoLote_debitos_inner"
+          type: array
+        transacao:
+          description: Código identificador da transação do parceiro.
+          example: 123456789
+          type: number
+      type: object
+    RetornoDebitoAutomaticoLote:
+      example:
+        resultado:
+        - numeroIdentificadorRegistroTipoE: 12346579
+          retorno:
+            codigo: 6042
+            mensagem: Preencha o campo Data de Vencimento.
+            status: 201
+          retornoDebito: "30"
+          codigoConvenio: "00067561"
+          valorDebito: 123.4
+          autenticacao: 007F97FE-CF15-49CC-832A-FB51EA64E32D
+        - numeroIdentificadorRegistroTipoE: 12346579
+          retorno:
+            codigo: 6042
+            mensagem: Preencha o campo Data de Vencimento.
+            status: 201
+          retornoDebito: "30"
+          codigoConvenio: "00067561"
+          valorDebito: 123.4
+          autenticacao: 007F97FE-CF15-49CC-832A-FB51EA64E32D
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/RetornoDebitoAutomaticoLote_resultado_inner"
+          type: array
+      type: object
+    StatusRetorno:
+      example:
+        codigo: 6042
+        mensagem: Preencha o campo Data de Vencimento.
+        status: 201
+      properties:
+        status:
+          description: Código HTTP Status do registro.
+          example: 201
+          format: int32
+          type: integer
+        codigo:
+          description: Código de retorno negocial do registro.
+          example: 6042
+          format: int32
+          type: integer
+        mensagem:
+          description: Mensagem de retorno.
+          example: Preencha o campo Data de Vencimento.
+          type: string
+      type: object
+    Identificacao:
+      description: Definição da instituição e unidade correspondente ao pagamento
+      properties:
+        instituicao:
+          description: "Número identificador da instituição: para os cooperados, este\
+            \ campo deve conter o número da cooperativa. Para os parceiros, solicitamos\
+            \ que verifiquem com a área gestora o valor a ser informado."
+          example: 1234.0
+          format: int
+          type: number
+        unidade:
+          description: Número identificador da unidade.
+          example: 0
+          format: int32
+          type: integer
+      required:
+      - instituicao
+      - unidade
+      type: object
+    Pagamento:
+      properties:
+        valorPago:
+          description: Valor a ser pago pela arrecadação do convênio.
+          example: 1171.23
+          format: double
+          type: number
+        nsu:
+          description: "Número sequencial único: código que identifica a transaçã\
+            o de maneira exclusiva."
+          example: 183390172928
+          type: number
+        dataPagamento:
+          description: "Data de pagamento da arrecadação. Formato RFC 3339, seção\
+            \ 5.6."
+          format: date
+          type: string
+        valorDocumento:
+          description: Valor do documento para arrecadação do convênio.
+          example: 1171.23
+          format: double
+          type: number
+        valorDesconto:
+          description: Valor do desconto para arrecadação do convênio.
+          example: 11.23
+          format: double
+          type: number
+        valorJuros:
+          description: Valor do juros para arrecadação do convênio.
+          example: 1.71
+          format: double
+          type: number
+        valorMulta:
+          description: Valor da multa para arrecadação do convênio.
+          example: 17.23
+          format: double
+          type: number
+        recebimentoViaCaixa:
+          description: Indica se o pagamento foi realizado via caixa.
+          example: false
+          type: boolean
+      required:
+      - dataPagamento
+      - valorDocumento
+      - valorPago
+      type: object
+    Arrecadacao:
+      example:
+        nsu: 183390172928
+        dataPagamento: 2000-01-23
+        valorDesconto: 11.23
+        valorPago: 1171.23
+        valorMulta: 17.23
+        recebimentoViaCaixa: false
+        valorJuros: 1.71
+        autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+        valorDocumento: 1171.23
+      properties:
+        valorPago:
+          description: Valor pago na arrecadação de convênio.
+          example: 1171.23
+          format: double
+          type: number
+        nsu:
+          description: "Número sequencial único: código que identifica a transaçã\
+            o de maneira exclusiva."
+          example: 183390172928
+          type: number
+        dataPagamento:
+          description: "Data de pagamento da arrecadação de convênio. Formato RFC\
+            \ 3339, seção 5.6."
+          format: date
+          type: string
+        valorDocumento:
+          description: Valor do documento para arrecadação de convênio.
+          example: 1171.23
+          format: double
+          type: number
+        valorDesconto:
+          description: Valor do desconto para arrecadação de convênio.
+          example: 11.23
+          format: double
+          type: number
+        valorJuros:
+          description: Valor do juros para arrecadação de convênio.
+          example: 1.71
+          format: double
+          type: number
+        valorMulta:
+          description: Valor da multa para arrecadação de convênio.
+          example: 17.23
+          format: double
+          type: number
+        autenticacao:
+          description: Informa o número de autenticação digital da arrecadação de
+            convênio.
+          example: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+          type: string
+        recebimentoViaCaixa:
+          description: Indica se o pagamento foi realizado via caixa.
+          example: false
+          type: boolean
+      required:
+      - dataPagamento
+      - valorDocumento
+      - valorPago
+      type: object
+    RetornoCodigoBarras:
+      example:
+        resultado:
+        - situacao: 0
+          dataPagamento: 2000-01-23
+          transacao: 1234569789
+          valorDesconto: 11.23
+          identificadorFgts: ACHGY123100JJ1
+          siglaConvenio: siglaConvenio
+          convenio: convenio
+          valorPago: 1171.23
+          recebimentoViaCaixa: false
+          valorJuros: 1.71
+          autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+          anoExercicio: 2019.0
+          valorDocumento: 1171.23
+          nsu: 183390172928
+          valorMulta: 17.23
+        - situacao: 0
+          dataPagamento: 2000-01-23
+          transacao: 1234569789
+          valorDesconto: 11.23
+          identificadorFgts: ACHGY123100JJ1
+          siglaConvenio: siglaConvenio
+          convenio: convenio
+          valorPago: 1171.23
+          recebimentoViaCaixa: false
+          valorJuros: 1.71
+          autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+          anoExercicio: 2019.0
+          valorDocumento: 1171.23
+          nsu: 183390172928
+          valorMulta: 17.23
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/RetornoCodigoBarras_resultado_inner"
+          type: array
+      type: object
+    _debito_automatico_optantes_post_request:
+      properties:
+        optante:
+          $ref: "#/components/schemas/Optante"
+        transacao:
+          description: Código identificador da transação do parceiro.
+          example: 123456789
+          type: number
+      required:
+      - optante
+      - transacao
+      type: object
+    _debito_automatico_optantes_post_201_response:
+      example:
+        resultado:
+          codigo: codigo
+          mensagem: mensagem
+          autenticacao: 7fdf94f120c4f4ad8271a53de1d394a3
+      properties:
+        resultado:
+          $ref: "#/components/schemas/RetornoOptante"
+      type: object
+    _debito_automatico_optantes_validacoes_post_201_response:
+      example:
+        resultado:
+          optanteValido: true
+      properties:
+        resultado:
+          $ref: "#/components/schemas/ValidacaoOptante"
+      type: object
+    _debito_automatico_optantes_ocorrencias_post_request:
+      properties:
+        ocorrencia:
+          $ref: "#/components/schemas/OcorrenciaOptante"
+        transacao:
+          description: Código identificador da transação do parceiro.
+          example: 123456789
+          type: number
+      required:
+      - ocorrencia
+      - transacao
+      type: object
+    _debito_automatico_debitos_post_request:
+      properties:
+        debito:
+          $ref: "#/components/schemas/RetornoDebito"
+        transacao:
+          description: Código identificador da transação do parceiro.
+          example: 123456789
+          type: number
+      required:
+      - debito
+      - transacao
+      type: object
+    _debito_automatico_debitos_post_201_response:
+      example:
+        resultado:
+          codigo: codigo
+          mensagem: mensagem
+          autenticacao: 7fdf94f120c4f4ad8271a53de1d394a3
+      properties:
+        resultado:
+          $ref: "#/components/schemas/RespostaRetornoDebitoAutomatico"
+      type: object
+    _arrecadacao_codigo_barras__codigoBarras__pagamentos_post_request:
+      properties:
+        identificacao:
+          $ref: "#/components/schemas/Identificacao"
+        pagamento:
+          $ref: "#/components/schemas/Pagamento"
+        transacao:
+          description: "Código identificador da transação: este código deve ser gerado\
+            \ pelo cooperado ou parceiro e deve ser único para cada data de movimentaç\
+            ão."
+          example: 123456789
+          type: number
+      required:
+      - identificacao
+      - pagamento
+      type: object
+    _arrecadacao_codigo_barras__codigoBarras__pagamentos_post_200_response_resultado:
+      example:
+        comprovante: PCFbQ0RBVEFbICBEYWRvcyBkbyBjb21wcm92YW50ZSAJCiAgXV0+
+        arrecadacao:
+          nsu: 183390172928
+          dataPagamento: 2000-01-23
+          valorDesconto: 11.23
+          valorPago: 1171.23
+          valorMulta: 17.23
+          recebimentoViaCaixa: false
+          valorJuros: 1.71
+          autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+          valorDocumento: 1171.23
+      properties:
+        comprovante:
+          description: "Dados do comprovante. Formato RFC 4648, seção 4."
+          example: PCFbQ0RBVEFbICBEYWRvcyBkbyBjb21wcm92YW50ZSAJCiAgXV0+
+          format: byte
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+        arrecadacao:
+          $ref: "#/components/schemas/Arrecadacao"
+      type: object
+    _arrecadacao_codigo_barras__codigoBarras__pagamentos_post_200_response:
+      example:
+        resultado:
+          comprovante: PCFbQ0RBVEFbICBEYWRvcyBkbyBjb21wcm92YW50ZSAJCiAgXV0+
+          arrecadacao:
+            nsu: 183390172928
+            dataPagamento: 2000-01-23
+            valorDesconto: 11.23
+            valorPago: 1171.23
+            valorMulta: 17.23
+            recebimentoViaCaixa: false
+            valorJuros: 1.71
+            autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+            valorDocumento: 1171.23
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_arrecadacao_codigo_barras__codigoBarras__pagamentos_post_200_response_resultado"
+      type: object
+    _arrecadacao_codigo_barras__codigoBarras__get_200_response_resultado:
+      example:
+        nsu: 183390172928
+        codigoConvenioFebraban: "0025"
+        valorDesconto: 1171.23
+        valorOutrosEncargos: 1171.23
+        siglaConvenio: SiG
+        valorTotal: 1171.23
+        convenio: "1"
+        valorMulta: 1171.23
+        valorJuros: 1171.23
+        valorDocumento: 1171.23
+      properties:
+        convenio:
+          description: Código identificador do convênio no Sicoob.
+          example: "1"
+          type: string
+        siglaConvenio:
+          description: Sigla do convênio.
+          example: SiG
+          type: string
+        valorDocumento:
+          description: Informa o valor do documento para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        valorDesconto:
+          description: Informa o valor de desconto para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        valorMulta:
+          description: Informa o valor multa para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        valorJuros:
+          description: Informa o valor do juros para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        valorOutrosEncargos:
+          description: Informa o valor de outros encargos para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        valorTotal:
+          description: Informa o valor total para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        codigoConvenioFebraban:
+          description: "Código do convênio FEBRABAN, contendo 4 posições com valor\
+            \ numérico."
+          example: "0025"
+          type: string
+        nsu:
+          description: "Número sequencial único: código que identifica a transaçã\
+            o de maneira exclusiva."
+          example: 183390172928
+          type: number
+      type: object
+    _arrecadacao_codigo_barras__codigoBarras__get_200_response:
+      example:
+        resultado:
+          nsu: 183390172928
+          codigoConvenioFebraban: "0025"
+          valorDesconto: 1171.23
+          valorOutrosEncargos: 1171.23
+          siglaConvenio: SiG
+          valorTotal: 1171.23
+          convenio: "1"
+          valorMulta: 1171.23
+          valorJuros: 1171.23
+          valorDocumento: 1171.23
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_arrecadacao_codigo_barras__codigoBarras__get_200_response_resultado"
+      type: object
+    _arrecadacao_pagamentos__nsu__comprovante_get_200_response_resultado:
+      example:
+        comprovante: PCFbQ0RBVEFbICBEYWRvcyBkbyBjb21wcm92YW50ZSAJCiAgXV0+
+        pagamento:
+          nsu: 183390172928
+          dataPagamento: 2000-01-23
+          valorDesconto: 11.23
+          valorPago: 1171.23
+          valorMulta: 17.23
+          recebimentoViaCaixa: false
+          valorJuros: 1.71
+          autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+          valorDocumento: 1171.23
+      properties:
+        comprovante:
+          description: "Dados do comprovante. Formato RFC 4648, seção 4."
+          example: PCFbQ0RBVEFbICBEYWRvcyBkbyBjb21wcm92YW50ZSAJCiAgXV0+
+          format: byte
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+        pagamento:
+          $ref: "#/components/schemas/Arrecadacao"
+      type: object
+    _arrecadacao_pagamentos__nsu__comprovante_get_200_response:
+      example:
+        resultado:
+          comprovante: PCFbQ0RBVEFbICBEYWRvcyBkbyBjb21wcm92YW50ZSAJCiAgXV0+
+          pagamento:
+            nsu: 183390172928
+            dataPagamento: 2000-01-23
+            valorDesconto: 11.23
+            valorPago: 1171.23
+            valorMulta: 17.23
+            recebimentoViaCaixa: false
+            valorJuros: 1.71
+            autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+            valorDocumento: 1171.23
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_arrecadacao_pagamentos__nsu__comprovante_get_200_response_resultado"
+      type: object
+    Conciliacao_resultado_inner:
+      example:
+        situacao: Aceito
+        siglaConvenio: SiG
+        valorTotal: 1171.23
+        convenio: "1"
+        quantidade: 0.8008281904610115
+      properties:
+        situacao:
+          description: Situação da arrecadação.
+          example: Aceito
+          type: string
+        convenio:
+          description: Retorna o identificador do convênio.
+          example: "1"
+          type: string
+        siglaConvenio:
+          description: Retorna a sigla do convênio.
+          example: SiG
+          type: string
+        valorTotal:
+          description: Informa o valor do total da(s) arrecadação(ões).
+          example: 1171.23
+          format: double
+          type: number
+        quantidade:
+          description: Informa o quantidade de arrecadações.
+          format: int
+          type: number
+      type: object
+    Debitos_resultado_paginacao:
+      example:
+        totalRegistros: 20
+        numeroPagina: 20
+        tamanhoPagina: 20
+        totalPaginas: 20
+      properties:
+        numeroPagina:
+          description: Número da página da consulta de debitos.
+          example: 20
+          minimum: 1
+          type: integer
+        tamanhoPagina:
+          description: Quantidade de registros por página.
+          example: 20
+          minimum: 1
+          type: integer
+        totalRegistros:
+          description: Total de registros da consulta.
+          example: 20
+          minimum: 1
+          type: integer
+        totalPaginas:
+          description: Quantidade de páginas da consulta.
+          example: 20
+          minimum: 1
+          type: integer
+      type: object
+    Debitos_resultado_debitos_inner:
+      example:
+        identificadorClienteEmpresa: "80600547"
+        numeroSequencialDebito: 11
+        opcaoChequeEspecial: "{}"
+        tipoIdentificacao: 0
+        identificacao: "90453275000173"
+        dataVencimentoOriginal: 2000-01-23
+        convenio: "80600547"
+        usoDaEmpresa: usoDaEmpresa
+        valorDebito: 1171.23
+        numeroIdentificadorRegistro: 134
+        tipoOperacao: "{}"
+        identificadorClienteBanco: "00100200344"
+        situacaoDebito: Em aberto
+        opcaoDebitoParcial: "{}"
+        dataVencimento: 2000-01-23
+        codigoRegistro: E
+        movimento: "{}"
+        dataPesquisa: 2000-01-23
+      properties:
+        codigoRegistro:
+          description: Código do registro da alteração de identificação do cliente
+            pela empresa.
+          enum:
+          - E
+          example: E
+          type: string
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa
+          example: "80600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito.\
+            \ Informar o número de conta corrente do parceiro no Sicoob."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        convenio:
+          description: Identificador do convênio.
+          example: "80600547"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        movimento:
+          properties: {}
+          type: object
+        dataVencimento:
+          description: "Data de Vencimento. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        dataVencimentoOriginal:
+          description: "Data de Vencimento Original. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        usoDaEmpresa:
+          description: Informação de origem da Empresa.
+          type: string
+        valorDebito:
+          description: Valor a ser debitado na conta.
+          example: 1171.23
+          format: float
+          type: number
+          x-faker: datatype.float
+        numeroSequencialDebito:
+          description: Número sequencial do débito.
+          example: 11
+          minimum: 1
+          type: integer
+        numeroIdentificadorRegistro:
+          description: "Número identificador do registro. (Este número deverá ser\
+            \ usado para o retorno do débito, tipo F)"
+          example: 134
+          minimum: 1
+          type: integer
+        tipoIdentificacao:
+          description: |
+            Tipo da identificação:
+             * `1` -  CPF.
+             * `2` -  CNPJ.
+          enum:
+          - 1
+          - 2
+          format: int32
+          type: integer
+        identificacao:
+          description: Identificação do CPF ou do CNPJ de acordo com o tipo da identificação
+            informado.
+          example: "90453275000173"
+          maxLength: 15
+          minLength: 11
+          pattern: "[0-9]"
+          type: string
+        tipoOperacao:
+          properties: {}
+          type: object
+        opcaoChequeEspecial:
+          properties: {}
+          type: object
+        opcaoDebitoParcial:
+          properties: {}
+          type: object
+        dataPesquisa:
+          description: "Data em que o registro foi recuperado pela primeira vez, quando\
+            \ esta informação não for retornada ou estiver vazio o mesmo está sendo\
+            \ retornado pela primeira vez."
+          format: date
+          type: string
+          x-faker: date.recent
+        situacaoDebito:
+          description: Situação do débito
+          enum:
+          - Em aberto
+          - Débito efetuado
+          - Débito não efetuado - Insuficiência de fundos
+          - Débito não efetuado - Conta não cadastrada
+          - Débito não efetuado - Outras restrições
+          - Débito não efetuado – valor do débito excede valor limite aprovado.
+          - Débito não efetuado - Agência em regime de encerramento
+          - Débito não efetuado - Valor inválido
+          - Débito não efetuado - Data de lançamento inválida
+          - Débito não efetuado - Agência inválida
+          - Débito não efetuado - conta inválida
+          - Débito não efetuado - Data do débito anterior à do processamento
+          - Débito não efetuado – Agência/Conta não pertence ao CPF/CNPJ informado
+          - Débito não efetuado – conta conjunta não solidária
+          - Débito não efetuado - Sem contrato de débito automático
+          - Débito efetuado em data diferente da data informada – feriado na praça
+            de débito
+          - Manutenção do Cadastro
+          - Cancelamento - Não encontrado
+          - "Cancelamento - Não efetuado, fora do tempo hábil"
+          - Cancelamento - cancelado conforme solicitação
+          - Cancelamento de débito pelo centralizador
+          - Cancelamento de débito pelo cliente
+          - Cancelamento de débito pela cooperativa
+          example: Em aberto
+          type: string
+      type: object
+    Debitos_resultado:
+      example:
+        paginacao:
+          totalRegistros: 20
+          numeroPagina: 20
+          tamanhoPagina: 20
+          totalPaginas: 20
+        debitos:
+        - identificadorClienteEmpresa: "80600547"
+          numeroSequencialDebito: 11
+          opcaoChequeEspecial: "{}"
+          tipoIdentificacao: 0
+          identificacao: "90453275000173"
+          dataVencimentoOriginal: 2000-01-23
+          convenio: "80600547"
+          usoDaEmpresa: usoDaEmpresa
+          valorDebito: 1171.23
+          numeroIdentificadorRegistro: 134
+          tipoOperacao: "{}"
+          identificadorClienteBanco: "00100200344"
+          situacaoDebito: Em aberto
+          opcaoDebitoParcial: "{}"
+          dataVencimento: 2000-01-23
+          codigoRegistro: E
+          movimento: "{}"
+          dataPesquisa: 2000-01-23
+        - identificadorClienteEmpresa: "80600547"
+          numeroSequencialDebito: 11
+          opcaoChequeEspecial: "{}"
+          tipoIdentificacao: 0
+          identificacao: "90453275000173"
+          dataVencimentoOriginal: 2000-01-23
+          convenio: "80600547"
+          usoDaEmpresa: usoDaEmpresa
+          valorDebito: 1171.23
+          numeroIdentificadorRegistro: 134
+          tipoOperacao: "{}"
+          identificadorClienteBanco: "00100200344"
+          situacaoDebito: Em aberto
+          opcaoDebitoParcial: "{}"
+          dataVencimento: 2000-01-23
+          codigoRegistro: E
+          movimento: "{}"
+          dataPesquisa: 2000-01-23
+      properties:
+        paginacao:
+          $ref: "#/components/schemas/Debitos_resultado_paginacao"
+        debitos:
+          items:
+            $ref: "#/components/schemas/Debitos_resultado_debitos_inner"
+          type: array
+      type: object
+    DebitosMovimento_resultado_debitos_inner:
+      example:
+        identificadorClienteEmpresa: "80600547"
+        numeroSequencialDebito: 11
+        identificadorConvenio: "80600547"
+        siglaConvenio: Convenio 001
+        dataVencimentoOriginal: 2000-01-23
+        valorDebito: 1171.23
+        numeroIdentificadorRegistro: 134
+        autenticacao: 32174809-DC04-472A-B702-5E16E83342BF
+        codigoRetorno: "00"
+        identificadorClienteBanco: "00100200344"
+        descricaoRetorno: Débito efetuado
+        dataVencimento: 2000-01-23
+        movimento: Débito normal
+      properties:
+        identificadorConvenio:
+          description: Identificador do convênio.
+          example: "80600547"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        siglaConvenio:
+          description: Sigla do convênio.
+          example: Convenio 001
+          maxLength: 20
+          type: string
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa
+          example: "80600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito.\
+            \ Informar o número de conta corrente do parceiro no Sicoob."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        movimento:
+          description: Descrição do movimento.
+          example: Débito normal
+          type: string
+        dataVencimento:
+          description: "Data de Vencimento. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        dataVencimentoOriginal:
+          description: "Data de Vencimento Original. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        valorDebito:
+          description: Valor a ser debitado na conta.
+          example: 1171.23
+          format: float
+          type: number
+          x-faker: datatype.float
+        numeroSequencialDebito:
+          description: Número sequencial do débito.
+          example: 11
+          minimum: 1
+          type: integer
+        numeroIdentificadorRegistro:
+          description: "Número identificador do registro. (Este número deverá ser\
+            \ usado para o retorno do débito, tipo E)"
+          example: 134
+          minimum: 1
+          type: integer
+        codigoRetorno:
+          description: Código do retorno.
+          enum:
+          - "00"
+          - "01"
+          - "02"
+          - "04"
+          - "05"
+          - "10"
+          - "12"
+          - "13"
+          - "14"
+          - "15"
+          - "18"
+          - "30"
+          - "31"
+          - "96"
+          - "97"
+          - "98"
+          - "99"
+          - DP
+          - FP
+          - CF
+          - NC
+          - CH
+          - PV
+          - DT
+          - OP
+          - CE
+          - CD
+          - PB
+          example: "00"
+          type: string
+        descricaoRetorno:
+          description: Descrição do retorno.
+          example: Débito efetuado
+          type: string
+        autenticacao:
+          description: Autenticação do débito.
+          example: 32174809-DC04-472A-B702-5E16E83342BF
+          type: string
+      type: object
+    DebitosMovimento_resultado:
+      example:
+        paginacao:
+          totalRegistros: 20
+          numeroPagina: 20
+          tamanhoPagina: 20
+          totalPaginas: 20
+        debitos:
+        - identificadorClienteEmpresa: "80600547"
+          numeroSequencialDebito: 11
+          identificadorConvenio: "80600547"
+          siglaConvenio: Convenio 001
+          dataVencimentoOriginal: 2000-01-23
+          valorDebito: 1171.23
+          numeroIdentificadorRegistro: 134
+          autenticacao: 32174809-DC04-472A-B702-5E16E83342BF
+          codigoRetorno: "00"
+          identificadorClienteBanco: "00100200344"
+          descricaoRetorno: Débito efetuado
+          dataVencimento: 2000-01-23
+          movimento: Débito normal
+        - identificadorClienteEmpresa: "80600547"
+          numeroSequencialDebito: 11
+          identificadorConvenio: "80600547"
+          siglaConvenio: Convenio 001
+          dataVencimentoOriginal: 2000-01-23
+          valorDebito: 1171.23
+          numeroIdentificadorRegistro: 134
+          autenticacao: 32174809-DC04-472A-B702-5E16E83342BF
+          codigoRetorno: "00"
+          identificadorClienteBanco: "00100200344"
+          descricaoRetorno: Débito efetuado
+          dataVencimento: 2000-01-23
+          movimento: Débito normal
+      properties:
+        paginacao:
+          $ref: "#/components/schemas/Debitos_resultado_paginacao"
+        debitos:
+          items:
+            $ref: "#/components/schemas/DebitosMovimento_resultado_debitos_inner"
+          type: array
+      type: object
+    OcorrenciasCadastroOptante_resultado_inner:
+      example:
+        identificadorClienteEmpresa: "000123456"
+        ocorrencia: Cliente cadastrado em outro Banco
+        codigoRegistro: C
+        codigoConvenio: "00067561"
+        movimento: "{}"
+        identificadorClienteBanco: "00100200344"
+        dataPesquisa: 2000-01-23
+      properties:
+        codigoRegistro:
+          description: Código do registro de ocorrência no cadastro do optante de
+            débito automático.
+          enum:
+          - C
+          example: C
+          type: string
+        codigoConvenio:
+          description: Código identificador do convênio.
+          example: "00067561"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa
+          example: "000123456"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: Identificador do cliente no Banco.
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        ocorrencia:
+          description: "Mensagem explicativa da recusa, pela Empresa"
+          example: Cliente cadastrado em outro Banco
+          type: string
+        movimento:
+          properties: {}
+          type: object
+        dataPesquisa:
+          description: "Data em que o registro foi recuperado pela primeira vez, quando\
+            \ esta informação não for retornada ou estiver vazio o mesmo está sendo\
+            \ retornado pela primeira vez."
+          format: date
+          type: string
+          x-faker: date.recent
+      type: object
+    RetornoAlteracoesOptante_resultado_inner:
+      example:
+        sequencial: 1
+        identificadorClienteEmpresaAtual: "183390172928"
+        convenio: "80600547"
+        ocorrenciaEspecial1:
+          codigo: "0"
+          mensagem: Para contrato onde não houve alteração da opção na instituição
+            destinatária.
+        ocorrenciaEspecial2:
+          codigo: "0"
+          mensagem: Para contrato onde não houve alteração da opção na instituição
+            destinatária.
+        identificadorClienteBanco: "00100200344"
+        dataVencimentoContrato: 99999999
+        identificadorClienteEmpresaAnterior: "80600547"
+        agenciaDebito: 1234
+        ocorrencia: ocorrencia
+        numeroConta: 117112
+        codigoRegistro: D
+        codigoMovimento: 0
+        movimento:
+          codigo: "0"
+          mensagem: Alteração de dados cadastrais do cliente na Instituição Depositária
+      properties:
+        codigoRegistro:
+          description: Código do registro da alteração de identificação do cliente
+            pela empresa.
+          enum:
+          - D
+          example: D
+          type: string
+        codigoMovimento:
+          description: |
+            Código movimento:
+             * `0` - Alteração da Identificação do Cliente na Empresa
+             * `1` - Exclusão de optante do Débito Automático, solicitação pela Empresa, conforme clausulas contratuais do convênio
+          enum:
+          - 0
+          - 1
+          format: int32
+          type: integer
+        convenio:
+          description: Identificador do convênio.
+          example: "80600547"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        identificadorClienteEmpresaAnterior:
+          description: Identificador do cliente na empresa - Anterior.
+          example: "80600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteEmpresaAtual:
+          description: Identificador do cliente na empresa - Atual.
+          example: "183390172928"
+          maxLength: 25
+          minLength: 2
+          type: string
+        agenciaDebito:
+          description: O conteúdo deverá ser idêntico ao anteriormente enviado pelo
+            Banco.
+          example: 1234
+          maximum: 9999
+          minimum: 1
+          type: integer
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito.\
+            \ Informar o número de conta corrente do parceiro no Sicoob."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        ocorrencia:
+          description: Mensagem
+          type: string
+        dataVencimentoContrato:
+          description: Data de vencimento do contrato prazo de validade do contrato
+            formato AAAAMMDD. Prazo de validade indeterminado – Formato 99999999
+          example: 99999999
+          maximum: 99999999
+          minimum: 20240101
+          type: integer
+        ocorrenciaEspecial1:
+          $ref: "#/components/schemas/OcorrenciaEspecial"
+        ocorrenciaEspecial2:
+          $ref: "#/components/schemas/OcorrenciaEspecial"
+        movimento:
+          $ref: "#/components/schemas/Movimento"
+        numeroConta:
+          description: "Conta autorizada pelo cliente na Destinatária (conta salá\
+            rio/ conta corrente/ conta pagamento, conta poupança)"
+          example: 117112
+          format: double
+          minimum: 19
+          type: integer
+        sequencial:
+          description: Identificador sequencial do registro.
+          example: 1
+          minimum: 1
+          type: integer
+      type: object
+    RetornoDebitoAutomatico_resultado_retornoDebitoAutomatico:
+      example:
+        identificadorClienteEmpresa: "000123456"
+        numeroIdentificadorRegistroTipoE: 99876541
+        numeroSequencialDebito: 11
+        dataPagamento: 2000-01-23
+        siglaConvenio: Tim
+        retornoDebito: 00 - Débito Efetivado
+        dataVencimento: 2000-01-23
+        codigoConvenio: "024756"
+        valorDebito: 100.99
+        identificadorClienteBanco: "00100200344"
+      properties:
+        codigoConvenio:
+          description: Código do convênio.
+          example: "024756"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        siglaConvenio:
+          description: Sigla do convênio
+          example: Tim
+          maxLength: 20
+          minLength: 10
+          type: string
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa
+          example: "000123456"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: Identificador do cliente no Banco.
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        valorDebito:
+          description: Valor do débito.
+          example: 100.99
+          format: float
+          type: number
+          x-faker: datatype.float
+        dataVencimento:
+          description: "Data de Vencimento. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        dataPagamento:
+          description: "Data do pagamento. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        numeroSequencialDebito:
+          description: Número sequencial do débito.
+          example: 11
+          minimum: 1
+          type: integer
+        numeroIdentificadorRegistroTipoE:
+          description: "Número identificador do registro do débito que chegou da empresa\
+            \ (registro tipo E, padrão FEBRABAN)."
+          example: 99876541
+          minimum: 1
+          type: integer
+        retornoDebito:
+          description: Retorno do débito automático que foi enviado para a empresa.
+          example: 00 - Débito Efetivado
+          type: string
+      type: object
+    RetornoDebitoAutomatico_resultado:
+      example:
+        retornoDebitoAutomatico:
+          identificadorClienteEmpresa: "000123456"
+          numeroIdentificadorRegistroTipoE: 99876541
+          numeroSequencialDebito: 11
+          dataPagamento: 2000-01-23
+          siglaConvenio: Tim
+          retornoDebito: 00 - Débito Efetivado
+          dataVencimento: 2000-01-23
+          codigoConvenio: "024756"
+          valorDebito: 100.99
+          identificadorClienteBanco: "00100200344"
+      properties:
+        retornoDebitoAutomatico:
+          $ref: "#/components/schemas/RetornoDebitoAutomatico_resultado_retornoDebitoAutomatico"
+      type: object
+    Historico_resultado_identificacao:
+      example:
+        identificadorClienteEmpresa: "80600547"
+        siglaConvenio: Convenio 001
+        convenio: "80600547"
+        identificadorClienteBanco: "100200344"
+      properties:
+        convenio:
+          description: Identificador do convênio.
+          example: "80600547"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        siglaConvenio:
+          description: Sigla do convênio.
+          example: Convenio 001
+          maxLength: 20
+          minLength: 10
+          type: string
+        identificadorClienteEmpresa:
+          description: "Identificador do cliente na empresa, enviado na requisiçã\
+            o."
+          example: "80600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, enviado na requisiçã\
+            o."
+          example: "100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+      type: object
+    Historico_resultado_registrosB_inner:
+      example:
+        identificadorClienteEmpresa: "00080600547"
+        dataRecebeParceiro: 2000-01-23
+        autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+        movimento: 1 - EXCLUSÃO
+        identificadorClienteBanco: "00100200344"
+      properties:
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "00080600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        movimento:
+          description: Descrição do movimento.
+          enum:
+          - 1 - EXCLUSÃO
+          - 2 - INCLUSÃO
+          type: string
+        dataRecebeParceiro:
+          description: "Data de recebimento do registro B enviado pelo parceiro. Formato\
+            \ RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        autenticacao:
+          description: Informa o número de autenticação digital do registro B.
+          example: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          minLength: 35
+          type: string
+      type: object
+    Historico_resultado_registrosC_inner:
+      example:
+        identificadorClienteEmpresa: "00080600547"
+        ocorrencia: Ocorrência recebida
+        dataRecepcaoEmpresa: 2000-01-23
+        dataParceiro: 2000-01-23
+        movimento: 1 - EXCLUSÃO
+        identificadorClienteBanco: "00100200344"
+      properties:
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "00080600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        movimento:
+          description: Descrição do movimento.
+          enum:
+          - 1 - EXCLUSÃO
+          - 2 - INCLUSÃO
+          type: string
+        ocorrencia:
+          description: Mensagem explicativa da ocorrência.
+          example: Ocorrência recebida
+          type: string
+        dataParceiro:
+          description: "Data em que o parceiro recuperou a informação do registro\
+            \ C. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        dataRecepcaoEmpresa:
+          description: "Data em que a informação do registro C foi disponibilizada.\
+            \ Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+      type: object
+    Historico_resultado_registrosD_inner:
+      example:
+        identificadorClienteEmpresa: "00080600547"
+        identificadorClienteEmpresaAnterior: "00090600547"
+        ocorrencia: Ocorrência recebida
+        dataRecepcaoEmpresa: 2000-01-23
+        dataParceiro: 2000-01-23
+        movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+        identificadorClienteBanco: "00100200344"
+      properties:
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "00080600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        identificadorClienteEmpresaAnterior:
+          description: Identificador do cliente na empresa - Anterior.
+          example: "00090600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        movimento:
+          description: Descrição do movimento.
+          enum:
+          - 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+          - 1 - EXCLUSÃO DE OPTANTE DO DÉBITO AUTOMÁTICO
+          type: string
+        ocorrencia:
+          description: Mensagem explicativa da ocorrência.
+          example: Ocorrência recebida
+          type: string
+        dataParceiro:
+          description: "Data em que o parceiro recuperou a informação do registro\
+            \ D. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        dataRecepcaoEmpresa:
+          description: "Data em que a informação do registro D foi disponibilizada.\
+            \ Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+      type: object
+    Historico_resultado_registrosE_inner:
+      example:
+        identificadorClienteEmpresa: "00080600547"
+        situacao: 00 - Débito Efetuado
+        identificadorRegistro: 8283451032
+        dataVencimento: 2000-01-23
+        dataRecepcaoEmpresa: 2000-01-23
+        dataParceiro: 2000-01-23
+        movimento: 0 - Débito Normal
+        identificadorClienteBanco: "00100200344"
+      properties:
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "00080600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        identificadorRegistro:
+          description: Identificador do registro de débito.
+          example: 8283451032
+          minimum: 1
+          type: integer
+        movimento:
+          description: Descrição do movimento.
+          enum:
+          - 0 - Débito Normal
+          - 1 - Cancelamento
+          type: string
+        dataParceiro:
+          description: "Data em que o parceiro recuperou a informação do registro\
+            \ E. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        dataRecepcaoEmpresa:
+          description: "Data em que a informação do registro E foi disponibilizada.\
+            \ Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        dataVencimento:
+          description: "Data vencimento do débito. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        situacao:
+          description: Situação do débito
+          example: 00 - Débito Efetuado
+          type: string
+      type: object
+    Historico_resultado_registrosF_inner:
+      example:
+        identificadorClienteEmpresa: "00080600547"
+        identificadorRegistroE: 8283451032
+        situacao: 00 - Débito Efetuado
+        data: 2000-01-23
+        envioParceiro: false
+        dataVencimento: 2000-01-23
+        autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+        movimento: 0 - Débito Normal
+        identificadorClienteBanco: "00100200344"
+      properties:
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "00080600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        identificadorRegistroE:
+          description: Identificador do registro de débito (Registro E).
+          example: 8283451032
+          minimum: 1
+          type: integer
+        movimento:
+          description: Descrição do movimento.
+          enum:
+          - 0 - Débito Normal
+          - 1 - Cancelamento
+          type: string
+        data:
+          description: "Data do registro F. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        envioParceiro:
+          description: Identifica se o registro foi enviado pelo parceiro.
+          example: false
+          type: boolean
+        dataVencimento:
+          description: "Data vencimento do débito. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.future
+        situacao:
+          description: Situação do débito
+          example: 00 - Débito Efetuado
+          type: string
+        autenticacao:
+          description: Informa o número de autenticação digital do registro B.
+          example: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          minLength: 35
+          type: string
+      type: object
+    Historico_resultado_registrosH_inner:
+      example:
+        identificadorClienteEmpresa: "00080600547"
+        identificadorClienteEmpresaAnterior: "00090600547"
+        ocorrencia: Ocorrência recebida
+        dataRecebeParceiro: 2000-01-23
+        autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+        movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+        identificadorClienteBanco: "00100200344"
+      properties:
+        identificadorClienteEmpresa:
+          description: Identificador do cliente na empresa.
+          example: "00080600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        identificadorClienteBanco:
+          description: "Identificador do cliente, pelo Banco, para efetuar o débito."
+          example: "00100200344"
+          maxLength: 20
+          minLength: 2
+          pattern: "[0-9]"
+          type: string
+        identificadorClienteEmpresaAnterior:
+          description: Identificador do cliente na empresa - Anterior.
+          example: "00090600547"
+          maxLength: 25
+          minLength: 2
+          type: string
+        movimento:
+          description: Descrição do movimento.
+          enum:
+          - 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+          - 1 - EXCLUSÃO DE OPTANTE DO DÉBITO AUTOMÁTICO
+          type: string
+        ocorrencia:
+          description: Mensagem explicativa da ocorrência.
+          example: Ocorrência recebida
+          type: string
+        dataRecebeParceiro:
+          description: "Data em que o parceiro enviou a informação do registro H.\
+            \ Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+          x-faker: date.recent
+        autenticacao:
+          description: Informa o número de autenticação digital do registro B.
+          example: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          minLength: 35
+          type: string
+      type: object
+    Historico_resultado:
+      example:
+        registrosB:
+        - identificadorClienteEmpresa: "00080600547"
+          dataRecebeParceiro: 2000-01-23
+          autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          movimento: 1 - EXCLUSÃO
+          identificadorClienteBanco: "00100200344"
+        - identificadorClienteEmpresa: "00080600547"
+          dataRecebeParceiro: 2000-01-23
+          autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          movimento: 1 - EXCLUSÃO
+          identificadorClienteBanco: "00100200344"
+        registrosC:
+        - identificadorClienteEmpresa: "00080600547"
+          ocorrencia: Ocorrência recebida
+          dataRecepcaoEmpresa: 2000-01-23
+          dataParceiro: 2000-01-23
+          movimento: 1 - EXCLUSÃO
+          identificadorClienteBanco: "00100200344"
+        - identificadorClienteEmpresa: "00080600547"
+          ocorrencia: Ocorrência recebida
+          dataRecepcaoEmpresa: 2000-01-23
+          dataParceiro: 2000-01-23
+          movimento: 1 - EXCLUSÃO
+          identificadorClienteBanco: "00100200344"
+        registrosD:
+        - identificadorClienteEmpresa: "00080600547"
+          identificadorClienteEmpresaAnterior: "00090600547"
+          ocorrencia: Ocorrência recebida
+          dataRecepcaoEmpresa: 2000-01-23
+          dataParceiro: 2000-01-23
+          movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+          identificadorClienteBanco: "00100200344"
+        - identificadorClienteEmpresa: "00080600547"
+          identificadorClienteEmpresaAnterior: "00090600547"
+          ocorrencia: Ocorrência recebida
+          dataRecepcaoEmpresa: 2000-01-23
+          dataParceiro: 2000-01-23
+          movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+          identificadorClienteBanco: "00100200344"
+        identificacao:
+          identificadorClienteEmpresa: "80600547"
+          siglaConvenio: Convenio 001
+          convenio: "80600547"
+          identificadorClienteBanco: "100200344"
+        registrosE:
+        - identificadorClienteEmpresa: "00080600547"
+          situacao: 00 - Débito Efetuado
+          identificadorRegistro: 8283451032
+          dataVencimento: 2000-01-23
+          dataRecepcaoEmpresa: 2000-01-23
+          dataParceiro: 2000-01-23
+          movimento: 0 - Débito Normal
+          identificadorClienteBanco: "00100200344"
+        - identificadorClienteEmpresa: "00080600547"
+          situacao: 00 - Débito Efetuado
+          identificadorRegistro: 8283451032
+          dataVencimento: 2000-01-23
+          dataRecepcaoEmpresa: 2000-01-23
+          dataParceiro: 2000-01-23
+          movimento: 0 - Débito Normal
+          identificadorClienteBanco: "00100200344"
+        registrosF:
+        - identificadorClienteEmpresa: "00080600547"
+          identificadorRegistroE: 8283451032
+          situacao: 00 - Débito Efetuado
+          data: 2000-01-23
+          envioParceiro: false
+          dataVencimento: 2000-01-23
+          autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          movimento: 0 - Débito Normal
+          identificadorClienteBanco: "00100200344"
+        - identificadorClienteEmpresa: "00080600547"
+          identificadorRegistroE: 8283451032
+          situacao: 00 - Débito Efetuado
+          data: 2000-01-23
+          envioParceiro: false
+          dataVencimento: 2000-01-23
+          autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          movimento: 0 - Débito Normal
+          identificadorClienteBanco: "00100200344"
+        registrosH:
+        - identificadorClienteEmpresa: "00080600547"
+          identificadorClienteEmpresaAnterior: "00090600547"
+          ocorrencia: Ocorrência recebida
+          dataRecebeParceiro: 2000-01-23
+          autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+          identificadorClienteBanco: "00100200344"
+        - identificadorClienteEmpresa: "00080600547"
+          identificadorClienteEmpresaAnterior: "00090600547"
+          ocorrencia: Ocorrência recebida
+          dataRecebeParceiro: 2000-01-23
+          autenticacao: 4DFB14D7-F346-43FB-A727-DD4116D5CBDR
+          movimento: 0 - ALTERAÇÃO IDENTIFICAÇÃO CLIENTE EMPRESA
+          identificadorClienteBanco: "00100200344"
+      properties:
+        identificacao:
+          $ref: "#/components/schemas/Historico_resultado_identificacao"
+        registrosB:
+          items:
+            $ref: "#/components/schemas/Historico_resultado_registrosB_inner"
+          type: array
+        registrosC:
+          items:
+            $ref: "#/components/schemas/Historico_resultado_registrosC_inner"
+          type: array
+        registrosD:
+          items:
+            $ref: "#/components/schemas/Historico_resultado_registrosD_inner"
+          type: array
+        registrosE:
+          items:
+            $ref: "#/components/schemas/Historico_resultado_registrosE_inner"
+          type: array
+        registrosF:
+          items:
+            $ref: "#/components/schemas/Historico_resultado_registrosF_inner"
+          type: array
+        registrosH:
+          items:
+            $ref: "#/components/schemas/Historico_resultado_registrosH_inner"
+          type: array
+      type: object
+    ConveniosHabilitados_resultado_inner:
+      example:
+        sigla: Sigla - 001
+        codigoFebraban: "0006"
+        segmento: 4.0
+        identificador: "0183390172928"
+      properties:
+        identificador:
+          description: Número identificador do convênio.
+          example: "0183390172928"
+          type: string
+        sigla:
+          description: Sigla do convênio.
+          example: Sigla - 001
+          type: string
+        codigoFebraban:
+          description: Código FEBRABAN.
+          example: "0006"
+          type: string
+        segmento:
+          description: Segmento do convênio.
+          example: 4.0
+          type: number
+      type: object
+    Convenios_resultado_inner:
+      example:
+        codigoFebraban: "0012"
+        codigoModuloDV: 1
+        siglaConvenio: Ceb
+        nomeConvenio: Claro
+        codigoRegraIdentificadorOptante: 1
+        descricaoSegmento: TELECOMUNICAÇÕES
+        codigoConvenio: "00067561"
+        descricaoModuloDV: Módulo 10
+        cadastramentoOptante: Empresa
+        codigoSegmento: 4
+        permiteCaracterEspecial: true
+        descricaoRegraIdentificadorOptante: Somente números
+      properties:
+        siglaConvenio:
+          description: Sigla do convênio
+          example: Ceb
+          maxLength: 20
+          type: string
+        codigoConvenio:
+          description: Código identificador do convênio.
+          example: "00067561"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        nomeConvenio:
+          description: Nome do convênio.
+          example: Claro
+          maxLength: 50
+          type: string
+        permiteCaracterEspecial:
+          description: Sinaliza se o identificador do optante permite caracter especial.
+          example: true
+          type: boolean
+        codigoRegraIdentificadorOptante:
+          description: Código da regra de identificação do Optante
+          example: 1
+          maximum: 10
+          minimum: 1
+          type: integer
+        codigoFebraban:
+          description: Código FEBRABAN do Convênio
+          example: "0012"
+          maxLength: 4
+          minLength: 4
+          pattern: "[0-9]"
+          type: string
+        descricaoRegraIdentificadorOptante:
+          description: Descrição da regra do preenchimento do identificador optante.
+          example: Somente números
+          type: string
+        codigoModuloDV:
+          description: Código do módulo utilizado para cálculo de dígito verificador.
+          example: 1
+          maximum: 20
+          minimum: 1
+          type: integer
+        descricaoModuloDV:
+          description: Descrição do módulo utilizado para cálculo de dígito verificador.
+          example: Módulo 10
+          type: string
+        cadastramentoOptante:
+          description: Indica quem pode cadastrar o optante.
+          enum:
+          - EMPRESA
+          - MISTO
+          - BANCO/PARCEIRO
+          example: Empresa
+          type: string
+        codigoSegmento:
+          description: Código do segmento do convênio.
+          example: 4
+          maximum: 10
+          minimum: 1
+          type: integer
+        descricaoSegmento:
+          description: Descrição do segmento do convênio.
+          example: TELECOMUNICAÇÕES
+          type: string
+      type: object
+    ConciliacaoDebitoAutomatico_concialicao_concialicaoDetalhada_inner:
+      example:
+        descricaoRetorno: Débito não efetuado - Insuficiência de fundos
+        siglaConvenio: EMBRATEL
+        valorTotal: 120.99
+        codigoConvenio: "00067561"
+        codigoRetorno: "01"
+        quantidade: 1
+      properties:
+        codigoConvenio:
+          description: Código do convênio
+          example: "00067561"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        siglaConvenio:
+          description: Sigla do convênio
+          example: EMBRATEL
+          maxLength: 20
+          minLength: 10
+          type: string
+        codigoRetorno:
+          description: Código do retorno do débito automático
+          enum:
+          - "00"
+          - "01"
+          - "02"
+          - "04"
+          - "05"
+          - "10"
+          - "12"
+          - "13"
+          - "14"
+          - "15"
+          - "18"
+          - "19"
+          - "20"
+          - "30"
+          - "31"
+          - "96"
+          - "97"
+          - "98"
+          - "99"
+          - DP
+          - FP
+          - CF
+          - NC
+          - CH
+          - PV
+          - DT
+          - OP
+          - CE
+          - CD
+          - PB
+          example: "01"
+          type: string
+        descricaoRetorno:
+          description: Descrição do retorno de débito automático
+          example: Débito não efetuado - Insuficiência de fundos
+          type: string
+        quantidade:
+          description: Quantidade de registros que foram processados em um determinado
+            convênio.
+          example: 1
+          minimum: 1
+          type: integer
+        valorTotal:
+          description: Valor total dos registros que foram processados em um determinado
+            convênio.
+          example: 120.99
+          format: float
+          type: number
+          x-faker: datatype.float
+      type: object
+    ConciliacaoDebitoAutomatico_concialicao:
+      example:
+        valorTotalAceito: 256.15
+        quantidadeRegistrosAceitos: 20
+        quantidadeRegistrosRecusados: 5
+        concialicaoDetalhada:
+        - descricaoRetorno: Débito não efetuado - Insuficiência de fundos
+          siglaConvenio: EMBRATEL
+          valorTotal: 120.99
+          codigoConvenio: "00067561"
+          codigoRetorno: "01"
+          quantidade: 1
+        - descricaoRetorno: Débito não efetuado - Insuficiência de fundos
+          siglaConvenio: EMBRATEL
+          valorTotal: 120.99
+          codigoConvenio: "00067561"
+          codigoRetorno: "01"
+          quantidade: 1
+        valorTotalRecusado: 50.25
+      properties:
+        quantidadeRegistrosAceitos:
+          description: Quantidade dos registros de débito automático que foram efetivados.
+          example: 20
+          minimum: 1
+          type: integer
+        quantidadeRegistrosRecusados:
+          description: Quantidade dos registros de débito automático que foram recusados.
+          example: 5
+          minimum: 1
+          type: integer
+        valorTotalAceito:
+          description: Valor total dos registros de débito automático que foram efetivados.
+          example: 256.15
+          format: float
+          type: number
+          x-faker: datatype.float
+        valorTotalRecusado:
+          description: Valor total dos registros de débito automático que foram recusados.
+          example: 50.25
+          format: float
+          type: number
+          x-faker: datatype.float
+        concialicaoDetalhada:
+          items:
+            $ref: "#/components/schemas/ConciliacaoDebitoAutomatico_concialicao_concialicaoDetalhada_inner"
+          type: array
+      type: object
+    DebitosMovimentacaoLote_debitos_inner:
+      example:
+        codigoConvenio: "024756"
+        valorDebito: 1171.23
+        numeroIdentificadorRegistro: 123456789
+        codigoRetorno: "00"
+      properties:
+        valorDebito:
+          description: Valor a ser debitado na conta.
+          example: 1171.23
+          format: double
+          type: number
+        codigoRetorno:
+          description: "Código do retorno do débito automático, deve ser obedecido\
+            \ o padrão FEBRABAN."
+          example: "00"
+          type: string
+        numeroIdentificadorRegistro:
+          description: Número identificador do registro.
+          example: 123456789
+          type: number
+        codigoConvenio:
+          description: Código identificador do convênio.
+          example: "024756"
+          type: string
+      required:
+      - codigoConvenio
+      - codigoRetorno
+      - numeroIdentificadorRegistro
+      - valorDebito
+      type: object
+    RetornoDebitoAutomaticoLote_resultado_inner:
+      example:
+        numeroIdentificadorRegistroTipoE: 12346579
+        retorno:
+          codigo: 6042
+          mensagem: Preencha o campo Data de Vencimento.
+          status: 201
+        retornoDebito: "30"
+        codigoConvenio: "00067561"
+        valorDebito: 123.4
+        autenticacao: 007F97FE-CF15-49CC-832A-FB51EA64E32D
+      properties:
+        retorno:
+          $ref: "#/components/schemas/StatusRetorno"
+        codigoConvenio:
+          description: Código identificador do convênio.
+          example: "00067561"
+          maxLength: 10
+          minLength: 7
+          pattern: "[0-9]"
+          type: string
+        valorDebito:
+          description: Valor do débito.
+          example: 123.4
+          format: float
+          type: number
+          x-faker: datatype.float
+        numeroIdentificadorRegistroTipoE:
+          description: Número identificador do registro tipo E (padrão FEBRABAN).
+          example: 12346579
+          type: integer
+        retornoDebito:
+          description: Retorno do débito automático que foi enviado na requisição
+            de cadastro de retorno de débito automático
+          enum:
+          - "00"
+          - "01"
+          - "02"
+          - "04"
+          - "05"
+          - "10"
+          - "12"
+          - "13"
+          - "14"
+          - "15"
+          - "18"
+          - "30"
+          - "31"
+          - "96"
+          - "97"
+          - "98"
+          - "99"
+          - DP
+          - FP
+          - CF
+          - NC
+          - CH
+          - PV
+          - DT
+          - OP
+          - CE
+          - CD
+          - PB
+          example: "30"
+          type: string
+        autenticacao:
+          description: Chave de autenticação de resposta da transação.
+          example: 007F97FE-CF15-49CC-832A-FB51EA64E32D
+          type: string
+      type: object
+    RetornoCodigoBarras_resultado_inner:
+      example:
+        situacao: 0
+        dataPagamento: 2000-01-23
+        transacao: 1234569789
+        valorDesconto: 11.23
+        identificadorFgts: ACHGY123100JJ1
+        siglaConvenio: siglaConvenio
+        convenio: convenio
+        valorPago: 1171.23
+        recebimentoViaCaixa: false
+        valorJuros: 1.71
+        autenticacao: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+        anoExercicio: 2019.0
+        valorDocumento: 1171.23
+        nsu: 183390172928
+        valorMulta: 17.23
+      properties:
+        valorPago:
+          description: Valor pago para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        nsu:
+          description: Código que identifica a transação de forma única.
+          example: 183390172928
+          type: number
+        dataPagamento:
+          description: "Data de pagamento do boleto. Formato RFC 3339, seção 5.6."
+          format: date
+          type: string
+        valorDocumento:
+          description: Valor do documento para arrecadação.
+          example: 1171.23
+          format: double
+          type: number
+        valorDesconto:
+          description: Valor do desconto para arrecadação.
+          example: 11.23
+          format: double
+          type: number
+        valorJuros:
+          description: Valor do juros para arrecadação.
+          example: 1.71
+          format: double
+          type: number
+        valorMulta:
+          description: Valor da multa para arrecadação.
+          example: 17.23
+          format: double
+          type: number
+        identificadorFgts:
+          description: Informa o identificador do convênico FGTS.
+          example: ACHGY123100JJ1
+          type: string
+        anoExercicio:
+          description: Informa o ano exercício do pagamento.
+          example: 2019.0
+          type: number
+        recebimentoViaCaixa:
+          description: Indica se o pagamento foi realizado via caixa.
+          example: false
+          type: boolean
+        autenticacao:
+          description: Informa o número de autenticação digital da arrecadação.
+          example: 71205202-2DBB-46C7-BA31-0DFB8DC64EBE
+          type: string
+        situacao:
+          description: Situação da arrecadação
+          format: int32
+          type: integer
+        convenio:
+          description: Identificador do convênio
+          type: string
+        siglaConvenio:
+          description: Sigla do convênio
+          type: string
+        transacao:
+          description: Número da transação utilizada no pagamento do código de barras.
+          example: 1234569789
+          type: number
+      type: object
+  securitySchemes:
+    oauth2:
+      flows:
+        clientCredentials:
+          scopes:
+            cco_transferencias: Transferências
+            cco_consulta: Consulta
+            openid: OpenID
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+x-sicoob-category: FINANCEIRO
+x-original-swagger-version: "2.0"
+

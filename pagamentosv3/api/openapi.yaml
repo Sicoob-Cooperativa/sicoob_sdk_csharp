@@ -1,0 +1,1605 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: GrupoGesin1CobrancaBancaria@sicoob.com.br
+    name: Equipe COBRANÇA BANCÁRIA
+    url: http://www.sicoob.com.br
+  description: |-
+    <pre>[ Base URL: https://api.sicoob.com.br/pagamentos/v3 ]</pre>
+    Esta API disponibiliza funcionalidades para realização de pagamentos de boletos de Cobrança Bancária.
+  title: Cobrança Bancária Pagamentos
+  version: 3.0.2.0
+  x-ibm-name: cobranca-bancaria-pagamentos
+  x-sicoob-category: FINANCEIRA
+servers:
+- url: https://api.sicoob.com.br/pagamentos/v3
+security:
+- oauth2:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+tags:
+- description: Pagamento de Boletos de Cobrança
+  name: Pagamento
+- description: Movimentações feitas no sistema DDA
+  name: Movimentações DDA
+paths:
+  /boletos:
+    get:
+      description: Serviço para consultar boletos DDA de uma conta corrente.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número da Conta Habilitada para Pagamentos via API.
+        in: query
+        name: numeroConta
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: |
+          Data inicial do filtro por data.
+          Formato: yyyy-MM-dd
+          Exemplo: 2022-07-30
+        in: query
+        name: dataInicial
+        required: true
+        schema:
+          format: date
+          type: string
+      - description: |
+          Data final do filtro por data.
+          Formato: yyyy-MM-dd
+          Exemplo: 2022-07-30
+        in: query
+        name: dataFinal
+        required: true
+        schema:
+          format: date
+          type: string
+      - description: |-
+          Código da Situação do Boleto.
+          - 1 - Em aberto
+          - 2 - Agendado
+          - 3 - Liquidado
+          - 4 - Baixado
+        in: query
+        name: situacao
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: "Opções 1, 2 ou 3 para escolher a data que será filtrada. \n\
+          - 1 - Data de vencimento\n- 2 - Data de emissão\n- 3 - Data de inclusão"
+        in: query
+        name: tipoData
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/BoletoDDA"
+                type: array
+          description: ""
+        "204":
+          content: {}
+          description: Requisição processada com sucesso e não há conteúdo a ser retornado.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consultar Boletos DDA
+      tags:
+      - Movimentações DDA
+  /boletos/{codigoBarras}:
+    get:
+      description: Serviço para consultar boleto.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número de código de barras com 44 posições ou linha digitável
+          com 47 posições do boleto
+        in: path
+        name: codigoBarras
+        required: true
+        schema:
+          type: string
+      - description: Número da Conta Habilitada para Pagamentos via API.
+        in: query
+        name: numeroConta
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: |
+          Data do pagamento do boleto. Se não for informada o pagamento será para data atual
+          Formato: yyyy-MM-dd
+          Exemplo: 2022-07-30
+        in: query
+        name: dataPagamento
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos__codigoBarras__get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: Requisição processada com sucesso e não há conteúdo a ser retornado.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consultar Boleto
+      tags:
+      - Pagamento
+  /boletos/pagamentos/{codigoBarras}:
+    post:
+      description: Serviço para efetuar o pagamento ou agendamento de boleto.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: "Este parâmetro é usado para garantir a idempotência das requisiç\
+          ões, ajudando a evitar operações duplicadas. \nPara cada requisição que\
+          \ deseja ser tratada de forma idempotente, envie um valor exclusivo. \n\
+          Esse valor deve ser uma string única que segue um padrão específico: começ\
+          a com um número de cooperativa (com até 4 dígitos), seguido do número da\
+          \ conta corrente (com até 14 dígitos), e termina com um UUID (Universally\
+          \ Unique Identifier). \nEx:4342-8901234-550e8400-e29b-41d4-a716-446655440000.\
+          \ \n[Especificação do UUID](https://datatracker.ietf.org/doc/html/rfc4122)\n"
+        in: header
+        name: x-idempotency-key
+        required: true
+        schema:
+          type: string
+      - description: Número de código de barras do boleto com 44 posições
+        in: path
+        name: codigoBarras
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BoletoPagamento"
+        description: Dados do boleto a ser pago ou agendado
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_pagamentos__codigoBarras__post_200_response"
+          description: ""
+        "202":
+          content: {}
+          description: Pendência de assinatura processada com sucesso e não há conteúdo
+            a ser retornado.
+        "204":
+          content: {}
+          description: Requisição processada com sucesso e não há conteúdo a ser retornado.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Pagar Boleto
+      tags:
+      - Pagamento
+      x-codegen-request-body-name: boletoPagamento
+  /boletos/pagamentos/{idPagamento}/comprovantes:
+    get:
+      description: Serviço para consultar um comprovante de um pagamento efetuado.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número de identificação do agendamento no SISBR.
+        in: path
+        name: idPagamento
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: Número da Conta Habilitada para Pagamentos via API.
+        in: query
+        name: numeroConta
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_pagamentos__idPagamento__comprovantes_get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: Requisição processada com sucesso e não há conteúdo a ser retornado.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Consultar comprovante de pagamento
+      tags:
+      - Pagamento
+  /boletos/pagamentos/agendamentos/{idPagamento}:
+    delete:
+      description: Serviço para cancelar um agendamento de pagamento.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Número de identificação do agendamento no SISBR.
+        in: path
+        name: idPagamento
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Cancelamento"
+        description: Dados da Conta Habilitada para Pagamentos via API.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Requisição processada com sucesso e não há conteúdo a ser retornado.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Cancelar um agendamento de pagamento
+      tags:
+      - Pagamento
+      x-codegen-request-body-name: cancelamento
+  /boletos/pagamentos/{idempotency}/idempotency/comprovantes:
+    get:
+      description: Serviço para consultar um comprovante de um pagamento efetuado
+        através do Idempotency.
+      parameters:
+      - description: ClientId utilizado para gerar o token.
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: "Este parâmetro é usado para garantir a idempotência das requisiç\
+          ões, ajudando a evitar operações duplicadas."
+        in: path
+        name: idempotency
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_pagamentos__codigoBarras__post_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: Requisição processada com sucesso e não há conteúdo a ser retornado.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Consultar comprovante de pagamento através do Idempotency.
+      tags:
+      - Pagamento
+components:
+  schemas:
+    BoletoPagamento:
+      example:
+        identificadorConsulta: hash
+        date: 2021-04-24
+        valorBoleto: 152.3
+        descricaoObservacao: Boleto da Escola
+        debtorAccount:
+          number: 1234569
+          accountType: 0
+          personType: 0
+          issuer: 1234.0
+        valorDescontoAbatimento: 0.0
+        amount: 152.3
+        valorMultaMora: 0.0
+        numeroCpfCnpjPortador: "12345678900"
+        aceitaValorDivergente: true
+        nomePortador: Rosa Maria da Silva
+      properties:
+        identificadorConsulta:
+          description: "Identificador da consulta do boleto, deverá ser enviado no\
+            \ serviço de pagamento/agendamento."
+          example: hash
+          type: string
+        valorBoleto:
+          description: Valor nominal do Boleto.
+          example: 152.3
+          format: double
+          type: number
+        valorDescontoAbatimento:
+          description: Valor de desconto/abatimento do pagamento do Boleto.
+          example: 0.0
+          format: double
+          type: number
+        valorMultaMora:
+          description: Valor de mora/multa do pagamento do Boleto.
+          example: 0.0
+          format: double
+          type: number
+        descricaoObservacao:
+          description: Descrição da observação informada no pagamento.
+          example: Boleto da Escola
+          type: string
+        aceitaValorDivergente:
+          description: "Entre o agendamento e o pagamento, o boleto poderá sofrer\
+            \ alterações pelo benificiário. Autoriza o pagamento com o valor divergente\
+            \ do agendado?"
+          example: true
+          type: boolean
+        numeroCpfCnpjPortador:
+          description: "Número do CPF/CNPJ do portador, responsável pelo pagamento."
+          example: "12345678900"
+          type: string
+        nomePortador:
+          description: "Nome do portador, responsável pelo pagamento."
+          example: Rosa Maria da Silva
+          type: string
+        amount:
+          description: Valor de pagamento do Boleto.
+          example: 152.3
+          format: double
+          type: number
+        date:
+          description: |
+            Data do pagamento do boleto. Se não for informada o pagamento será para data atual.
+            Formato: yyyy-MM-dd
+          example: 2021-04-24
+          format: date
+          type: string
+        debtorAccount:
+          $ref: "#/components/schemas/DebtorAccount"
+      required:
+      - aceitaValorDivergente
+      - amount
+      - date
+      - debtorAccount
+      - identificadorConsulta
+      - nomePortador
+      - numeroCpfCnpjPortador
+      - valorBoleto
+      - valorDescontoAbatimento
+      - valorMultaMora
+      type: object
+    DebtorAccount:
+      description: Conta do associado
+      example:
+        number: 1234569
+        accountType: 0
+        personType: 0
+        issuer: 1234.0
+      properties:
+        issuer:
+          description: Número da cooperativa da conta
+          example: 1234.0
+          type: number
+        number:
+          description: Número da Conta onde será realizado o débito para o pagamento
+            (Deve ser a mesma habilidata para pagamentos via API).
+          example: 1234569
+          format: int64
+          type: integer
+        accountType:
+          description: "Tipo da conta. Opções: 0 - Conta Corrente"
+          example: 0
+          format: int32
+          type: integer
+        personType:
+          description: "Tipo pessoa. Opções: 0 - Pessoa Física, 1 - Pessoa Jurídica"
+          example: 0
+          format: int32
+          type: integer
+      required:
+      - accountType
+      - issuer
+      - number
+      - personType
+      type: object
+    BoletoConsulta:
+      example:
+        valorMultaMora: 0.0
+        bloquearPagamento: true
+        numeroInstituicaoEmissora: 756.0
+        codigoEspecieDocumento: 25.0
+        valorBoleto: 152.3
+        descricaoInstrucaoDesconto1: Conceder desconto de 10% até 05/04/2021
+        nomeRazaoSocialBeneficiario: José da Silva
+        consultaEmContingencia: false
+        descricaoInstrucaoDesconto3: Conceder desconto de 2% até 05/04/2021
+        descricaoInstrucaoDesconto2: Conceder desconto de 5% até 10/04/2021
+        numeroDocumento: "123456"
+        codigoBarras: codigoBarras
+        permiteAlterarValor: true
+        nomeInstituicaoEmissora: Banco Cooperativo do Brasil
+        nomeFantasiaBeneficiario: Estilo Tech
+        nomeFantasiaBeneficiarioFinal: Quitanda do João
+        dataPagamento: 2021-04-24
+        numeroCpfCnpjBeneficiario: "12345678900"
+        tipoPessoaPagador: F
+        dataVencimentoBoleto: 2021-04-20
+        numeroLinhaDigitavel: numeroLinhaDigitavel
+        numeroCpfCnpjPagador: "12345678900"
+        dataLimitePagamentoBoleto: 2021-04-25
+        nomeRazaoSocialPagador: Maria José
+        identificadorConsulta: hash
+        numeroCpfCnpjBeneficiarioFinal: "12345678900"
+        tipoPessoaBeneficiario: F
+        nomeRazaoSocialBeneficiarioFinal: João das Flores
+        descricaoInstrucaoValorMinMax: "O Valor Mínimo é R$ 0,01. O Valor Máximo é\
+          \ R$ 99.999.999,99"
+        nossoNumero: "123789"
+        mensagemBloqueioPagamento: Pagamento bloqueado
+        tipoPessoaBeneficiarioFinal: "2"
+        valorAbatimentoDesconto: 0.0
+        codigoSituacaoBoletoPagamento: "12"
+        nomeFantasiaPagador: Rosa Maria da Silva
+        valorPagamento: 152.3
+      properties:
+        numeroInstituicaoEmissora:
+          description: Número da instituição financeira emissora do boleto.
+          example: 756.0
+          type: number
+        nomeInstituicaoEmissora:
+          description: Nome da instituição financeira emissora do boleto.
+          example: Banco Cooperativo do Brasil
+          type: string
+        tipoPessoaBeneficiario:
+          description: Tipo de pessoa beneficiário. F-Pessoa Física e J-Pessoa Jurídica.
+          example: F
+          type: string
+        numeroCpfCnpjBeneficiario:
+          description: Número do CPF/CNPJ do beneficiário.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialBeneficiario:
+          description: Nome Razão Social do beneficiário.
+          example: José da Silva
+          type: string
+        nomeFantasiaBeneficiario:
+          description: Nome Fantasia do beneficiário.
+          example: Estilo Tech
+          type: string
+        tipoPessoaBeneficiarioFinal:
+          description: "Tipo de pessoa do beneficiário final (antigo sacador avalista).\
+            \ 0-Isento / Não Informado, 1-CPF, 2-CNPJ, 3-PIS/PASEP, 9-Outros, F-Pessoa\
+            \ Física e  J-Pessoa Jurídica."
+          example: "2"
+          type: string
+        numeroCpfCnpjBeneficiarioFinal:
+          description: Número do CPF/CNPJ do beneficiário final (antigo sacador avalista).
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialBeneficiarioFinal:
+          description: Nome/Razão Social do beneficiário final (antigo sacador avalista).
+          example: João das Flores
+          type: string
+        nomeFantasiaBeneficiarioFinal:
+          description: Nome Fantasia do beneficiário final (antigo sacador avalista).
+          example: Quitanda do João
+          type: string
+        tipoPessoaPagador:
+          description: Tipo de pessoa do pagador. F-Pessoa Física e J-Pessoa Jurídica.
+          example: F
+          type: string
+        numeroCpfCnpjPagador:
+          description: Número do CPF/CNPJ do pagador.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialPagador:
+          description: Razão Social do Pagador.
+          example: Maria José
+          type: string
+        nomeFantasiaPagador:
+          description: Nome Fantasia do pagador.
+          example: Rosa Maria da Silva
+          type: string
+        codigoBarras:
+          description: Número de código de barras do boleto com 44 posições.
+          type: string
+        numeroLinhaDigitavel:
+          description: Número da linha digitável do boleto com 47 posições.
+          type: string
+        dataVencimentoBoleto:
+          description: |
+            Data de vencimento do Boleto.
+            Formato: yyyy-MM-dd
+          example: 2021-04-20
+          format: date
+          type: string
+        dataLimitePagamentoBoleto:
+          description: |
+            Data limite para pagamento do Boleto.
+            Formato: yyyy-MM-dd
+          example: 2021-04-25
+          format: date
+          type: string
+        valorBoleto:
+          description: Valor nominal do Boleto.
+          example: 152.3
+          format: double
+          type: number
+        valorAbatimentoDesconto:
+          description: Valor de abatimento e de desconto do boleto.
+          example: 0.0
+          format: double
+          type: number
+        valorMultaMora:
+          description: Valor da multa e de juros/mora.
+          example: 0.0
+          format: double
+          type: number
+        valorPagamento:
+          description: Valor do pagamento.
+          example: 152.3
+          format: double
+          type: number
+        dataPagamento:
+          description: |
+            Data do pagamento.
+            Exemplo: 2022-07-30
+          example: 2021-04-24
+          format: date
+          type: string
+        permiteAlterarValor:
+          description: Identificador que determina se o usuário permite efetivar o
+            pagamento caso o valor do boleto seja alterado pelo beneficiário.
+          example: true
+          type: boolean
+        consultaEmContingencia:
+          description: "Indica se a consulta está em modo de contingência, operando\
+            \ sem comunicação com a Núclea."
+          example: false
+          type: boolean
+        codigoEspecieDocumento:
+          description: "Código espécie do documento (\t1  =  CH Cheque 2  =  DM Duplicata\
+            \ Mercantil 3  =  DMI Duplicata Mercantil p/ Indicação 4  =  DS Duplicata\
+            \ de Serviço 5  =  DSI Duplicata de Serviço p/ Indicação 6  =  DR Duplicata\
+            \ Rural 7  =  LC Letra de Câmbio 8  =  NCC Nota de Crédito Comercial 9\
+            \  =  NCE Nota de Crédito a Exportação 10  =  NCI Nota de Crédito Industrial\
+            \ 11  =  NCR Nota de Crédito Rural 12  =  NP Nota Promissória 13  =  NPR\
+            \ Nota Promissória Rural 14  =  TM Triplicata Mercantil 15  =  TS Triplicata\
+            \ de Serviço 16  =  NS Nota de Seguro 17  =  RC Recibo 18  =  FAT Fatura\
+            \ 19  =  ND Nota de Débito 20  =  AP Apólice de Seguro 21  =  ME Mensalidade\
+            \ Escolar 22  =  PC Parcela de Consórcio 23  =  NF Nota Fiscal 24  = \
+            \ DD Documento de Dívida 25  =  Cédula de Produto RuralC015 26  =  Warrant\
+            \ 27  =  Dívida Ativa de Estado 28  =  Dívida Ativa de Município 29  =\
+            \  Dívida Ativa da União 30  =  Encargos condominiais 31  =  CC Cartã\
+            o de Crédito 32  =  BDP –Boleto de Proposta 99  =  Outros)"
+          example: 25.0
+          type: number
+        codigoSituacaoBoletoPagamento:
+          description: "Código da situação de pagamento do boleto. (01-Boleto já baixado,\
+            \ 02-Boleto bloqueado para pagamento, 03-Boleto encontrado e cliente beneficiá\
+            rio inapto na instituição emissora do título, 04-Boleto encontrado na\
+            \ base e cliente Beneficiário sem cadastro, 05-Boleto encontrado e cliente\
+            \ beneficiário em análise na instituição emissora do título, 06-Boleto\
+            \ excedeu o limite de pagamentos parciais, 07-Baixa operacional integral\
+            \ já registrada, 08-Baixa operacional já registrada para título que nã\
+            o permite pagamento parcial, 09-Boleto excedeu o valor de saldo para pagamento\
+            \ parcial para o tipo de modelo de cálculo 04, 10-Boleto encontrado e\
+            \ cliente beneficiário inapto em instituição diferente da emissora, 11-Boleto\
+            \ encontrado e cliente beneficiário em análise em instituição diferente\
+            \ da emissora e 12-Boleto encontrado e cliente beneficiário apto)."
+          example: "12"
+          type: string
+        nossoNumero:
+          description: Número identificador do boleto.
+          example: "123789"
+          type: string
+        numeroDocumento:
+          description: Número identificador do boleto no sistema do beneficiário.
+          example: "123456"
+          type: string
+        identificadorConsulta:
+          description: "Identificador da consulta do boleto, deverá ser enviado no\
+            \ serviço de pagamento (/pagamentos/{codigoBarras}/pagar)."
+          example: hash
+          type: string
+        descricaoInstrucaoDesconto1:
+          description: Instruções para desconto 1.
+          example: Conceder desconto de 10% até 05/04/2021
+          type: string
+        descricaoInstrucaoDesconto2:
+          description: Instruções para desconto 2.
+          example: Conceder desconto de 5% até 10/04/2021
+          type: string
+        descricaoInstrucaoDesconto3:
+          description: Instruções para desconto 3.
+          example: Conceder desconto de 2% até 05/04/2021
+          type: string
+        descricaoInstrucaoValorMinMax:
+          description: Instruções para valores mínimo e máximo
+          example: "O Valor Mínimo é R$ 0,01. O Valor Máximo é R$ 99.999.999,99"
+          type: string
+        bloquearPagamento:
+          description: Identificador de pagamento não permitido. Se verdadeiro não
+            submeter o pagamento do boleto.
+          example: true
+          type: boolean
+        mensagemBloqueioPagamento:
+          description: Mensagem referente ao motivo pelo qual deve-se bloquer o pagamento.
+          example: Pagamento bloqueado
+          type: string
+      required:
+      - bloquearPagamento
+      - codigoBarras
+      - consultaEmContingencia
+      - dataPagamento
+      - dataVencimentoBoleto
+      - descricaoInstrucaoValorMinMax
+      - nomeInstituicaoEmissora
+      - numeroInstituicaoEmissora
+      - numeroLinhaDigitavel
+      - permiteAlterarValor
+      - valorAbatimentoDesconto
+      - valorBoleto
+      - valorMultaMora
+      - valorPagamento
+      type: object
+    ComprovantePagamento:
+      example:
+        descricaoOuvidoria: "OUVIDORIA AGIBANK: 08007250996"
+        idPagamento: 1983450
+        valorMultaMora: 60.36
+        numeroInstituicaoEmissora: 756.0
+        valorBoleto: 100.36
+        descricaoObservacao: Boleto da Escola
+        descricaoDetalheSituacao: "Saldo no momento da rejeição em 10/03/2021 às 22:01:10:\
+          \ R$ 343,05."
+        numeroConta: 1234569
+        nomeRazaoSocialBeneficiario: José da Silva
+        numeroDocumento: "123456"
+        nomeInstituicaoEmissora: Banco Cooperativo do Brasil
+        nomeFantasiaBeneficiario: Estilo Tech
+        nomeFantasiaBeneficiarioFinal: Quinatda dojão
+        nomeProprietarioContaCorrente: José da Silva
+        nomeAgencia: Agência Sede
+        dataPagamento: 2019-10-20
+        numeroAutenticacaoPagamento: 89C3E9FD-1A37-40BE-A85B-69AF118D336A
+        descricaoTituloComprovante: PAGAMENTO DE BOLETO
+        numeroCpfCnpjBeneficiario: "12345678900"
+        aceitaValorDivergente: true
+        numeroLinhaDigitavel: numeroLinhaDigitavel
+        numeroCpfCnpjPagador: "12345678900"
+        nomeRazaoSocialPagador: Maria José
+        situacaoPagamento: Efetivado
+        numeroCpfCnpjBeneficiarioFinal: "12345678900"
+        nomeRazaoSocialBeneficiarioFinal: João das Flores
+        dataVencimento: 2018-09-20
+        dataHoraCadastro: 2019-10-20T12:30:22Z
+        nossoNumero: "756"
+        valorAbatimentoDesconto: 0.0
+        numeroAgencia: 0001-9
+        nomeFantasiaPagador: Rosa Maria da Silva
+        valorPagamento: 255.63
+      properties:
+        numeroAgencia:
+          description: Número da agência onde o pagamento foi realizado.
+          example: 0001-9
+          type: string
+        nomeAgencia:
+          description: Nome da agência onde o pagamento foi realizado.
+          example: Agência Sede
+          type: string
+        numeroConta:
+          description: Número da Conta onde será realizado o débito para o pagamento.
+          example: 1234569
+          format: int64
+          type: integer
+        nomeProprietarioContaCorrente:
+          description: Nome do propietário da conta onde o pagamento foi ou será debitado.
+          example: José da Silva
+          type: string
+        numeroLinhaDigitavel:
+          description: Número da linha digitável do boleto formatado com 47 posições
+            e 54 caracteres.
+          type: string
+        numeroInstituicaoEmissora:
+          description: Número da instituição financeira emissora do boleto.
+          example: 756.0
+          type: number
+        nomeInstituicaoEmissora:
+          description: Nome da instituição financeira emissora do boleto.
+          example: Banco Cooperativo do Brasil
+          type: string
+        numeroCpfCnpjBeneficiario:
+          description: Número do CPF/CNPJ do beneficiário do boleto.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialBeneficiario:
+          description: Nome Razão Social do beneficiário do boleto.
+          example: José da Silva
+          type: string
+        nomeFantasiaBeneficiario:
+          description: Nome Fantasia do beneficiário do boleto.
+          example: Estilo Tech
+          type: string
+        numeroCpfCnpjBeneficiarioFinal:
+          description: Número do CPF/CNPJ do beneficiário final (antigo sacador avalista)
+            do boleto.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialBeneficiarioFinal:
+          description: Nome Razão Social do beneficiário final (antigo sacador avalista)
+            do boleto.
+          example: João das Flores
+          type: string
+        nomeFantasiaBeneficiarioFinal:
+          description: Nome Fantasia do beneficiário final (antigo sacador avalista)
+            do boleto.
+          example: Quinatda dojão
+          type: string
+        numeroCpfCnpjPagador:
+          description: Número do CPF/CNPJ do pagador do boleto.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialPagador:
+          description: Razão Social do Pagador do boleto
+          example: Maria José
+          type: string
+        nomeFantasiaPagador:
+          description: Nome Fantasia do pagador do boleto.
+          example: Rosa Maria da Silva
+          type: string
+        dataVencimento:
+          description: |
+            Data de vencimento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorBoleto:
+          description: Valor nominal do boleto.
+          example: 100.36
+          format: double
+          type: number
+        valorAbatimentoDesconto:
+          description: Valor de abatimento e de desconto do boleto
+          example: 0.0
+          format: double
+          type: number
+        valorMultaMora:
+          description: Valor da multa e de juros/mora do boleto.
+          example: 60.36
+          format: double
+          type: number
+        valorPagamento:
+          description: Valor do pagamento do boleto.
+          example: 255.63
+          format: double
+          type: number
+        dataPagamento:
+          description: |
+            Data da efetivação do pagamento.
+            Formato: yyyy-MM-dd
+          example: 2019-10-20
+          format: date
+          type: string
+        situacaoPagamento:
+          description: "Situação do pagamento do boleto. \n- Rejeitado\n- Agendado\n\
+            - Efetivado\n"
+          example: Efetivado
+          type: string
+        descricaoDetalheSituacao:
+          description: Descrição detalhada da situação do pagamento.
+          example: "Saldo no momento da rejeição em 10/03/2021 às 22:01:10: R$ 343,05."
+          type: string
+        dataHoraCadastro:
+          description: |
+            Data e hora de cadastro do agendamento/pagamento.
+            Formato: yyyy-MM-ddTHH:mm:ss.SSSZ (Conforme especificação RFC-3339 com uso de timezone UTC)
+          example: 2019-10-20T12:30:22Z
+          format: date-time
+          type: string
+        aceitaValorDivergente:
+          description: "Entre o agendamento e o pagamento, o boleto poderá sofrer\
+            \ alterações pelo benificiário. Autoriza o pagamento com o valor divergente\
+            \ do agendado?"
+          example: true
+          type: boolean
+        nossoNumero:
+          description: Número identificador do boleto.
+          example: "756"
+          type: string
+        numeroDocumento:
+          description: Número identificador do boleto no sistema do beneficiário.
+          example: "123456"
+          type: string
+        descricaoObservacao:
+          description: Descrição da observação informada no pagamento.
+          example: Boleto da Escola
+          type: string
+        descricaoOuvidoria:
+          description: Descrição das informações da ouvidoria do Sicoob.
+          example: "OUVIDORIA AGIBANK: 08007250996"
+          type: string
+        descricaoTituloComprovante:
+          description: "Descreve o boleto que deve ser utilizado no comprovante. \n\
+            - AGENDAMENTO DE BOLETO\n- PAGAMENTO DE BOLETO\n- PAGAMENTO REJEITADO\n\
+            - PAGAMENTO CANCELADO\n- AGENDAMENTO DE BOLETO VLB\n- PAGAMENTO DE BOLETO\
+            \ VLB\n- PAGAMENTO VLB REJEITADO\n- PAGAMENTO VLB CANCELADO\n"
+          example: PAGAMENTO DE BOLETO
+          type: string
+        idPagamento:
+          description: Número de identificação do agendamento no SISBR.
+          example: 1983450
+          format: int64
+          type: integer
+        numeroAutenticacaoPagamento:
+          description: Identificador único de autenticação do pagamento no SISBR.
+          example: 89C3E9FD-1A37-40BE-A85B-69AF118D336A
+          type: string
+      required:
+      - aceitaValorDivergente
+      - dataHoraCadastro
+      - dataPagamento
+      - dataVencimento
+      - descricaoDetalheSituacao
+      - descricaoOuvidoria
+      - descricaoTituloComprovante
+      - idPagamento
+      - nomeAgencia
+      - nomeInstituicaoEmissora
+      - numeroInstituicaoEmissora
+      - numeroLinhaDigitavel
+      - situacaoPagamento
+      - valorAbatimentoDesconto
+      - valorBoleto
+      - valorMultaMora
+      - valorPagamento
+      type: object
+    Comprovante:
+      example:
+        descricaoOuvidoria: "OUVIDORIA AGIBANK: 08007250996"
+        idPagamento: 1983450
+        valorMultaMora: 60.36
+        numeroInstituicaoEmissora: 756.0
+        valorBoleto: 100.36
+        descricaoObservacao: Boleto da Escola
+        descricaoDetalheSituacao: "Saldo no momento da rejeição em 10/03/2021 às 22:01:10:\
+          \ R$ 343,05."
+        numeroConta: 1234569
+        nomeRazaoSocialBeneficiario: José da Silva
+        numeroDocumento: "123456"
+        nomeInstituicaoEmissora: Banco Cooperativo do Brasil
+        nomeFantasiaBeneficiario: Estilo Tech
+        nomeFantasiaBeneficiarioFinal: Quinatda dojão
+        nomeProprietarioContaCorrente: José da Silva
+        nomeAgencia: Agência Sede
+        dataPagamento: 2019-10-20
+        numeroAutenticacaoPagamento: 89C3E9FD-1A37-40BE-A85B-69AF118D336A
+        descricaoTituloComprovante: PAGAMENTO DE BOLETO
+        numeroCpfCnpjBeneficiario: "12345678900"
+        aceitaValorDivergente: true
+        numeroLinhaDigitavel: numeroLinhaDigitavel
+        numeroCpfCnpjPagador: "12345678900"
+        nomeRazaoSocialPagador: Maria José
+        situacaoPagamento: Efetivado
+        numeroCpfCnpjBeneficiarioFinal: "12345678900"
+        nomeRazaoSocialBeneficiarioFinal: João das Flores
+        dataVencimento: 2018-09-20
+        dataHoraCadastro: 2019-10-20T12:30:22Z
+        nossoNumero: "756"
+        valorAbatimentoDesconto: 0.0
+        numeroAgencia: 0001-9
+        nomeFantasiaPagador: Rosa Maria da Silva
+        valorPagamento: 255.63
+      properties:
+        numeroAgencia:
+          description: Número da agência onde o pagamento foi realizado.
+          example: 0001-9
+          type: string
+        nomeAgencia:
+          description: Nome da agência onde o pagamento foi realizado.
+          example: Agência Sede
+          type: string
+        numeroConta:
+          description: Número da Conta onde será realizado o débito para o pagamento.
+          example: 1234569
+          format: int64
+          type: integer
+        nomeProprietarioContaCorrente:
+          description: Nome do propietário da conta onde o pagamento foi ou será debitado.
+          example: José da Silva
+          type: string
+        numeroLinhaDigitavel:
+          description: Número da linha digitável do boleto formatado com 47 posições
+            e 54 caracteres.
+          type: string
+        numeroInstituicaoEmissora:
+          description: Número da instituição financeira emissora do boleto.
+          example: 756.0
+          type: number
+        nomeInstituicaoEmissora:
+          description: Nome da instituição financeira emissora do boleto.
+          example: Banco Cooperativo do Brasil
+          type: string
+        numeroCpfCnpjBeneficiario:
+          description: Número do CPF/CNPJ do beneficiário do boleto.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialBeneficiario:
+          description: Nome Razão Social do beneficiário do boleto.
+          example: José da Silva
+          type: string
+        nomeFantasiaBeneficiario:
+          description: Nome Fantasia do beneficiário do boleto.
+          example: Estilo Tech
+          type: string
+        numeroCpfCnpjBeneficiarioFinal:
+          description: Número do CPF/CNPJ do beneficiário final (antigo sacador avalista)
+            do boleto.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialBeneficiarioFinal:
+          description: Nome Razão Social do beneficiário final (antigo sacador avalista)
+            do boleto.
+          example: João das Flores
+          type: string
+        nomeFantasiaBeneficiarioFinal:
+          description: Nome Fantasia do beneficiário final (antigo sacador avalista)
+            do boleto.
+          example: Quinatda dojão
+          type: string
+        numeroCpfCnpjPagador:
+          description: Número do CPF/CNPJ do pagador do boleto.
+          example: "12345678900"
+          type: string
+        nomeRazaoSocialPagador:
+          description: Razão Social do Pagador do boleto
+          example: Maria José
+          type: string
+        nomeFantasiaPagador:
+          description: Nome Fantasia do pagador do boleto.
+          example: Rosa Maria da Silva
+          type: string
+        dataVencimento:
+          description: |
+            Data de vencimento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorBoleto:
+          description: Valor nominal do boleto.
+          example: 100.36
+          format: double
+          type: number
+        valorAbatimentoDesconto:
+          description: Valor de abatimento e de desconto do boleto
+          example: 0.0
+          format: double
+          type: number
+        valorMultaMora:
+          description: Valor da multa e de juros/mora do boleto.
+          example: 60.36
+          format: double
+          type: number
+        valorPagamento:
+          description: Valor do pagamento do boleto.
+          example: 255.63
+          format: double
+          type: number
+        dataPagamento:
+          description: |
+            Data da efetivação do pagamento.
+            Formato: yyyy-MM-dd
+          example: 2019-10-20
+          format: date
+          type: string
+        situacaoPagamento:
+          description: "Situação do pagamento do boleto. \n- Rejeitado\n- Agendado\n\
+            - Efetivado\n- Cancelado\n"
+          example: Efetivado
+          type: string
+        descricaoDetalheSituacao:
+          description: Descrição detalhada da situação do pagamento.
+          example: "Saldo no momento da rejeição em 10/03/2021 às 22:01:10: R$ 343,05."
+          type: string
+        dataHoraCadastro:
+          description: |
+            Data e hora de cadastro do agendamento/pagamento.
+            Formato: yyyy-MM-ddTHH:mm:ss.SSSZ (Conforme especificação RFC-3339 com uso de timezone UTC)
+          example: 2019-10-20T12:30:22Z
+          format: date-time
+          type: string
+        aceitaValorDivergente:
+          description: "Entre o agendamento e o pagamento, o boleto poderá sofrer\
+            \ alterações pelo benificiário. Autoriza o pagamento com o valor divergente\
+            \ do agendado?"
+          example: true
+          type: boolean
+        nossoNumero:
+          description: Número identificador do boleto.
+          example: "756"
+          type: string
+        numeroDocumento:
+          description: Número identificador do boleto no sistema do beneficiário.
+          example: "123456"
+          type: string
+        descricaoObservacao:
+          description: Descrição da observação informada no pagamento.
+          example: Boleto da Escola
+          type: string
+        descricaoOuvidoria:
+          description: Descrição das informações da ouvidoria do Sicoob.
+          example: "OUVIDORIA AGIBANK: 08007250996"
+          type: string
+        descricaoTituloComprovante:
+          description: "Descreve o boleto que deve ser utilizado no comprovante. \n\
+            - AGENDAMENTO DE BOLETO\n- PAGAMENTO DE BOLETO\n- PAGAMENTO REJEITADO\n\
+            - PAGAMENTO CANCELADO\n- AGENDAMENTO DE BOLETO VLB\n- PAGAMENTO DE BOLETO\
+            \ VLB\n- PAGAMENTO VLB REJEITADO\n- PAGAMENTO VLB CANCELADO\n"
+          example: PAGAMENTO DE BOLETO
+          type: string
+        idPagamento:
+          description: Número de identificação do agendamento no SISBR.
+          example: 1983450
+          format: int64
+          type: integer
+        numeroAutenticacaoPagamento:
+          description: Identificador único de autenticação do pagamento no SISBR.
+          example: 89C3E9FD-1A37-40BE-A85B-69AF118D336A
+          type: string
+      required:
+      - aceitaValorDivergente
+      - dataHoraCadastro
+      - dataPagamento
+      - dataVencimento
+      - descricaoDetalheSituacao
+      - descricaoOuvidoria
+      - descricaoTituloComprovante
+      - idPagamento
+      - nomeAgencia
+      - nomeInstituicaoEmissora
+      - numeroInstituicaoEmissora
+      - numeroLinhaDigitavel
+      - situacaoPagamento
+      - valorAbatimentoDesconto
+      - valorBoleto
+      - valorMultaMora
+      - valorPagamento
+      type: object
+    Cancelamento:
+      example:
+        numeroConta: 1234569
+      properties:
+        numeroConta:
+          description: Número da Conta Habilitada para Pagamentos via API.
+          example: 1234569
+          format: int64
+          type: integer
+      required:
+      - numeroConta
+      type: object
+    MensagensErro:
+      example:
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          description: Array com todas as mensagens de erro encontradas.
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+      required:
+      - mensagens
+      type: object
+    SicoobMensagem:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem de retorno que pode ser informativa ou de erro.
+          type: string
+        codigo:
+          description: Código padrão de erro.
+          type: string
+      required:
+      - codigo
+      - mensagem
+      type: object
+    BoletoDDA:
+      example:
+        numeroCepPagador: numeroCepPagador
+        numeroCpfCnpjPagadorEletronico: numeroCpfCnpjPagadorEletronico
+        quantidadePagamentoParcial: 1
+        dataJuros: 2000-01-23
+        valorPercentualMulta: 3.616076749251911
+        descricaoLogradouroPagador: descricaoLogradouroPagador
+        valorPercentualMinimo: 1.1730742509559433
+        codigoTipoJuros: 2.3021358869347655
+        codigoTipoMulta: 9
+        numeroIdentificadorBoletoCip: 1
+        numeroDocumento: numeroDocumento
+        aceite: true
+        valorPercentualDesconto3: 1.2315135367772556
+        valorPercentualDesconto2: 7.386281948385884
+        valorPercentualMaximo: 7.457744773683766
+        dataVencimentoBoleto: 2000-01-23
+        valorAbatimento: 2.027123023002322
+        valorPercentualDesconto1: 4.145608029883936
+        nomeRazaoSocialPagador: nomeRazaoSocialPagador
+        nomeAvalista: nomeAvalista
+        dataLimitePagamento: dataLimitePagamento
+        dataEmissao: 2000-01-23
+        codigoTipoDesconto3: codigoTipoDesconto3
+        codigoTipoDesconto2: codigoTipoDesconto2
+        codigoTipoSituacaoBoleto: 6
+        codigoTipoDesconto1: codigoTipoDesconto1
+        siglaUfPagador: siglaUfPagador
+        codigoEspecieDocumento: 5
+        valorBoleto: 0.8008281904610115
+        tipoPessoaAvalista: tipoPessoaAvalista
+        codigoIndicadorValorMaximo: codigoIndicadorValorMaximo
+        nomeRazaoSocialBeneficiario: nomeRazaoSocialBeneficiario
+        codigoAutorizacaoValorDivergente: 6
+        numeroNossoNumero: numeroNossoNumero
+        numeroDiasProtesto: 1
+        descricaoTipoPagador: descricaoTipoPagador
+        dataPagamento: 2000-01-23
+        numeroCpfCnpjBeneficiario: numeroCpfCnpjBeneficiario
+        tipoPessoaPagador: tipoPessoaPagador
+        codigoIndicadorValorMinimo: codigoIndicadorValorMinimo
+        numeroCpfCnpjPagador: numeroCpfCnpjPagador
+        numeroCodigoBarras: numeroCodigoBarras
+        tipoPessoaBeneficiario: tipoPessoaBeneficiario
+        descricaoCidadePagador: descricaoCidadePagador
+        descricaoSituacaoBoleto: descricaoSituacaoBoleto
+        dataMulta: 2000-01-23
+        dataDesconto3: dataDesconto3
+        nomeFantasiaPagador: nomeFantasiaPagador
+        numeroCpfCnpjAvalista: numeroCpfCnpjAvalista
+        valorPagamento: 5.962133916683182
+        dataDesconto2: dataDesconto2
+        valorPercentualJuros: 7.061401241503109
+        dataDesconto1: 2000-01-23
+      properties:
+        descricaoTipoPagador:
+          description: Tipo de pagador.
+          type: string
+        tipoPessoaBeneficiario:
+          description: Tipo de pessoa (Física/Jurídica) do beneficiário.
+          type: string
+        numeroCpfCnpjBeneficiario:
+          description: CPF ou CNPJ do beneficiário.
+          type: string
+        nomeRazaoSocialBeneficiario:
+          description: Razão social do beneficiário.
+          type: string
+        tipoPessoaPagador:
+          description: Tipo de pessoa (Física/Jurídica) do pagador.
+          type: string
+        numeroCpfCnpjPagador:
+          description: CPF ou CNPJ do pagador.
+          type: string
+        nomeRazaoSocialPagador:
+          description: Razão social do pagador.
+          type: string
+        nomeFantasiaPagador:
+          description: Nome fantasia do pagador.
+          type: string
+        descricaoLogradouroPagador:
+          description: Logradouro do pagador.
+          type: string
+        descricaoCidadePagador:
+          description: Cidade do pagador.
+          type: string
+        siglaUfPagador:
+          description: UF do pagador.
+          type: string
+        numeroCepPagador:
+          description: CEP do pagador.
+          type: string
+        tipoPessoaAvalista:
+          description: Tipo de pessoa (Física/Jurídica) do avalista.
+          type: string
+        numeroCpfCnpjAvalista:
+          description: CPF ou CNPJ do avalista.
+          type: string
+        nomeAvalista:
+          description: Nome do avalista.
+          type: string
+        valorBoleto:
+          description: Valor do boleto.
+          type: number
+        dataVencimentoBoleto:
+          description: "Data de vencimento do boleto. Formato: yyyy-MM-dd."
+          format: date
+          type: string
+        codigoTipoSituacaoBoleto:
+          description: Código da situação do boleto
+          type: integer
+        descricaoSituacaoBoleto:
+          description: Situação do boleto.
+          type: string
+        numeroIdentificadorBoletoCip:
+          description: Número identificador do boleto CIP.
+          type: integer
+        numeroCodigoBarras:
+          description: Código de barras.
+          type: string
+        numeroCpfCnpjPagadorEletronico:
+          description: CPF ou CNPJ do pagador eletrônico.
+          type: string
+        aceite:
+          description: Aceite.
+          type: boolean
+        numeroNossoNumero:
+          description: Nosso número.
+          type: string
+        numeroDocumento:
+          description: Número do documento.
+          type: string
+        dataPagamento:
+          description: "Data do pagamento. Formato: yyyy-MM-dd."
+          format: date
+          type: string
+        valorPagamento:
+          description: Valor do pagamento
+          type: number
+        codigoEspecieDocumento:
+          description: Código da espécie de documento.
+          type: integer
+        dataEmissao:
+          description: "Data da emissão. Formato: yyyy-MM-dd."
+          format: date
+          type: string
+        dataLimitePagamento:
+          description: "Data do limite do pagamento. Formato: yyyy-MM-dd."
+          type: string
+        codigoTipoJuros:
+          description: |
+            Código do Tipo de juros.
+            - 1 - Valor (dias corridos)
+            - 2 - Percentual ao dia (dias corridos)
+            - 3 - Percentual ao mês (dias corridos)
+            - 4 - Percentual ao ano (dias corridos)
+            - 5 - Isento
+            - 6 - Valor (dia útil)
+            - 7 - Percentual ao dia (dias úteis)
+            - 8 - Percentual ao mês (dias úteis)
+            - 9 - Percentual ao ano (dias úteis)
+          type: number
+        dataJuros:
+          description: "Data do juros. Formato: yyyy-MM-dd."
+          format: date
+          type: string
+        valorPercentualJuros:
+          description: Percentual dos juros.
+          type: number
+        codigoTipoMulta:
+          description: |
+            Código do tipo de multa.
+            - 1 - Valor Fixo
+            - 2 - Percentual
+            - 3 - Isenta
+          type: integer
+        dataMulta:
+          description: "Data da multa. Formato: yyyy-MM-dd."
+          format: date
+          type: string
+        valorPercentualMulta:
+          description: Percentual da multa.
+          type: number
+        valorAbatimento:
+          description: Valor do abatimento.
+          type: number
+        codigoTipoDesconto1:
+          description: Código do tipo do primeiro desconto.
+          type: string
+        dataDesconto1:
+          description: Data do primeiro desconto. Formato yyyy-MM-dd
+          format: date
+          type: string
+        valorPercentualDesconto1:
+          description: Valor do primeiro desconto.
+          type: number
+        codigoTipoDesconto2:
+          description: Código do tipo do segundo desconto.
+          type: string
+        dataDesconto2:
+          description: Data do segundo desconto.
+          type: string
+        valorPercentualDesconto2:
+          description: Percentual do segundo desconto.
+          type: number
+        codigoTipoDesconto3:
+          description: Código do tipo do terceiro desconto.
+          type: string
+        dataDesconto3:
+          description: Data do terceiro desconto.
+          type: string
+        valorPercentualDesconto3:
+          description: Percentual do terceiro desconto.
+          type: number
+        numeroDiasProtesto:
+          description: Número de dias de protesto.
+          type: integer
+        quantidadePagamentoParcial:
+          description: Quantidade de pagamentos parciais.
+          type: integer
+        codigoAutorizacaoValorDivergente:
+          description: ""
+          type: integer
+        codigoIndicadorValorMaximo:
+          description: Código indicador do valor máximo.
+          type: string
+        valorPercentualMaximo:
+          description: Percentual máximo.
+          type: number
+        codigoIndicadorValorMinimo:
+          description: Código do indicador do valor mínimo.
+          type: string
+        valorPercentualMinimo:
+          description: Percentual mínimo.
+          type: number
+      type: object
+    _boletos__codigoBarras__get_200_response:
+      example:
+        resultado:
+          valorMultaMora: 0.0
+          bloquearPagamento: true
+          numeroInstituicaoEmissora: 756.0
+          codigoEspecieDocumento: 25.0
+          valorBoleto: 152.3
+          descricaoInstrucaoDesconto1: Conceder desconto de 10% até 05/04/2021
+          nomeRazaoSocialBeneficiario: José da Silva
+          consultaEmContingencia: false
+          descricaoInstrucaoDesconto3: Conceder desconto de 2% até 05/04/2021
+          descricaoInstrucaoDesconto2: Conceder desconto de 5% até 10/04/2021
+          numeroDocumento: "123456"
+          codigoBarras: codigoBarras
+          permiteAlterarValor: true
+          nomeInstituicaoEmissora: Banco Cooperativo do Brasil
+          nomeFantasiaBeneficiario: Estilo Tech
+          nomeFantasiaBeneficiarioFinal: Quitanda do João
+          dataPagamento: 2021-04-24
+          numeroCpfCnpjBeneficiario: "12345678900"
+          tipoPessoaPagador: F
+          dataVencimentoBoleto: 2021-04-20
+          numeroLinhaDigitavel: numeroLinhaDigitavel
+          numeroCpfCnpjPagador: "12345678900"
+          dataLimitePagamentoBoleto: 2021-04-25
+          nomeRazaoSocialPagador: Maria José
+          identificadorConsulta: hash
+          numeroCpfCnpjBeneficiarioFinal: "12345678900"
+          tipoPessoaBeneficiario: F
+          nomeRazaoSocialBeneficiarioFinal: João das Flores
+          descricaoInstrucaoValorMinMax: "O Valor Mínimo é R$ 0,01. O Valor Máximo\
+            \ é R$ 99.999.999,99"
+          nossoNumero: "123789"
+          mensagemBloqueioPagamento: Pagamento bloqueado
+          tipoPessoaBeneficiarioFinal: "2"
+          valorAbatimentoDesconto: 0.0
+          codigoSituacaoBoletoPagamento: "12"
+          nomeFantasiaPagador: Rosa Maria da Silva
+          valorPagamento: 152.3
+      properties:
+        resultado:
+          $ref: "#/components/schemas/BoletoConsulta"
+      type: object
+    _boletos_pagamentos__codigoBarras__post_200_response:
+      example:
+        resultado:
+          descricaoOuvidoria: "OUVIDORIA AGIBANK: 08007250996"
+          idPagamento: 1983450
+          valorMultaMora: 60.36
+          numeroInstituicaoEmissora: 756.0
+          valorBoleto: 100.36
+          descricaoObservacao: Boleto da Escola
+          descricaoDetalheSituacao: "Saldo no momento da rejeição em 10/03/2021 à\
+            s 22:01:10: R$ 343,05."
+          numeroConta: 1234569
+          nomeRazaoSocialBeneficiario: José da Silva
+          numeroDocumento: "123456"
+          nomeInstituicaoEmissora: Banco Cooperativo do Brasil
+          nomeFantasiaBeneficiario: Estilo Tech
+          nomeFantasiaBeneficiarioFinal: Quinatda dojão
+          nomeProprietarioContaCorrente: José da Silva
+          nomeAgencia: Agência Sede
+          dataPagamento: 2019-10-20
+          numeroAutenticacaoPagamento: 89C3E9FD-1A37-40BE-A85B-69AF118D336A
+          descricaoTituloComprovante: PAGAMENTO DE BOLETO
+          numeroCpfCnpjBeneficiario: "12345678900"
+          aceitaValorDivergente: true
+          numeroLinhaDigitavel: numeroLinhaDigitavel
+          numeroCpfCnpjPagador: "12345678900"
+          nomeRazaoSocialPagador: Maria José
+          situacaoPagamento: Efetivado
+          numeroCpfCnpjBeneficiarioFinal: "12345678900"
+          nomeRazaoSocialBeneficiarioFinal: João das Flores
+          dataVencimento: 2018-09-20
+          dataHoraCadastro: 2019-10-20T12:30:22Z
+          nossoNumero: "756"
+          valorAbatimentoDesconto: 0.0
+          numeroAgencia: 0001-9
+          nomeFantasiaPagador: Rosa Maria da Silva
+          valorPagamento: 255.63
+      properties:
+        resultado:
+          $ref: "#/components/schemas/ComprovantePagamento"
+      type: object
+    _boletos_pagamentos__idPagamento__comprovantes_get_200_response:
+      example:
+        resultado:
+          descricaoOuvidoria: "OUVIDORIA AGIBANK: 08007250996"
+          idPagamento: 1983450
+          valorMultaMora: 60.36
+          numeroInstituicaoEmissora: 756.0
+          valorBoleto: 100.36
+          descricaoObservacao: Boleto da Escola
+          descricaoDetalheSituacao: "Saldo no momento da rejeição em 10/03/2021 à\
+            s 22:01:10: R$ 343,05."
+          numeroConta: 1234569
+          nomeRazaoSocialBeneficiario: José da Silva
+          numeroDocumento: "123456"
+          nomeInstituicaoEmissora: Banco Cooperativo do Brasil
+          nomeFantasiaBeneficiario: Estilo Tech
+          nomeFantasiaBeneficiarioFinal: Quinatda dojão
+          nomeProprietarioContaCorrente: José da Silva
+          nomeAgencia: Agência Sede
+          dataPagamento: 2019-10-20
+          numeroAutenticacaoPagamento: 89C3E9FD-1A37-40BE-A85B-69AF118D336A
+          descricaoTituloComprovante: PAGAMENTO DE BOLETO
+          numeroCpfCnpjBeneficiario: "12345678900"
+          aceitaValorDivergente: true
+          numeroLinhaDigitavel: numeroLinhaDigitavel
+          numeroCpfCnpjPagador: "12345678900"
+          nomeRazaoSocialPagador: Maria José
+          situacaoPagamento: Efetivado
+          numeroCpfCnpjBeneficiarioFinal: "12345678900"
+          nomeRazaoSocialBeneficiarioFinal: João das Flores
+          dataVencimento: 2018-09-20
+          dataHoraCadastro: 2019-10-20T12:30:22Z
+          nossoNumero: "756"
+          valorAbatimentoDesconto: 0.0
+          numeroAgencia: 0001-9
+          nomeFantasiaPagador: Rosa Maria da Silva
+          valorPagamento: 255.63
+      properties:
+        resultado:
+          $ref: "#/components/schemas/Comprovante"
+      type: object
+  securitySchemes:
+    oauth2:
+      flows:
+        clientCredentials:
+          scopes:
+            cco_transferencias: Transferências
+            cco_consulta: Consulta
+            openid: OpenID
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+x-original-swagger-version: "2.0"
+

@@ -1,0 +1,5171 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: GrupoGesin1CobrancaBancaria@sicoob.com.br
+    name: Equipe COBRANÇA BANCÁRIA
+  description: |-
+    <pre>[ Base URL: https://api.sicoob.com.br/cobranca-bancaria/v3 ]</pre>
+    A Cobrança Bancária Sicoob é um conjunto de serviços oferecidos a seus associados para recebimento de valores referentes às vendas de produtos e serviços da sua empresa, por meio de boletos de cobrança, pagos em toda a rede bancária. Esta API disponibiliza funcionalidades que auxiliam na gestão da carteira registrada, tornando viável todo o processo de acompanhamento, desde a inclusão de novos boletos, alteração de informações relevantes, protesto/negativação de títulos vencidos e não pagos, até a liquidação ou baixa do título.
+  title: Cobrança Bancária
+  version: 3.0.8.0
+  x-ibm-name: cobranca-bancaria-v3
+servers:
+- url: https://api.sicoob.com.br/cobranca-bancaria/v3
+security:
+- oauth2:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+tags:
+- description: Inclusão e Manutenção de Boleto Bancário.
+  name: Boleto
+- description: Inclusão e Manutenção de Pagador.
+  name: Pagador
+- description: Negativação de Boleto Bancário Vencido e Não Pago.
+  name: Negativação
+- description: Protesto de Boleto Bancário Vencido e Não Pago.
+  name: Protesto
+- description: Gestão da Carteira de Cobrança Bancária.
+  name: Movimentação
+- description: Webhook para notificação periódicas de eventos associados a diferentes
+    tipos de movimento.
+  name: Webhook
+- description: Serviços de apoio da API
+  name: Apoio
+paths:
+  /boletos:
+    get:
+      description: "Serviço para consulta de um boleto bancário. Utiliza as informaç\
+        ões do beneficiário logado (número da cooperativa, número identificador do\
+        \ beneficiário e conta corrente), juntamente com a informação do identificador\
+        \ do boleto (nosso número), ou da linha digitável ou do código de barras."
+      parameters:
+      - description: Número que identifica o contrato do beneficiário no Sisbr.
+        in: query
+        name: numeroCliente
+        required: true
+        schema:
+          type: integer
+      - description: "Identifica a modalidade do boleto.\n- 1 - SIMPLES COM REGISTRO\n\
+          - 3 - CAUCIONADA\n- 4 - VINCULADA\n- 5 - CARNÊ DE PAGAMENTOS \n- 8 - COBRANÇ\
+          A CONTA CAPITAL"
+        in: query
+        name: codigoModalidade
+        required: true
+        schema:
+          type: integer
+      - description: "Número identificador do boleto no Sisbr. Caso seja infomado,\
+          \ não é necessário infomar a linha digitável ou código de barras."
+        in: query
+        name: nossoNumero
+        schema:
+          type: integer
+      - description: "Número da linha digitável do boleto com 47 posições. Caso seja\
+          \ informado, não é necessário informar o nosso número ou código de barras."
+        in: query
+        name: linhaDigitavel
+        schema:
+          type: string
+      - description: "Número de código de barras do boleto com 44 posições.Caso seja\
+          \ informado, não é necessário informar o nosso número ou linha digitável."
+        in: query
+        name: codigoBarras
+        schema:
+          type: string
+      - description: Indicar o id do contatro de cobrança
+        in: query
+        name: numeroContratoCobranca
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: A requisição foi processada com êxito e não está retornando
+            conteúdo.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consultar boleto
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+    post:
+      description: Serviço para a inclusão de boletos. É possível a inclusão de 1
+        boleto por requisição.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Boleto"
+        description: Inclusão das informações detalhadas do boleto de cobrança.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_post_200_response"
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Incluir boletos
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+  /pagadores/{numeroCpfCnpj}/boletos:
+    get:
+      description: Serviço para listagem de boletos por Pagador.
+      parameters:
+      - description: CPF ou CNPJ do pagador. `Tamanho máximo 14`
+        in: path
+        name: numeroCpfCnpj
+        required: true
+        schema:
+          type: string
+      - description: Número que identifica o contrato do beneficiário no Sisbr.
+        in: query
+        name: numeroCliente
+        required: true
+        schema:
+          type: integer
+      - description: |-
+          Código da Situação do Boleto.
+            - 1 Entrada Normal
+            - 2 Baixado
+            - 3 Liquidado
+        in: query
+        name: codigoSituacao
+        schema:
+          type: integer
+      - description: |
+          Data de Vencimento Inicial.
+          Formato: yyyy-MM-dd
+        in: query
+        name: dataInicio
+        schema:
+          format: date
+          type: string
+      - description: |
+          Data de Vencimento Final.
+          Formato: yyyy-MM-dd
+        in: query
+        name: dataFim
+        schema:
+          format: date
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_pagadores__numeroCpfCnpj__boletos_get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: A requisição foi processada com êxito e não está retornando
+            conteúdo.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Listar Boletos por Pagador
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+  /boletos/segunda-via:
+    get:
+      description: "Serviço para emissão da segunda via de boleto já registrado. Utiliza\
+        \ as informações do beneficiário logado (número da cooperativa, número identificador\
+        \ do beneficiário e conta corrente), juntamente com a informação do identificador\
+        \ do boleto (nosso número), ou da linha digitável ou do código de barras.\
+        \ Quando informados código de barras ou linha digitável, a pesquisa é realiazada\
+        \ prioritariamente por estes parâmetros."
+      parameters:
+      - description: Número que identifica o contrato do beneficiário no Sisbr.
+        in: query
+        name: numeroCliente
+        required: true
+        schema:
+          type: integer
+      - description: "Identifica a modalidade do boleto.\n- 1 - SIMPLES COM REGISTRO\n\
+          - 3 - CAUCIONADA\n- 4 - VINCULADA\n- 5 - CARNÊ DE PAGAMENTOS \n- 8 - COBRANÇ\
+          A CONTA CAPITAL"
+        in: query
+        name: codigoModalidade
+        required: true
+        schema:
+          type: integer
+      - description: "Número identificador do boleto no Sisbr.Caso seja informado,\
+          \ não é necessário informar a linha digitável ou código de barras."
+        in: query
+        name: nossoNumero
+        schema:
+          type: integer
+      - description: "Número da linha digitável do boleto com 47 posições.Caso seja\
+          \ informado, não é necessário informar o nosso número ou código de barras."
+        in: query
+        name: linhaDigitavel
+        schema:
+          type: string
+      - description: "Número de código de barras do boleto com 44 posições.Caso seja\
+          \ informado, não é necessário informar o nosso número ou a linha digitá\
+          vel."
+        in: query
+        name: codigoBarras
+        schema:
+          type: string
+      - description: Identificador para o sistema devolver ou não o PDF do Boleto.
+          O PDF será retornado na Base64.
+        in: query
+        name: gerarPdf
+        schema:
+          type: boolean
+      - description: Indicar o id do contatro de cobrança
+        in: query
+        name: numeroContratoCobranca
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_segunda_via_get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: A requisição foi processada com êxito e não está retornando
+            conteúdo.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Emitir segunda via de um boleto
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+  /boletos/faixas-nosso-numero:
+    get:
+      description: "Serviço para consulta de dados de faixas de nosso número disponí\
+        veis. \nQuando o campo validaDigitoVerificadorNossoNumero retornar o valor\
+        \ \"0\" a faixa \"numeroInicial\" e \"numeroFinal\" refere-se a numeração\
+        \ final (exemplo: 10 e 15 - utilização: 1-0 1-1 1-2 1-3 1-4 1-5).\nMas se\
+        \ o campo validaDigitoVerificadorNossoNumero retornar o valor \"1\" a faixa\
+        \ \"numeroInicial\" e \"numeroFinal\" deverá ser calculado o DV (exemplo:\
+        \ 10 e 15 - utilização: 10-4 11-8 12-0 13-1 14-7 15-9)."
+      parameters:
+      - description: Número que identifica o contrato do beneficiário no Sisbr.
+        in: query
+        name: numeroCliente
+        required: true
+        schema:
+          type: integer
+      - description: |-
+          Identifica a modalidade do boleto.
+          - 1 - SIMPLES COM REGISTRO
+          - 3 - CAUCIONADA
+          - 4 - VINCULADA
+          - 8 - COBRANÇA CONTA CAPITAL
+        in: query
+        name: codigoModalidade
+        required: true
+        schema:
+          type: integer
+      - description: Quantidade mínima de nosso números que devem estar disponíveis
+          na faixa a ser pesquisada.
+        in: query
+        name: quantidade
+        required: true
+        schema:
+          type: integer
+      - description: Indicar o id do contatro de cobrança
+        in: query
+        name: numeroContratoCobranca
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_faixas_nosso_numero_get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: A requisição foi processada com êxito e não está retornando
+            conteúdo.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno.
+      summary: Consulta de dados de faixas de nosso número disponíveis.
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+  /boletos/{nossoNumero}:
+    patch:
+      description: |-
+        Serviço para alteração de dados de boleto já registrado.  Deve ser feita a alteração de somente um objeto do boleto por requisição.
+        **Objetos de alteração do boleto:**
+        - seuNumero
+        - desconto
+        - abatimento
+        - multa
+        - jurosMora
+        - rateioCredito
+        - pix
+        - prorrogacaoVencimento
+        - prorrogacaoLimitePagamento
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BoletoAlteracao"
+        description: Informações do boleto de cobrança
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Alteração realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Alterar dados de um boleto
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+  /boletos/{nossoNumero}/baixar:
+    post:
+      description: Serviço para comandar a baixa de boletos informados.
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BoletoBaixa"
+        description: Informações do boleto de cobrança
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Comandar a baixa de boletos
+      tags:
+      - Boleto
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+  /pagadores:
+    put:
+      description: Serviço para alterar informações do cadastro do pagador.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pagador"
+        description: Informações do pagador.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Alterar informações do cadastro do pagador.
+      tags:
+      - Pagador
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: pagador
+  /boletos/{nossoNumero}/negativacoes:
+    delete:
+      description: Serviço para comandar uma baixa da negativação de pagadores de
+        boletos informados. Será enviado um pedido de baixa para o serviço de proteção
+        ao crédito.
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Negativacao"
+        description: Informações do boleto de cobrança.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Baixar a negativação de pagadores de boletos
+      tags:
+      - Negativação
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+    patch:
+      description: Serviço para cancelar o apontamento da negativação de pagadores
+        de boletos informados. O boleto não será enviado ao serviço de proteção ao
+        crédito.
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Negativacao"
+        description: Informações do boleto.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Cancelar o apontamento da negativação de pagadores de boletos
+      tags:
+      - Negativação
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+    post:
+      description: "Serviço para indicar a negativação de pagadores de boletos informados.\
+        \ A negativação é o registro de pendências ou restrições nos órgãos de proteç\
+        ão ao crédito. No Sicoob, o parceiro para este serviço é o SERASA."
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Negativacao"
+        description: Informações do boleto de cobrança.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Negativar pagadores de boletos
+      tags:
+      - Negativação
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boletos
+  /boletos/{nossoNumero}/protestos:
+    delete:
+      description: "Este serviço realiza o pedido de desistência do protesto de boletos\
+        \ informados. O pedido de desistência não garante que o protesto será retirado.\
+        \ Deve-se aguardar o retorno do cartório. O pedido de desistência pode ser\
+        \ realizado a qualquer momento, desde que haja um apontamento prévio."
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Protesto"
+        description: Informações do boleto de cobrança.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Desistir do protesto de boletos
+      tags:
+      - Protesto
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+    patch:
+      description: "Este serviço realiza a indicação de cancelamento de protesto de\
+        \ boletos informados. Os boletos em atraso e não pagos podem ser indicados\
+        \ a protesto. Caso seja realizado no mesmo dia, pode-se cancelar o apontamento\
+        \ a protesto."
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Protesto"
+        description: Informações do boleto bancário.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Cancelar o apontamento de protesto de boletos
+      tags:
+      - Protesto
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boleto
+    post:
+      description: Este serviço registra a indicação a protesto de boletos informados.
+        Os boletos vencidos e não pagos podem ser protestados e registrados em cartório.
+      parameters:
+      - description: Número que identifica o boleto de cobrança no Sisbr
+        in: path
+        name: nossoNumero
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Protesto"
+        description: Informações do boleto bancário.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Solicitação recebida com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Protestar boletos
+      tags:
+      - Protesto
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: boletos
+  /boletos/movimentacoes:
+    get:
+      description: Serviço para consultar a situação da solicitação da movimentação.
+      parameters:
+      - description: Número que identifica o contrato do beneficiário no Sisbr.
+        in: query
+        name: numeroCliente
+        required: true
+        schema:
+          type: integer
+      - description: Código da solicitação que deseja consultar a quantidade de arquivos
+          que serão gerados
+        in: query
+        name: codigoSolicitacao
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_movimentacoes_get_200_response"
+          description: ""
+        "204":
+          content: {}
+          description: A requisição foi processada com êxito e não está retornando
+            conteúdo.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Consultar a situação da solicitação da movimentação
+      tags:
+      - Movimentação
+      x-sicoob-category: APOIO
+    post:
+      description: |-
+        Serviço para solicitar a movimentação da carteira de cobrança registrada para beneficiário informado. Os movimentos disponíveis para solicitaçao são 1. Entrada 2. Prorrogação 3. A Vencer 4. Vencido 5. Liquidação 6. Baixa 7. Vinculado Operações Crédito
+        * As consultas estão limitadas em um período máximo de 2 dias.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/_boletos_movimentacoes_post_request"
+        description: Informações da solicitação de movimentação de cobrança.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_movimentacoes_post_200_response"
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de negócio.
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Solicitar a movimentação da carteira de cobrança registrada para beneficiário
+        informado
+      tags:
+      - Movimentação
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: solicitacao
+  /boletos/movimentacoes/download:
+    get:
+      description: Serviço para obter um arquivo de movimentação.
+      parameters:
+      - description: Número que identifica o contrato do beneficiário no Sisbr.
+        in: query
+        name: numeroCliente
+        required: true
+        schema:
+          type: integer
+      - description: Código da solicitação que deseja consultar a quantidade de arquivos
+          que serão gerados
+        in: query
+        name: codigoSolicitacao
+        required: true
+        schema:
+          type: integer
+      - description: ID do arquivo para download
+        in: query
+        name: idArquivo
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_boletos_movimentacoes_download_get_200_response"
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Download do(s) arquivo(s) de movimentação.
+      tags:
+      - Movimentação
+      x-sicoob-category: NÃO FINANCEIRA
+  /webhooks:
+    get:
+      description: Serviço para consultar os detalhes dos webhooks cadastrados.
+      parameters:
+      - description: Identificador único do webhook.
+        in: query
+        name: idWebhook
+        schema:
+          format: int64
+          type: integer
+      - description: |
+          Código do tipo de movimento do webhook.
+            7 - Pagamento (Baixa operacional)
+        in: query
+        name: codigoTipoMovimento
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_webhooks_get_200_response"
+          description: Consulta realizada com sucesso.
+        "204":
+          content: {}
+          description: A consulta foi realizada com sucesso e não retornou registros.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Consultar os webhooks cadastrados.
+      tags:
+      - Webhook
+      x-sicoob-category: NÃO FINANCEIRA
+    post:
+      description: |
+        Este serviço permite cadastrar uma URL que será notificada sempre que ocorrer um evento associado a um tipo de movimento. O webhook pode ser configurado para o período de movimentação atual (D0).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookCadastro"
+        description: Informações do webhook para o cadastro.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_webhooks_post_201_response"
+          description: Webhook cadastrado com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Cadastrar um webhook para receber notificações de acordo com o tipo
+        de movimento.
+      tags:
+      - Webhook
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: webhook
+  /webhooks/{idWebhook}:
+    delete:
+      description: |
+        Serviço responsável por remover permanentemente um webhook registrado, encerrando o envio de notificações para a URL vinculada."
+      parameters:
+      - description: Identificador único do webhook.
+        in: path
+        name: idWebhook
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "204":
+          content: {}
+          description: Webhook excluído com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Excluir um webhook.
+      tags:
+      - Webhook
+      x-sicoob-category: NÃO FINANCEIRA
+    patch:
+      description: |
+        Serviço de atualização de webhook. Ao modificar a URL, a situação do webhook será automaticamente alterada para '1 - Aguardando validação' e permanecerá assim até que a nova URL seja validada com sucesso.
+      parameters:
+      - description: Identificador único do webhook.
+        in: path
+        name: idWebhook
+        required: true
+        schema:
+          format: int64
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookAlteracao"
+        description: Informações do webhook para atualização.
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: Webhook atualizado com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Atualizar um webhook cadastrado.
+      tags:
+      - Webhook
+      x-sicoob-category: NÃO FINANCEIRA
+      x-codegen-request-body-name: webhook
+  /webhooks/{idWebhook}/reativar:
+    patch:
+      description: |
+        Serviço de reativação de webhook desativado, restabelecendo o recebimento de notificações. A situação do webhook será atualizada para '1 - Aguardando validação' e permanecerá assim até que a URL seja validada com sucesso.
+      parameters:
+      - description: Identificador único do webhook.
+        in: path
+        name: idWebhook
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "204":
+          content: {}
+          description: Webhook reativado com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Reativar um webhook inativo.
+      tags:
+      - Webhook
+      x-sicoob-category: NÃO FINANCEIRA
+  /webhooks/{idWebhook}/solicitacoes:
+    get:
+      description: "Consulta as solicitações de notificação para um webhook com base\
+        \ na data de solicitação informada. \nRetorna o histórico das tentativas de\
+        \ notificação, incluindo o status e a resposta da requisição.\n"
+      parameters:
+      - description: Identificador único do webhook.
+        in: path
+        name: idWebhook
+        required: true
+        schema:
+          format: int64
+          type: integer
+      - description: "Data da solicitação. Formato: yyyy-MM-dd"
+        in: query
+        name: dataSolicitacao
+        required: true
+        schema:
+          format: date
+          type: string
+      - description: Número da página a ser consultada.
+        in: query
+        name: pagina
+        schema:
+          format: int32
+          type: integer
+      - description: |
+          Código da situação da solicitação do webhook.
+            - 2 - Aguardando envio
+            - 3 - Enviado com sucesso
+            - 6 - Erro no envio
+        in: query
+        name: codigoSolicitacaoSituacao
+        schema:
+          format: int32
+          type: integer
+      - description: Código de barras do boleto presente na notificação webhook
+        in: query
+        name: codigoBarras
+        schema:
+          type: string
+      - description: Nosso número do boleto presente na notificação webhook
+        in: query
+        name: nossoNumero
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_webhooks__idWebhook__solicitacoes_get_200_response"
+          description: Consulta realizada com sucesso.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro de negócio
+        "406":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Possíveis erros de inconsistência nos dados passados.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MensagensErro"
+          description: Erro interno
+      summary: Consultar solicitações de um webhook.
+      tags:
+      - Webhook
+      x-sicoob-category: NÃO FINANCEIRA
+  /health:
+    get:
+      description: Serviço para verificar a disponibilidade da API.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_health_get_200_response"
+          description: Consulta realizada com sucesso
+      summary: Verifica a disponibilidade da API
+      tags:
+      - Apoio
+      x-sicoob-category: APOIO
+components:
+  parameters:
+    id-webhook-requerido-query:
+      description: Identificador único do webhook.
+      in: query
+      name: idWebhook
+      required: true
+      schema:
+        format: int64
+        type: integer
+    id-webhook-query:
+      description: Identificador único do webhook.
+      in: query
+      name: idWebhook
+      schema:
+        format: int64
+        type: integer
+    codigo-tipo-movimento-query:
+      description: |
+        Código do tipo de movimento do webhook.
+          7 - Pagamento (Baixa operacional)
+      in: query
+      name: codigoTipoMovimento
+      schema:
+        format: int32
+        type: integer
+    data-solicitacao-requerido-query:
+      description: "Data da solicitação. Formato: yyyy-MM-dd"
+      in: query
+      name: dataSolicitacao
+      required: true
+      schema:
+        format: date
+        type: string
+    codigo-webhook-solicitacao-situacao-consulta-query:
+      description: |
+        Código da situação da solicitação do webhook.
+          - 2 - Aguardando envio
+          - 3 - Enviado com sucesso
+          - 6 - Erro no envio
+      in: query
+      name: codigoSolicitacaoSituacao
+      schema:
+        format: int32
+        type: integer
+    pagina-query:
+      description: Número da página a ser consultada.
+      in: query
+      name: pagina
+      schema:
+        format: int32
+        type: integer
+    nosso-numero-query:
+      description: Nosso número do boleto presente na notificação webhook
+      in: query
+      name: nossoNumero
+      schema:
+        format: int64
+        type: integer
+    codigo-barras-query:
+      description: Código de barras do boleto presente na notificação webhook
+      in: query
+      name: codigoBarras
+      schema:
+        type: string
+    id-webhook-requerido-path:
+      description: Identificador único do webhook.
+      in: path
+      name: idWebhook
+      required: true
+      schema:
+        format: int64
+        type: integer
+  schemas:
+    Webhook:
+      example:
+        descricaoMotivoInativacao: Erro ao enviar notificação
+        descricaoTipoMovimento: Pagamento (Baixa operacional)
+        idWebhook: 4
+        codigoPeriodoMovimento: 1
+        descricaoPeriodoMovimento: Movimento atual (D0)
+        url: https://webhook.com
+        descricaoSituacao: Validado com sucesso
+        codigoTipoMovimento: 7
+        dataHoraInativacao: 2024-09-05T18:50:55.099Z
+        dataHoraCadastro: 2024-09-03T00:27:18.483Z
+        dataHoraUltimaAlteracao: 2024-09-06T12:24:11.296Z
+        email: webhook@email.com
+        codigoSituacao: 3
+      properties:
+        idWebhook:
+          description: Identificador único do webhook
+          example: 4
+          format: int64
+          type: integer
+        url:
+          description: URL do webhook. A URL deve ser https.
+          example: https://webhook.com
+          type: string
+        email:
+          description: E-mail associado ao webhook
+          example: webhook@email.com
+          type: string
+        codigoTipoMovimento:
+          description: |
+            Código do tipo de movimento do webhook.
+                    7 - Pagamento (Baixa operacional)
+          example: 7
+          format: int32
+          type: integer
+        descricaoTipoMovimento:
+          description: Descrição do tipo de movimento
+          example: Pagamento (Baixa operacional)
+          type: string
+        codigoPeriodoMovimento:
+          description: |
+            Código do período de movimento
+            - 1 - Movimento atual (D0)
+          example: 1
+          format: int32
+          type: integer
+        descricaoPeriodoMovimento:
+          description: Descrição do período de movimento
+          example: Movimento atual (D0)
+          type: string
+        codigoSituacao:
+          description: |
+            Código da situação do webhook
+            - 1 - Aguardando validação
+            - 2 - Validado com sucesso
+            - 3 - Inativo
+          example: 3
+          format: int32
+          type: integer
+        descricaoSituacao:
+          description: Descrição da situação
+          example: Validado com sucesso
+          type: string
+        dataHoraCadastro:
+          description: "Data e hora de cadastro Formato: yyyy-MM-ddTHH:mm:ss.SSSZ"
+          example: 2024-09-03T00:27:18.483Z
+          format: date-time
+          type: string
+        dataHoraUltimaAlteracao:
+          description: "Data e hora da última alteração Formato: yyyy-MM-ddTHH:mm:ss.SSSZ"
+          example: 2024-09-06T12:24:11.296Z
+          format: date-time
+          type: string
+        dataHoraInativacao:
+          description: "Data e hora de inativação Formato: yyyy-MM-ddTHH:mm:ss.SSSZ"
+          example: 2024-09-05T18:50:55.099Z
+          format: date-time
+          type: string
+        descricaoMotivoInativacao:
+          description: Descrição do motivo de inativação
+          example: Erro ao enviar notificação
+          type: string
+      required:
+      - codigoPeriodoMovimento
+      - codigoSituacao
+      - codigoTipoMovimento
+      - dataHoraCadastro
+      - descricaoPeriodoMovimento
+      - descricaoSituacao
+      - descricaoTipoMovimento
+      - idWebhook
+      - url
+      type: object
+    WebhookCadastro:
+      example:
+        codigoTipoMovimento: 7
+        codigoPeriodoMovimento: 1
+        url: https://webhook.com
+        email: email
+      properties:
+        url:
+          description: URL do webhook
+          example: https://webhook.com
+          type: string
+        codigoTipoMovimento:
+          description: |
+            Código do tipo de movimento do webhook.
+              7 - Pagamento (Baixa operacional)
+          example: 7
+          format: int32
+          type: integer
+        codigoPeriodoMovimento:
+          description: |
+            Código do período de movimento
+            - 1 - Movimento atual (D0)
+          example: 1
+          format: int32
+          type: integer
+        email:
+          description: E-mail do associado
+          type: string
+      required:
+      - codigoPeriodoMovimento
+      - codigoTipoMovimento
+      - url
+      type: object
+    WebhookAlteracao:
+      example:
+        url: https://webhook.com
+        email: email
+      properties:
+        url:
+          description: URL do webhook
+          example: https://webhook.com
+          type: string
+        email:
+          description: Email associado ao webhook
+          type: string
+      required:
+      - url
+      type: object
+    WebhookSolicitacoes:
+      example:
+        totalRegistros: 100
+        paginaAtual: 1
+        webhookSolicitacoes:
+        - descricaoSolicitacaoSituacao: Enviado com sucesso
+          descricaoErroProcessamento: Erro ao enviar notificação
+          descricaoTipoMovimento: Pagamento (Baixa operacional)
+          codigoWebhookSituacao: 3
+          codigoSolicitacaoSituacao: 3
+          codigoPeriodoMovimento: 1
+          descricaoPeriodoMovimento: Movimento atual (D0)
+          webhookNotificacoes:
+          - dataHoraInicio: 2024-09-08T15:50:38.077Z
+            tempoComunicao: 60
+            dataHoraFim: 2024-09-08T15:51:38.077Z
+            codigoStatusRequisicao: 200
+            url: https://webhook.com
+            descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+              \ sucesso!\"}"
+          - dataHoraInicio: 2024-09-08T15:50:38.077Z
+            tempoComunicao: 60
+            dataHoraFim: 2024-09-08T15:51:38.077Z
+            codigoStatusRequisicao: 200
+            url: https://webhook.com
+            descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+              \ sucesso!\"}"
+          validacaoWebhook: false
+          codigoTipoMovimento: 7
+          descricaoWebhookSituacao: Validado com sucesso
+          dataHoraCadastro: 2024-09-04T15:43:56Z
+          nossoNumero: 2588658
+          codigoBarras: "07092501614004706610157633070651479470000006500"
+        - descricaoSolicitacaoSituacao: Enviado com sucesso
+          descricaoErroProcessamento: Erro ao enviar notificação
+          descricaoTipoMovimento: Pagamento (Baixa operacional)
+          codigoWebhookSituacao: 3
+          codigoSolicitacaoSituacao: 3
+          codigoPeriodoMovimento: 1
+          descricaoPeriodoMovimento: Movimento atual (D0)
+          webhookNotificacoes:
+          - dataHoraInicio: 2024-09-08T15:50:38.077Z
+            tempoComunicao: 60
+            dataHoraFim: 2024-09-08T15:51:38.077Z
+            codigoStatusRequisicao: 200
+            url: https://webhook.com
+            descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+              \ sucesso!\"}"
+          - dataHoraInicio: 2024-09-08T15:50:38.077Z
+            tempoComunicao: 60
+            dataHoraFim: 2024-09-08T15:51:38.077Z
+            codigoStatusRequisicao: 200
+            url: https://webhook.com
+            descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+              \ sucesso!\"}"
+          validacaoWebhook: false
+          codigoTipoMovimento: 7
+          descricaoWebhookSituacao: Validado com sucesso
+          dataHoraCadastro: 2024-09-04T15:43:56Z
+          nossoNumero: 2588658
+          codigoBarras: "07092501614004706610157633070651479470000006500"
+        totalPaginas: 2
+      properties:
+        paginaAtual:
+          description: Número da página atual
+          example: 1
+          format: int32
+          type: integer
+        totalPaginas:
+          description: Total de páginas
+          example: 2
+          format: int32
+          type: integer
+        totalRegistros:
+          description: Total de registros
+          example: 100
+          format: int32
+          type: integer
+        webhookSolicitacoes:
+          items:
+            $ref: "#/components/schemas/WebhookSolicitacoes_webhookSolicitacoes_inner"
+          type: array
+      required:
+      - paginaAtual
+      - totalPaginas
+      - totalRegistros
+      type: object
+    Boleto:
+      example:
+        valorPrimeiroDesconto: 22.5
+        numeroDiasNegativacao: 60
+        dataPrimeiroDesconto: 2025-09-15
+        pagador:
+          uf: OU
+          numeroCpfCnpj: "11122233300"
+          cidade: Cidade do pagador X
+          endereco: Endereço do pagador X
+          bairro: Bairro do pagador X
+          nome: Nome completo do pagador X
+          email: pagador@dominio.com br
+          cep: "00000000"
+        numeroCliente: 25546454
+        identificacaoEmissaoBoleto: 1
+        dataLimitePagamento: 2025-11-05
+        beneficiarioFinal:
+          numeroCpfCnpj: "11122233300"
+          nome: Beneficiário Y
+        dataEmissao: 2025-09-01
+        codigoEspecieDocumento: DM
+        seuNumero: "012345678901234567"
+        codigoModalidade: 1
+        codigoProtesto: 1
+        codigoCadastrarPIX: 1
+        valorMulta: 5.5
+        tipoDesconto: 1
+        dataJurosMora: 2025-11-05
+        numeroParcela: 1
+        aceite: true
+        numeroDiasProtesto: 30
+        identificacaoBoletoEmpresa: "01234567890123456789"
+        valorSegundoDesconto: 15.5
+        valor: 156.23
+        tipoMulta: 1
+        valorAbatimento: 5.57
+        rateioCreditos:
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        codigoNegativacao: 2
+        gerarPdf: false
+        dataTerceiroDesconto: 2025-09-24
+        dataSegundoDesconto: 2025-09-20
+        valorJurosMora: 4.5
+        tipoJurosMora: 1
+        numeroContaCorrente: 123456
+        dataVencimento: 2025-09-25
+        valorTerceiroDesconto: 10.5
+        nossoNumero: 123456789012345678
+        identificacaoDistribuicaoBoleto: 1
+        mensagensInstrucao:
+        - Descrição da Instrução 1
+        - Descrição da Instrução 2
+        - Descrição da Instrução 3
+        - Descrição da Instrução 4
+        - Descrição da Instrução 5
+        dataMulta: 2025-11-05
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário no Sisbr.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto. Informar
+            - 1 - SIMPLES COM REGISTRO
+          example: 1
+          format: int32
+          type: integer
+        numeroContaCorrente:
+          description: Número da Conta Corrente onde será realizado o crédito da liquidação
+            do boleto.
+          example: 123456
+          format: int32
+          type: integer
+        codigoEspecieDocumento:
+          description: |-
+            Espécie do Documento. Informar valores listados abaixo. `Tamanho máximo 3`
+              - CH - Cheque
+              - DM - Duplicata Mercantil
+              - DMI - Duplicata Mercantil Indicação
+              - DS - Duplicata de Serviço
+              - DSI - Duplicata Serviço Indicação
+              - DR - Duplicata Rural
+              - LC - Letra de Câmbio
+              - NCC - Nota de Crédito Comercial
+              - NCE - Nota de Crédito Exportação
+              - NCI - Nota de Crédito Industrial
+              - NCR - Nota de Crédito Rural
+              - NP - Nota Promissória
+              - NPR - Nota Promissória Rural
+              - TM - Triplicata Mercantil
+              - TS - Triplicata de Serviço
+              - NS - Nota de Seguro
+              - RC - Recibo
+              - FAT - Fatura
+              - ND - Nota de Débito
+              - AP - Apólice de Seguro
+              - ME - Mensalidade Escolar
+              - PC - Pagamento de Consórcio
+              - NF - Nota Fiscal
+              - DD - Documento de Dívida
+              - BDP - Boleto Proposta
+              - OU - Outros
+          example: DM
+          type: string
+        dataEmissao:
+          description: |-
+            Data de emissão do boleto.
+            Formato: yyyy-MM-dd
+          example: 2025-09-01
+          format: date
+          type: string
+        nossoNumero:
+          description: "Número que identifica o boleto de cobrança no Sisbr. Caso\
+            \ deseje, o beneficiário poderá informar o nossoNumero."
+          example: 123456789012345678
+          format: int32
+          type: integer
+        seuNumero:
+          description: Número identificador do boleto no sistema do beneficiário.
+            `Tamanho máximo 18`
+          example: "012345678901234567"
+          type: string
+        identificacaoBoletoEmpresa:
+          description: Campo destinado para uso da empresa do beneficiário para identificação
+            do boleto. `Tamanho máximo 25`
+          example: "01234567890123456789"
+          type: string
+        identificacaoEmissaoBoleto:
+          description: Código de identificação de emissão do boleto. Informar os valores
+            listados abaixo. - 1 Banco Emite - 2 Cliente Emite
+          example: 1
+          type: integer
+        identificacaoDistribuicaoBoleto:
+          description: Código de identificação de distribuição do boleto. Informar
+            os valores listados abaixo. - 1 Banco Distribui - 2 Cliente Distribui
+          example: 1
+          type: integer
+        valor:
+          description: Valor nominal do boleto.
+          example: 156.23
+          format: double
+          type: number
+        dataVencimento:
+          description: "Data de vencimento do boleto.  \nFormato: yyyy-MM-dd\n"
+          example: 2025-09-25
+          format: date
+          type: string
+        dataLimitePagamento:
+          description: |
+            Data de limite para pagamento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2025-11-05
+          format: date
+          type: string
+        valorAbatimento:
+          description: Valor do abatimento a ser aplicado no boleto.
+          example: 5.57
+          format: double
+          type: number
+        tipoDesconto:
+          description: |-
+            Informar o tipo de desconto atribuido ao boleto.
+                              - 0 Sem Desconto
+                              - 1 Valor Fixo Até a Data Informada
+                              - 2 Percentual até a data informada
+                              - 3 Valor por antecipação dia corrido
+                              - 4 Valor por antecipação dia útil
+                              - 5 Percentual por antecipação dia corrido
+                              - 6 Percentual por antecipação dia útil
+          example: 1
+          format: int64
+          type: integer
+        dataPrimeiroDesconto:
+          description: |
+            Data do primeiro desconto. Deve ser informado caso o tipo de desconto seja diferente de 0.
+            Formato: yyyy-MM-dd
+          example: 2025-09-15
+          format: date
+          type: string
+        valorPrimeiroDesconto:
+          description: Valor do primeiro desconto. Deve ser informado caso a data
+            do primeiro desconto seja preenchida.
+          example: 22.5
+          format: double
+          type: number
+        dataSegundoDesconto:
+          description: |
+            Data do segundo desconto.
+            Formato: yyyy-MM-dd
+          example: 2025-09-20
+          format: date
+          type: string
+        valorSegundoDesconto:
+          description: Valor do segundo desconto. Deve ser informado caso a data do
+            segundo desconto seja preenchida.
+          example: 15.5
+          format: double
+          type: number
+        dataTerceiroDesconto:
+          description: |
+            Data do terceiro desconto.
+            Formato: yyyy-MM-dd
+          example: 2025-09-24
+          format: date
+          type: string
+        valorTerceiroDesconto:
+          description: Valor do terceiro desconto.Deve ser preenchido caso a data
+            do terceiro desconto seja preenchida.
+          example: 10.5
+          format: double
+          type: number
+        tipoMulta:
+          description: |-
+            Tipo de multa a ser aplicado no boleto. Informar os valores listados abaixo.
+              - 0 Isento
+              - 1 Valor Fixo
+              - 2 Percentual
+          example: 1
+          type: integer
+        dataMulta:
+          description: |-
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+            Formato: yyyy-MM-dd
+          example: 2025-11-05
+          format: date
+          type: string
+        valorMulta:
+          description: Valor da multa. Deve ser preenchido caso o campo dataMulta
+            seja preenchido.
+          example: 5.5
+          format: double
+          type: number
+        tipoJurosMora:
+          description: |-
+            Tipo de juros de mora. Informar os valores listados abaixo.
+              - 1 Valor por dia
+              - 2 Taxa Mensal
+              - 3 Isento
+          example: 1
+          type: integer
+        dataJurosMora:
+          description: |-
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+            Formato: yyyy-MM-dd
+          example: 2025-11-05
+          format: date
+          type: string
+        valorJurosMora:
+          description: Valor do juros de mora. Deve ser preenchido caso o campo dataJurosMora
+            seja preenchido.
+          example: 4.5
+          format: double
+          type: number
+        numeroParcela:
+          description: Número da parcela do boleto.Valor máximo permitido '99'.
+          example: 1
+          format: int64
+          type: integer
+        aceite:
+          description: Identificador do aceite do boleto.
+          example: true
+          type: boolean
+        codigoNegativacao:
+          description: |-
+            Código de negativação do boleto. Informar os valores abaixo.
+              - 2 Negativar Dias Úteis
+              - 3 Não Negativar
+          example: 2
+          type: integer
+        numeroDiasNegativacao:
+          description: Número de dias para negativação do boleto. Deve ser preenchido
+            caso o campo codigoNegativacao seja igual a '2'. `Tamanho máximo 99`
+          example: 60
+          type: integer
+        codigoProtesto:
+          description: |-
+            Código de protesto do boleto. Informar os valores abaixo.
+              - 1 Protestar Dias Corridos
+              - 2 Protestar Dias Úteis
+              - 3 Não Protestar
+          example: 1
+          type: integer
+        numeroDiasProtesto:
+          description: Número de dias para protesto do boleto. Deve ser preenchido
+            caso o campo codigoProtesto seja '1'. `Tamanho máximo 99`
+          example: 30
+          type: integer
+        pagador:
+          $ref: "#/components/schemas/Boleto_pagador"
+        beneficiarioFinal:
+          $ref: "#/components/schemas/_boletos_post_200_response_resultado_beneficiarioFinal"
+        mensagensInstrucao:
+          example:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          items:
+            description: A lista de mensagem permite 5 mensagens com máximo de 40
+              caracteres.
+            type: string
+          type: array
+        gerarPdf:
+          description: Identificador para o sistema devolver ou não o PDF do Boleto.
+            O PDF será retornado na Base64.
+          example: false
+          type: boolean
+        rateioCreditos:
+          items:
+            $ref: "#/components/schemas/RateioCredito"
+          type: array
+        codigoCadastrarPIX:
+          description: |-
+            Indicar uma das opções
+            - 0 Padrão
+            - 1 Com Pix
+            - 2 Sem Pix
+          example: 1
+          format: int16
+          type: integer
+        numeroContratoCobranca:
+          description: Indicar o id do contrato Cobranca
+          example: 1
+          format: int64
+          type: integer
+      required:
+      - codigoEspecieDocumento
+      - codigoModalidade
+      - dataEmissao
+      - dataVencimento
+      - identificacaoDistribuicaoBoleto
+      - identificacaoEmissaoBoleto
+      - numeroCliente
+      - numeroContaCorrente
+      - numeroParcela
+      - pagador
+      - seuNumero
+      - tipoDesconto
+      - tipoJurosMora
+      - tipoMulta
+      - valor
+      type: object
+    Negativacao:
+      example:
+        codigoModalidade: 1.0
+        numeroCliente: 25546454
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário no Sisbr.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto.
+            - 1 - SIMPLES COM REGISTRO
+            - 5 - CARNÊ DE PAGAMENTOS
+          example: 1.0
+          type: number
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+      required:
+      - codigoModalidade
+      - numeroCliente
+      type: object
+    Protesto:
+      example:
+        codigoModalidade: 1.0
+        numeroCliente: 25546454
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário no Sisbr.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto.
+            - 1 - SIMPLES COM REGISTRO
+            - 3 - CAUCIONADA
+            - 4 - VINCULADA
+            - 5 - CARNÊ DE PAGAMENTOS
+            - 8 - COBRANÇA CONTA CAPITAL
+          example: 1.0
+          type: number
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+      required:
+      - codigoModalidade
+      - numeroCliente
+      type: object
+    Pagador:
+      example:
+        uf: DF
+        numeroCpfCnpj: "98765432185"
+        cidade: Luziânia
+        endereco: Rua 87 Quadra 1 Lote 1 casa 1
+        bairro: Santa Rosa
+        numeroCliente: 25546454
+        nome: Marcelo dos Santos
+        email: pagador@dominio.com.br
+        cep: "72320000"
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário.
+          example: 25546454
+          format: int32
+          type: integer
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do pagador do boleto de cobrança. `Tamanho máximo
+            14`
+          example: "98765432185"
+          type: string
+        nome:
+          description: Nome completo do pagador do boleto de cobrança. `Tamanho máximo
+            50`
+          example: Marcelo dos Santos
+          type: string
+        endereco:
+          description: Endereço do pagador do boleto de cobrança.
+          example: Rua 87 Quadra 1 Lote 1 casa 1
+          type: string
+        bairro:
+          description: Bairro do pagador do boleto de cobrança.
+          example: Santa Rosa
+          type: string
+        cidade:
+          description: Cidade do pagador do boleto de cobrança.
+          example: Luziânia
+          type: string
+        cep:
+          description: CEP do pagador do boleto de cobrança.
+          example: "72320000"
+          type: string
+        uf:
+          description: UF do pagador do boleto de cobrança.
+          example: DF
+          type: string
+        email:
+          description: E-mail do Pagador.
+          example: pagador@dominio.com.br
+          type: string
+      required:
+      - bairro
+      - cep
+      - cidade
+      - endereco
+      - nome
+      - numeroCliente
+      - numeroCpfCnpj
+      - uf
+      type: object
+    RateioCredito:
+      example:
+        codigoTipoContaDestinoTed: CC
+        nomeTitular: Nome completo do titular X
+        codigoFinalidadeTed: "10"
+        valorRateio: "100"
+        quantidadeDiasFloat: 1
+        dataFloatCredito: 2020-12-30
+        numeroBanco: 33
+        contaPrincipal: true
+        numeroCpfCnpjTitular: "11122233300"
+        codigoTipoValorRateio: 1
+        numeroContaCorrente: "987654"
+        numeroAgencia: 1
+        codigoTipoCalculoRateio: 1
+      properties:
+        numeroBanco:
+          description: Número do Banco de Destino
+          example: 33
+          format: int32
+          type: integer
+        numeroAgencia:
+          description: Número da Agência de Destino
+          example: 1
+          format: int32
+          type: integer
+        numeroContaCorrente:
+          description: Número da Conta Corrente Destino.
+          example: "987654"
+          type: string
+        contaPrincipal:
+          description: Identificador de conta principal.
+          example: true
+          type: boolean
+        codigoTipoValorRateio:
+          description: |-
+            Tipo de valor do Rateio.
+              - 1 Percentual
+              - 2 Valor
+          example: 1
+          format: int32
+          type: integer
+        valorRateio:
+          description: Valor do rateio.
+          example: "100"
+          type: string
+        codigoTipoCalculoRateio:
+          description: |-
+            Tipo de cálculo do Rateio.
+              - 1 Valor Cobrado
+          example: 1
+          format: int32
+          type: integer
+        numeroCpfCnpjTitular:
+          description: CPF ou CNPJ do titular da conta. `Tamanho máximo 14`
+          example: "11122233300"
+          type: string
+        nomeTitular:
+          description: Nome completo do titular da conta. `Tamanho máximo 50`
+          example: Nome completo do titular X
+          type: string
+        codigoFinalidadeTed:
+          description: |-
+            Código da Finalidade TED.
+              - 1 Pagamento de Impostos, Tributos e Taxas
+              - 2 Pagamento à Concessionárias de Serviço Público
+              - 3 Pagamentos de Dividendos
+              - 4 Pagamento de Salários
+              - 5 Pagamento de Fornecedores
+              - 6 Pagamento de Honorários
+              - 7 Pagamento de Aluguéis e Taxas de Condomínio
+              - 8 Pagamento de Duplicatas e Títulos
+              - 9 Pagamento de Mensalidade Escolar
+              - 10 Crédito em Conta
+               ...
+              - 99999 Outros
+              - Para mais informações acesse https://www.bcb.gov.br/estabilidadefinanceira/comunicacaodados
+          example: "10"
+          type: string
+        codigoTipoContaDestinoTed:
+          description: |-
+            Tipo de conta Finalidade TED. `Tamanho máximo 2`
+              - CC Conta Corrente
+              - CD Conta de Depósito
+              - CG Conta garantida
+          example: CC
+          type: string
+        quantidadeDiasFloat:
+          description: Quantidade de dias float (não informar junto com dataFloatCredito).
+            `Tamanho máximo 10`
+          example: 1
+          format: int32
+          type: integer
+        dataFloatCredito:
+          description: |-
+            Data do float (não informar junto com quantidadeDiasFloat)
+            Formato: yyyy-MM-dd
+          example: 2020-12-30
+          format: date
+          type: string
+      required:
+      - codigoTipoValorRateio
+      - contaPrincipal
+      - nomeTitular
+      - numeroAgencia
+      - numeroBanco
+      - numeroContaCorrente
+      - valorRateio
+      type: object
+    FaixaNossoNumero:
+      example:
+        numeroFinal: 10
+        numeroCliente: 5224
+        validaDigitoVerificadorNossoNumero: true
+        nomeCliente: JOSE PEREIRA
+        numeroInicial: 1
+        quantidade: 10
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número do contrato
+          example: 5224
+          format: int32
+          type: integer
+        nomeCliente:
+          description: Nome do cliente
+          example: JOSE PEREIRA
+          type: string
+        numeroInicial:
+          description: Número do início da faixa
+          example: 1
+          format: int32
+          type: integer
+        numeroFinal:
+          description: Número do final da faixa
+          example: 10
+          format: int32
+          type: integer
+        quantidade:
+          description: Quantidade
+          example: 10
+          format: int32
+          type: integer
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+        validaDigitoVerificadorNossoNumero:
+          description: Indica que o contrato esta habilitado para validar o DV do
+            NN.
+          example: true
+          type: boolean
+      required:
+      - nomeCliente
+      - numeroCliente
+      - numeroFinal
+      - numeroInicial
+      - quantidade
+      - validaDigitoVerificadorNossoNumero
+      type: object
+    BoletoAlteracao:
+      example:
+        prorrogacaoVencimento:
+          dataVencimento: 2018-09-20
+        valorNominal:
+          valor: 156.23
+        desconto:
+          dataTerceiroDesconto: 2018-09-20
+          valorPrimeiroDesconto: 1.0
+          dataSegundoDesconto: 2018-09-20
+          dataPrimeiroDesconto: 2018-09-20
+          valorSegundoDesconto: 0.0
+          valorTerceiroDesconto: 0.0
+          tipoDesconto: 1
+        multa:
+          tipoMulta: 1
+          valorMulta: 5.0
+          dataMulta: 2018-09-20
+        numeroCliente: 25546454
+        rateioCredito:
+          tipoOperacao: 2
+          rateioCreditos:
+          - codigoTipoContaDestinoTed: CC
+            nomeTitular: Nome completo do titular X
+            codigoFinalidadeTed: "10"
+            valorRateio: "100"
+            quantidadeDiasFloat: 1
+            dataFloatCredito: 2020-12-30
+            numeroBanco: 33
+            contaPrincipal: true
+            numeroCpfCnpjTitular: "11122233300"
+            codigoTipoValorRateio: 1
+            numeroContaCorrente: "987654"
+            numeroAgencia: 1
+            codigoTipoCalculoRateio: 1
+          - codigoTipoContaDestinoTed: CC
+            nomeTitular: Nome completo do titular X
+            codigoFinalidadeTed: "10"
+            valorRateio: "100"
+            quantidadeDiasFloat: 1
+            dataFloatCredito: 2020-12-30
+            numeroBanco: 33
+            contaPrincipal: true
+            numeroCpfCnpjTitular: "11122233300"
+            codigoTipoValorRateio: 1
+            numeroContaCorrente: "987654"
+            numeroAgencia: 1
+            codigoTipoCalculoRateio: 1
+        prorrogacaoLimitePagamento:
+          dataLimitePagamento: 2018-09-20
+        seuNumero:
+          seuNumero: "209"
+          identificacaoBoletoEmpresa: "209"
+        codigoModalidade: 1
+        jurosMora:
+          valorJurosMora: 4.0
+          tipoJurosMora: 1
+          dataJurosMora: 2018-09-20
+        especieDocumento:
+          codigoEspecieDocumento: DM
+        abatimento:
+          valorAbatimento: 156.23
+        numeroContratoCobranca: 1
+        pix:
+          utilizarPix: false
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário no Sisbr.
+          example: 25546454
+          format: int64
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto.
+            - 1 - SIMPLES COM REGISTRO
+            - 3 - CAUCIONADA
+            - 4 - VINCULADA
+            - 5 - CARNÊ DE PAGAMENTOS
+            - 8 - COBRANÇA CONTA CAPITAL
+          example: 1
+          format: int32
+          type: integer
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+        especieDocumento:
+          $ref: "#/components/schemas/BoletoAlteracao_especieDocumento"
+        seuNumero:
+          $ref: "#/components/schemas/BoletoAlteracao_seuNumero"
+        desconto:
+          $ref: "#/components/schemas/BoletoAlteracao_desconto"
+        abatimento:
+          $ref: "#/components/schemas/BoletoAlteracao_abatimento"
+        multa:
+          $ref: "#/components/schemas/BoletoAlteracao_multa"
+        jurosMora:
+          $ref: "#/components/schemas/BoletoAlteracao_jurosMora"
+        rateioCredito:
+          $ref: "#/components/schemas/BoletoAlteracao_rateioCredito"
+        pix:
+          $ref: "#/components/schemas/BoletoAlteracao_pix"
+        prorrogacaoVencimento:
+          $ref: "#/components/schemas/BoletoAlteracao_prorrogacaoVencimento"
+        prorrogacaoLimitePagamento:
+          $ref: "#/components/schemas/BoletoAlteracao_prorrogacaoLimitePagamento"
+        valorNominal:
+          $ref: "#/components/schemas/BoletoAlteracao_valorNominal"
+      required:
+      - codigoModalidade
+      - numeroCliente
+      type: object
+    BoletoBaixa:
+      example:
+        codigoModalidade: 1
+        numeroCliente: 5224
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário.
+          example: 5224
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto.
+            - 1 - SIMPLES COM REGISTRO
+            - 3 - CAUCIONADA
+            - 4 - VINCULADA
+            - 5 - CARNÊ DE PAGAMENTOS
+            - 8 - COBRANÇA CONTA CAPITAL
+          example: 1
+          format: int32
+          type: integer
+      required:
+      - codigoModalidade
+      - numeroCliente
+      type: object
+    Status:
+      properties:
+        codigo:
+          description: Método http aplicado à URL espeficida.
+          enum:
+          - 200
+          - 400
+          - 406
+          example: 400
+          format: int32
+          type: integer
+        mensagem:
+          description: Mensagem de retorno.
+          type: string
+      type: object
+    MensagensErro:
+      example:
+        mensagens:
+        - codigo: codigo
+          mensagem: mensagem
+        - codigo: codigo
+          mensagem: mensagem
+      properties:
+        mensagens:
+          description: Array com todas as mensagem de erro encontradas.
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+      required:
+      - mensagens
+      type: object
+    SicoobMensagem:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+      properties:
+        mensagem:
+          description: Mensagem de retorno que pode ser informativa ou de erro
+          type: string
+        codigo:
+          description: Código padrão de erro
+          type: string
+      required:
+      - codigo
+      - mensagem
+      type: object
+    _boletos_get_200_response_resultado_pagador:
+      example:
+        uf: DF
+        numeroCpfCnpj: "98765432185"
+        cidade: Luziânia
+        endereco: Rua 87 Quadra 1 Lote 1 casa 1
+        bairro: Santa Rosa
+        nome: Marcelo dos Santos
+        email: pagador@dominio.com.br
+        cep: "72320000"
+      properties:
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do pagador. `Tamanho máximo 14`
+          example: "98765432185"
+          type: string
+        nome:
+          description: Nome completo do pagador. `Tamanho máximo 50`
+          example: Marcelo dos Santos
+          type: string
+        endereco:
+          description: Endereço do pagador.
+          example: Rua 87 Quadra 1 Lote 1 casa 1
+          type: string
+        bairro:
+          description: Bairro do pagador.
+          example: Santa Rosa
+          type: string
+        cidade:
+          description: Cidade do pagador.
+          example: Luziânia
+          type: string
+        cep:
+          description: CEP do pagador.
+          example: "72320000"
+          type: string
+        uf:
+          description: UF do pagador.
+          example: DF
+          type: string
+        email:
+          description: E-mail do Pagador.
+          example: pagador@dominio.com.br
+          type: string
+      required:
+      - bairro
+      - cep
+      - cidade
+      - endereco
+      - nome
+      - numeroCpfCnpj
+      - uf
+      type: object
+    _boletos_get_200_response_resultado_beneficiarioFinal:
+      example:
+        numeroCpfCnpj: "98784978699"
+        nome: Lucas de Lima
+      properties:
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do Beneficário Final. Antigo Sacador Avalista.
+            `Tamanho máximo 14`
+          example: "98784978699"
+          type: string
+        nome:
+          description: Nome do Beneficário Final. Antigo Sacador Avalista. `Tamanho
+            máximo 50`
+          example: Lucas de Lima
+          type: string
+      type: object
+    _boletos_get_200_response_resultado_listaHistorico_inner:
+      example:
+        tipoHistorico: "1"
+        descricaoHistorico: "TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75"
+        dataHistorico: 2019-05-31
+      properties:
+        dataHistorico:
+          description: |
+            Data do Hitórico.
+            Formato: yyyy-MM-dd
+          example: 2019-05-31
+          format: date
+          type: string
+        tipoHistorico:
+          description: Tipo do Histórico.
+          example: "1"
+          type: string
+        descricaoHistorico:
+          description: Descrição do Histórico.
+          example: "TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75"
+          type: string
+      required:
+      - dataHistorico
+      - descricaoHistorico
+      - tipoHistorico
+      type: object
+    _boletos_get_200_response_resultado:
+      example:
+        valorPrimeiroDesconto: 1.0
+        numeroDiasNegativacao: 60
+        dataPrimeiroDesconto: 2018-09-20
+        pagador:
+          uf: DF
+          numeroCpfCnpj: "98765432185"
+          cidade: Luziânia
+          endereco: Rua 87 Quadra 1 Lote 1 casa 1
+          bairro: Santa Rosa
+          nome: Marcelo dos Santos
+          email: pagador@dominio.com.br
+          cep: "72320000"
+        numeroCliente: 25546454
+        identificacaoEmissaoBoleto: 1
+        dataLimitePagamento: 2018-09-20
+        beneficiarioFinal:
+          numeroCpfCnpj: "98784978699"
+          nome: Lucas de Lima
+        situacaoBoleto: Em Aberto
+        dataEmissao: 2018-09-20
+        codigoEspecieDocumento: DM
+        seuNumero: "1235512"
+        qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+          PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+        codigoModalidade: 1
+        linhaDigitavel: "42297115040000195441184217468127172300000023124"
+        valorMulta: 5.0
+        tipoDesconto: 1
+        dataJurosMora: 2018-09-20
+        numeroParcela: 1
+        codigoBarras: "07092501614004706610157633070651479470000006500"
+        aceite: true
+        numeroDiasProtesto: 30
+        identificacaoBoletoEmpresa: "4562"
+        valorSegundoDesconto: 0.0
+        valor: 156.23
+        tipoMulta: 1
+        valorAbatimento: 1.0
+        quantidadeDiasFloat: 2
+        rateioCreditos:
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        dataTerceiroDesconto: 2018-09-20
+        dataSegundoDesconto: 2018-09-20
+        valorJurosMora: 4.0
+        tipoJurosMora: 1
+        listaHistorico:
+        - tipoHistorico: "1"
+          descricaoHistorico: "TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75"
+          dataHistorico: 2019-05-31
+        - tipoHistorico: "1"
+          descricaoHistorico: "TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75"
+          dataHistorico: 2019-05-31
+        numeroContaCorrente: 0
+        dataVencimento: 2018-09-20
+        valorTerceiroDesconto: 0.0
+        nossoNumero: 6
+        identificacaoDistribuicaoBoleto: 1
+        mensagensInstrucao:
+        - Descrição da Instrução 1
+        - Descrição da Instrução 2
+        - Descrição da Instrução 3
+        - Descrição da Instrução 4
+        - Descrição da Instrução 5
+        dataMulta: 2018-09-20
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: "Número que identifica a modalidade do boleto.\n- 1 - SIMPLES\
+            \ COM REGISTRO\n- 3 - CAUCIONADA\n- 4 - VINCULADA\n- 5 - CARNÊ DE PAGAMENTOS\
+            \ \n- 8 - COBRANÇA CONTA CAPITAL"
+          example: 1
+          format: int32
+          type: integer
+        numeroContaCorrente:
+          description: Número da Conta Corrente para crédito do boleto.
+          format: int32
+          type: integer
+        codigoEspecieDocumento:
+          description: |-
+            Espécie do documento
+              - CH - Cheque
+              - DM - Duplicata Mercantil
+              - DMI - Duplicata Mercantil Indicação
+              - DS - Duplicata de Serviço
+              - DSI - Duplicata Serviço Indicação
+              - DR - Duplicata Rural
+              - LC - Letra de Câmbio
+              - NCC - Nota de Crédito Comercial
+              - NCE - Nota de Crédito Exportação
+              - NCI - Nota de Crédito Industrial
+              - NCR - Nota de Crédito Rural
+              - NP - Nota Promissória
+              - NPR - Nota Promissória Rural
+              - TM - Triplicata Mercantil
+              - TS - Triplicata de Serviço
+              - NS - Nota de Seguro
+              - RC - Recibo
+              - FAT - Fatura
+              - ND - Nota de Débito
+              - AP - Apólice de Seguro
+              - ME - Mensalidade Escolar
+              - PC - Pagamento de Consórcio
+              - NF - Nota Fiscal
+              - DD - Documento de Dívida
+              - CC - Cartão de Crédito
+              - BDP - Boleto Proposta
+              - OU - Outros
+          example: DM
+          type: string
+        dataEmissao:
+          description: |
+            Data de emissão do boleto
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        nossoNumero:
+          description: Número que identifica o boleto.
+          format: int32
+          type: integer
+        seuNumero:
+          description: Informar o número que identifica o boleto no sistema do beneficiário.
+            `Tamanho máximo 18`
+          example: "1235512"
+          type: string
+        identificacaoBoletoEmpresa:
+          description: Destinado para uso da Empresa Cedente para identificação do
+            Boleto
+          example: "4562"
+          type: string
+        codigoBarras:
+          description: Número de código de barras do boleto com 44 posições.
+          example: "07092501614004706610157633070651479470000006500"
+          type: string
+        linhaDigitavel:
+          description: Número da linha digitável do boleto com 47 posições.
+          example: "42297115040000195441184217468127172300000023124"
+          type: string
+        identificacaoEmissaoBoleto:
+          description: |-
+            Identificação de Emissão do Boleto
+              - 1 Banco Emite
+              - 2 Cliente Emite
+          example: 1
+          type: integer
+        identificacaoDistribuicaoBoleto:
+          description: |-
+            Identificação de Distribuição do Boleto
+              - 1 Banco Distribui
+              - 2 Cliente Distribui
+          example: 1
+          type: integer
+        valor:
+          description: Valor nominal do boleto.
+          example: 156.23
+          format: double
+          type: number
+        dataVencimento:
+          description: |
+            Data de vencimento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        dataLimitePagamento:
+          description: |
+            Data de limite para pagamento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorAbatimento:
+          description: Valor do abatimento.
+          example: 1.0
+          format: double
+          type: number
+        tipoDesconto:
+          description: |-
+            Informar o tipo de desconto atribuido ao boleto.
+                - 0 Sem Desconto
+                - 1 Valor Fixo Até a Data Informada
+                - 2 Percentual até a data informada
+                - 3 Valor por antecipação dia corrido
+                - 4 Valor por antecipação dia útil
+                - 5 Percentual por antecipação dia corrido
+                - 6 Percentual por antecipação dia útil
+          example: 1
+          format: int64
+          type: integer
+        dataPrimeiroDesconto:
+          description: |
+            Data do primeiro desconto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorPrimeiroDesconto:
+          description: Valor do primeiro desconto
+          example: 1.0
+          format: double
+          type: number
+        dataSegundoDesconto:
+          description: |
+            Data do segundo desconto
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorSegundoDesconto:
+          description: Valor do segundo desconto
+          example: 0.0
+          format: double
+          type: number
+        dataTerceiroDesconto:
+          description: |
+            Data do terceiro desconto
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorTerceiroDesconto:
+          description: Valor do terceiro desconto
+          example: 0.0
+          format: double
+          type: number
+        tipoMulta:
+          description: |-
+            Tipo de Multa
+              - 0 Isento
+              - 1 Valor Fixo
+              - 2 Percentual
+          example: 1
+          type: integer
+        dataMulta:
+          description: |-
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorMulta:
+          description: Valor da multa.
+          example: 5.0
+          format: double
+          type: number
+        tipoJurosMora:
+          description: |-
+            Tipo de Juros de Mora
+            - 1 Valor por dia
+            - 2 Taxa Mensal
+            - 3 Isento
+          example: 1
+          type: integer
+        dataJurosMora:
+          description: "Deve ser maior que a data de vencimento do boleto e menor\
+            \ ou igual que data limite de pagamento. Formato: yyyy-MM-dd"
+          example: 2018-09-20
+          format: date
+          type: string
+        valorJurosMora:
+          description: Valor do Juros de Mora.
+          example: 4.0
+          format: double
+          type: number
+        numeroParcela:
+          description: Número da parcela.
+          example: 1
+          format: int64
+          type: integer
+        aceite:
+          description: Identificador do aceite do boleto.
+          example: true
+          type: boolean
+        numeroDiasNegativacao:
+          description: Número de Dias para Negativação do Boleto
+          example: 60
+          type: integer
+        numeroDiasProtesto:
+          description: Número de Dias para Protesto do Boleto
+          example: 30
+          type: integer
+        quantidadeDiasFloat:
+          description: Quantidade de Dias de Float.
+          example: 2
+          type: integer
+        pagador:
+          $ref: "#/components/schemas/_boletos_get_200_response_resultado_pagador"
+        beneficiarioFinal:
+          $ref: "#/components/schemas/_boletos_get_200_response_resultado_beneficiarioFinal"
+        mensagensInstrucao:
+          example:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          items:
+            description: Lista de mensagens de instrução.
+            type: string
+          type: array
+        listaHistorico:
+          items:
+            $ref: "#/components/schemas/_boletos_get_200_response_resultado_listaHistorico_inner"
+          type: array
+        situacaoBoleto:
+          description: |-
+            Descreve a Situação atual do Boleto
+              - Em Aberto
+              - Baixado
+              - Liquidado
+          example: Em Aberto
+          type: string
+        rateioCreditos:
+          items:
+            $ref: "#/components/schemas/RateioCredito"
+          type: array
+        qrCode:
+          description: QRCode para pagamento com PIX
+          example: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          type: string
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+      required:
+      - aceite
+      - codigoBarras
+      - codigoEspecieDocumento
+      - codigoModalidade
+      - dataEmissao
+      - dataVencimento
+      - identificacaoBoletoEmpresa
+      - linhaDigitavel
+      - nossoNumero
+      - numeroCliente
+      - numeroParcela
+      - pagador
+      - quantidadeDiasFloat
+      - seuNumero
+      - situacaoBoleto
+      - tipoDesconto
+      - tipoJurosMora
+      - tipoMulta
+      - valor
+      - valorAbatimento
+      - valorJurosMora
+      - valorMulta
+      type: object
+    _boletos_get_200_response:
+      example:
+        resultado:
+          valorPrimeiroDesconto: 1.0
+          numeroDiasNegativacao: 60
+          dataPrimeiroDesconto: 2018-09-20
+          pagador:
+            uf: DF
+            numeroCpfCnpj: "98765432185"
+            cidade: Luziânia
+            endereco: Rua 87 Quadra 1 Lote 1 casa 1
+            bairro: Santa Rosa
+            nome: Marcelo dos Santos
+            email: pagador@dominio.com.br
+            cep: "72320000"
+          numeroCliente: 25546454
+          identificacaoEmissaoBoleto: 1
+          dataLimitePagamento: 2018-09-20
+          beneficiarioFinal:
+            numeroCpfCnpj: "98784978699"
+            nome: Lucas de Lima
+          situacaoBoleto: Em Aberto
+          dataEmissao: 2018-09-20
+          codigoEspecieDocumento: DM
+          seuNumero: "1235512"
+          qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          codigoModalidade: 1
+          linhaDigitavel: "42297115040000195441184217468127172300000023124"
+          valorMulta: 5.0
+          tipoDesconto: 1
+          dataJurosMora: 2018-09-20
+          numeroParcela: 1
+          codigoBarras: "07092501614004706610157633070651479470000006500"
+          aceite: true
+          numeroDiasProtesto: 30
+          identificacaoBoletoEmpresa: "4562"
+          valorSegundoDesconto: 0.0
+          valor: 156.23
+          tipoMulta: 1
+          valorAbatimento: 1.0
+          quantidadeDiasFloat: 2
+          rateioCreditos:
+          - codigoTipoContaDestinoTed: CC
+            nomeTitular: Nome completo do titular X
+            codigoFinalidadeTed: "10"
+            valorRateio: "100"
+            quantidadeDiasFloat: 1
+            dataFloatCredito: 2020-12-30
+            numeroBanco: 33
+            contaPrincipal: true
+            numeroCpfCnpjTitular: "11122233300"
+            codigoTipoValorRateio: 1
+            numeroContaCorrente: "987654"
+            numeroAgencia: 1
+            codigoTipoCalculoRateio: 1
+          - codigoTipoContaDestinoTed: CC
+            nomeTitular: Nome completo do titular X
+            codigoFinalidadeTed: "10"
+            valorRateio: "100"
+            quantidadeDiasFloat: 1
+            dataFloatCredito: 2020-12-30
+            numeroBanco: 33
+            contaPrincipal: true
+            numeroCpfCnpjTitular: "11122233300"
+            codigoTipoValorRateio: 1
+            numeroContaCorrente: "987654"
+            numeroAgencia: 1
+            codigoTipoCalculoRateio: 1
+          dataTerceiroDesconto: 2018-09-20
+          dataSegundoDesconto: 2018-09-20
+          valorJurosMora: 4.0
+          tipoJurosMora: 1
+          listaHistorico:
+          - tipoHistorico: "1"
+            descricaoHistorico: "TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75"
+            dataHistorico: 2019-05-31
+          - tipoHistorico: "1"
+            descricaoHistorico: "TARIFA - TAR. MANUTENÇÃO DE TÍTULO VENCIDO - R$ 0,75"
+            dataHistorico: 2019-05-31
+          numeroContaCorrente: 0
+          dataVencimento: 2018-09-20
+          valorTerceiroDesconto: 0.0
+          nossoNumero: 6
+          identificacaoDistribuicaoBoleto: 1
+          mensagensInstrucao:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          dataMulta: 2018-09-20
+          numeroContratoCobranca: 1
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_boletos_get_200_response_resultado"
+      type: object
+    _boletos_post_200_response_resultado_pagador:
+      example:
+        uf: OU
+        numeroCpfCnpj: "11122233300"
+        cidade: Cidade do pagador X
+        endereco: Endereço do pagador X
+        bairro: Bairro do pagador X
+        nome: Nome completo do pagador X
+        email: pagador@dominio.com br
+        cep: "00000000"
+      properties:
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do pagador. `Tamanho máximo 14`
+          example: "11122233300"
+          type: string
+        nome:
+          description: Nome completo do pagador. `Tamanho máximo 50`
+          example: Nome completo do pagador X
+          type: string
+        endereco:
+          description: Endereço do pagador.
+          example: Endereço do pagador X
+          type: string
+        bairro:
+          description: Bairro do pagador.
+          example: Bairro do pagador X
+          type: string
+        cidade:
+          description: Cidade do pagador.
+          example: Cidade do pagador X
+          type: string
+        cep:
+          description: CEP do pagador.
+          example: "00000000"
+          type: string
+        uf:
+          description: UF do pagador.
+          example: OU
+          type: string
+        email:
+          description: E-mail do Pagador.
+          example: pagador@dominio.com br
+          type: string
+      type: object
+    _boletos_post_200_response_resultado_beneficiarioFinal:
+      example:
+        numeroCpfCnpj: "11122233300"
+        nome: Beneficiário Y
+      properties:
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do Beneficário Final. Antigo Sacador Avalista.
+            `Tamanho máximo 14`
+          example: "11122233300"
+          type: string
+        nome:
+          description: Nome do Beneficário Final. Antigo Sacador Avalista. `Tamanho
+            máximo 40`
+          example: Beneficiário Y
+          type: string
+      type: object
+    _boletos_post_200_response_resultado:
+      example:
+        valorPrimeiroDesconto: 22.5
+        numeroDiasNegativacao: 60
+        pdfBoleto: JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=
+        dataPrimeiroDesconto: 2025-09-15
+        pagador:
+          uf: OU
+          numeroCpfCnpj: "11122233300"
+          cidade: Cidade do pagador X
+          endereco: Endereço do pagador X
+          bairro: Bairro do pagador X
+          nome: Nome completo do pagador X
+          email: pagador@dominio.com br
+          cep: "00000000"
+        numeroCliente: 25546454
+        identificacaoEmissaoBoleto: 1
+        dataLimitePagamento: 2025-11-05
+        beneficiarioFinal:
+          numeroCpfCnpj: "11122233300"
+          nome: Beneficiário Y
+        dataEmissao: 2025-09-01
+        codigoEspecieDocumento: DM
+        seuNumero: "012345678901234567"
+        qrCode: 1234567891098765421br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924NOME
+          COMPLETO6008Brasilia62070503***630435A3
+        codigoModalidade: 1
+        codigoProtesto: 1
+        linhaDigitavel: "42297115040000195441184217468127172300000023124"
+        valorMulta: 5.5
+        tipoDesconto: 1
+        dataJurosMora: 2025-11-05
+        numeroParcela: 1
+        codigoBarras: "07092501614004706610157633070651479470000006500"
+        descricaoRejeicaoPix: Modalidade não permitida para geração de QR Code.
+        aceite: true
+        numeroDiasProtesto: 30
+        identificacaoBoletoEmpresa: "01234567890123456789"
+        valorSegundoDesconto: 15.5
+        valor: 156.23
+        tipoMulta: 1
+        valorAbatimento: 5.57
+        quantidadeDiasFloat: 2
+        rateioCreditos:
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        codigoNegativacao: 2
+        dataTerceiroDesconto: 2025-09-24
+        dataSegundoDesconto: 2025-09-20
+        valorJurosMora: 4.5
+        tipoJurosMora: 1
+        numeroContaCorrente: 0
+        dataVencimento: 2025-09-25
+        valorTerceiroDesconto: 10.5
+        nossoNumero: 6
+        identificacaoDistribuicaoBoleto: 1
+        mensagensInstrucao:
+        - Descrição da Instrução 1
+        - Descrição da Instrução 2
+        - Descrição da Instrução 3
+        - Descrição da Instrução 4
+        - Descrição da Instrução 5
+        dataMulta: 2025-11-05
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto.
+               - 1 SIMPLES COM REGISTRO
+          example: 1
+          format: int32
+          type: integer
+        numeroContaCorrente:
+          description: Número da Conta Corrente para crédito do boleto.
+          format: int32
+          type: integer
+        codigoEspecieDocumento:
+          description: |-
+            Espécie do documento
+              - CH - Cheque
+              - DM - Duplicata Mercantil
+              - DMI - Duplicata Mercantil Indicação
+              - DS - Duplicata de Serviço
+              - DSI - Duplicata Serviço Indicação
+              - DR - Duplicata Rural
+              - LC - Letra de Câmbio
+              - NCC - Nota de Crédito Comercial
+              - NCE - Nota de Crédito Exportação
+              - NCI - Nota de Crédito Industrial
+              - NCR - Nota de Crédito Rural
+              - NP - Nota Promissória
+              - NPR - Nota Promissória Rural
+              - TM - Triplicata Mercantil
+              - TS - Triplicata de Serviço
+              - NS - Nota de Seguro
+              - RC - Recibo
+              - FAT - Fatura
+              - ND - Nota de Débito
+              - AP - Apólice de Seguro
+              - ME - Mensalidade Escolar
+              - PC - Pagamento de Consórcio
+              - NF - Nota Fiscal
+              - DD - Documento de Dívida
+              - BDP - Boleto Proposta
+              - OU - Outros
+          example: DM
+          type: string
+        dataEmissao:
+          description: |
+            Data de emissão do boleto
+            Formato: yyyy-MM-dd
+          example: 2025-09-01
+          format: date
+          type: string
+        nossoNumero:
+          description: Número que identifica o boleto.
+          format: int32
+          type: integer
+        seuNumero:
+          description: Informar o número que identifica o boleto no sistema do beneficiário.
+          example: "012345678901234567"
+          type: string
+        identificacaoBoletoEmpresa:
+          description: Destinado para uso da Empresa Cedente para identificação do
+            Boleto
+          example: "01234567890123456789"
+          type: string
+        codigoBarras:
+          description: Número de código de barras do boleto com 44 posições.
+          example: "07092501614004706610157633070651479470000006500"
+          type: string
+        linhaDigitavel:
+          description: Número da linha digitável do boleto com 47 posições.
+          example: "42297115040000195441184217468127172300000023124"
+          type: string
+        identificacaoEmissaoBoleto:
+          description: Identificação de Emissão do Boleto - 1 Banco Emite - 2 Cliente
+            Emite
+          example: 1
+          type: integer
+        identificacaoDistribuicaoBoleto:
+          description: |-
+            Identificação de Distribuição do Boleto
+              - 1 Banco Distribui
+              - 2 Cliente Distribui
+          example: 1
+          type: integer
+        valor:
+          description: Valor nominal do boleto.
+          example: 156.23
+          format: double
+          type: number
+        dataVencimento:
+          description: |
+            Data de vencimento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2025-09-25
+          format: date
+          type: string
+        dataLimitePagamento:
+          description: |
+            Data de limite para pagamento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2025-11-05
+          format: date
+          type: string
+        valorAbatimento:
+          description: Valor do abatimento.
+          example: 5.57
+          format: double
+          type: number
+        tipoDesconto:
+          description: |-
+            Informar o tipo de desconto a ser aplicado no boleto.
+                - 0 Sem Desconto
+                - 1 Valor Fixo Até a Data Informada
+                - 2 Percentual até a data informada
+                - 3 Valor por antecipação dia corrido
+                - 4 Valor por antecipação dia útil
+                - 5 Percentual por antecipação dia corrido
+                - 6 Percentual por antecipação dia útil
+          example: 1
+          format: int64
+          type: integer
+        dataPrimeiroDesconto:
+          description: |
+            Data do primeiro desconto.
+            Formato: yyyy-MM-dd
+          example: 2025-09-15
+          format: date
+          type: string
+        valorPrimeiroDesconto:
+          description: Valor do primeiro desconto
+          example: 22.5
+          format: double
+          type: number
+        dataSegundoDesconto:
+          description: |
+            Data do segundo desconto
+            Formato: yyyy-MM-dd
+          example: 2025-09-20
+          format: date
+          type: string
+        valorSegundoDesconto:
+          description: Valor do segundo desconto
+          example: 15.5
+          format: double
+          type: number
+        dataTerceiroDesconto:
+          description: |
+            Data do terceiro desconto
+            Formato: yyyy-MM-dd
+          example: 2025-09-24
+          format: date
+          type: string
+        valorTerceiroDesconto:
+          description: Valor do terceiro desconto
+          example: 10.5
+          format: double
+          type: number
+        tipoMulta:
+          description: |-
+            Tipo de Multa
+              - 0 Isento
+              - 1 Valor Fixo
+              - 2 Percentual
+          example: 1
+          type: integer
+        dataMulta:
+          description: |-
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+            Formato: yyyy-MM-dd
+          example: 2025-11-05
+          format: date
+          type: string
+        valorMulta:
+          description: Valor da multa.
+          example: 5.5
+          format: double
+          type: number
+        tipoJurosMora:
+          description: |-
+            Tipo de Juros de Mora
+              - 1 Valor por dia
+              - 2 Taxa Mensal
+              - 3 Isento
+          example: 1
+          type: integer
+        dataJurosMora:
+          description: |-
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+            Formato: yyyy-MM-dd
+          example: 2025-11-05
+          format: date
+          type: string
+        valorJurosMora:
+          description: Valor do Juros de Mora.
+          example: 4.5
+          format: double
+          type: number
+        numeroParcela:
+          description: Número da parcela.
+          example: 1
+          format: int64
+          type: integer
+        aceite:
+          description: Identificador do aceite do boleto.
+          example: true
+          type: boolean
+        codigoNegativacao:
+          description: |-
+            Código de Negativação do Boleto
+              - 2 Negativar Dias Úteis
+              - 3 Não Negativar
+          example: 2
+          type: integer
+        numeroDiasNegativacao:
+          description: Número de Dias para Negativação do Boleto
+          example: 60
+          type: integer
+        codigoProtesto:
+          description: |-
+            Código de Protesto do Boleto
+              - 1 Protestar Dias Corridos
+              - 2 Protestar Dias Úteis
+              - 3 Não Protestar
+          example: 1
+          type: integer
+        numeroDiasProtesto:
+          description: Número de Dias para Protesto do Boleto
+          example: 30
+          type: integer
+        quantidadeDiasFloat:
+          description: Quantidade de Dias de Float.
+          example: 2
+          type: integer
+        pagador:
+          $ref: "#/components/schemas/_boletos_post_200_response_resultado_pagador"
+        beneficiarioFinal:
+          $ref: "#/components/schemas/_boletos_post_200_response_resultado_beneficiarioFinal"
+        mensagensInstrucao:
+          example:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          items:
+            description: A lista de mensagem permite 5 mensagens com máximo de 40
+              caracteres.
+            type: string
+          type: array
+        rateioCreditos:
+          items:
+            $ref: "#/components/schemas/RateioCredito"
+          type: array
+        pdfBoleto:
+          description: String na Base64 do PDF do Boleto.
+          example: JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=
+          type: string
+        qrCode:
+          description: QRCode para pagamento com PIX
+          example: 1234567891098765421br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924NOME
+            COMPLETO6008Brasilia62070503***630435A3
+          type: string
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+        descricaoRejeicaoPix:
+          description: O motivo pelo qual não foi incluído o QRCode para pagamento
+            com PIX.
+          example: Modalidade não permitida para geração de QR Code.
+          type: string
+      required:
+      - aceite
+      - codigoBarras
+      - codigoEspecieDocumento
+      - codigoModalidade
+      - codigoNegativacao
+      - codigoProtesto
+      - dataEmissao
+      - dataJurosMora
+      - dataMulta
+      - dataVencimento
+      - identificacaoEmissaoBoleto
+      - linhaDigitavel
+      - nossoNumero
+      - numeroCliente
+      - numeroContaCorrente
+      - numeroParcela
+      - seuNumero
+      - tipoDesconto
+      - tipoJurosMora
+      - tipoMulta
+      - valor
+      - valorAbatimento
+      - valorJurosMora
+      - valorMulta
+      type: object
+    _boletos_post_200_response:
+      example:
+        resultado:
+          valorPrimeiroDesconto: 22.5
+          numeroDiasNegativacao: 60
+          pdfBoleto: JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=
+          dataPrimeiroDesconto: 2025-09-15
+          pagador:
+            uf: OU
+            numeroCpfCnpj: "11122233300"
+            cidade: Cidade do pagador X
+            endereco: Endereço do pagador X
+            bairro: Bairro do pagador X
+            nome: Nome completo do pagador X
+            email: pagador@dominio.com br
+            cep: "00000000"
+          numeroCliente: 25546454
+          identificacaoEmissaoBoleto: 1
+          dataLimitePagamento: 2025-11-05
+          beneficiarioFinal:
+            numeroCpfCnpj: "11122233300"
+            nome: Beneficiário Y
+          dataEmissao: 2025-09-01
+          codigoEspecieDocumento: DM
+          seuNumero: "012345678901234567"
+          qrCode: 1234567891098765421br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924NOME
+            COMPLETO6008Brasilia62070503***630435A3
+          codigoModalidade: 1
+          codigoProtesto: 1
+          linhaDigitavel: "42297115040000195441184217468127172300000023124"
+          valorMulta: 5.5
+          tipoDesconto: 1
+          dataJurosMora: 2025-11-05
+          numeroParcela: 1
+          codigoBarras: "07092501614004706610157633070651479470000006500"
+          descricaoRejeicaoPix: Modalidade não permitida para geração de QR Code.
+          aceite: true
+          numeroDiasProtesto: 30
+          identificacaoBoletoEmpresa: "01234567890123456789"
+          valorSegundoDesconto: 15.5
+          valor: 156.23
+          tipoMulta: 1
+          valorAbatimento: 5.57
+          quantidadeDiasFloat: 2
+          rateioCreditos:
+          - codigoTipoContaDestinoTed: CC
+            nomeTitular: Nome completo do titular X
+            codigoFinalidadeTed: "10"
+            valorRateio: "100"
+            quantidadeDiasFloat: 1
+            dataFloatCredito: 2020-12-30
+            numeroBanco: 33
+            contaPrincipal: true
+            numeroCpfCnpjTitular: "11122233300"
+            codigoTipoValorRateio: 1
+            numeroContaCorrente: "987654"
+            numeroAgencia: 1
+            codigoTipoCalculoRateio: 1
+          - codigoTipoContaDestinoTed: CC
+            nomeTitular: Nome completo do titular X
+            codigoFinalidadeTed: "10"
+            valorRateio: "100"
+            quantidadeDiasFloat: 1
+            dataFloatCredito: 2020-12-30
+            numeroBanco: 33
+            contaPrincipal: true
+            numeroCpfCnpjTitular: "11122233300"
+            codigoTipoValorRateio: 1
+            numeroContaCorrente: "987654"
+            numeroAgencia: 1
+            codigoTipoCalculoRateio: 1
+          codigoNegativacao: 2
+          dataTerceiroDesconto: 2025-09-24
+          dataSegundoDesconto: 2025-09-20
+          valorJurosMora: 4.5
+          tipoJurosMora: 1
+          numeroContaCorrente: 0
+          dataVencimento: 2025-09-25
+          valorTerceiroDesconto: 10.5
+          nossoNumero: 6
+          identificacaoDistribuicaoBoleto: 1
+          mensagensInstrucao:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          dataMulta: 2025-11-05
+          numeroContratoCobranca: 1
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_boletos_post_200_response_resultado"
+      type: object
+    _pagadores__numeroCpfCnpj__boletos_get_200_response_resultado_inner_pagador:
+      example:
+        numeroCpfCnpj: "98765432185"
+        nome: Marcelo dos Santos
+      properties:
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do pagador. `Tamanho máximo 14`
+          example: "98765432185"
+          type: string
+        nome:
+          description: Nome completo do pagador. `Tamanho máximo 50`
+          example: Marcelo dos Santos
+          type: string
+      type: object
+    _pagadores__numeroCpfCnpj__boletos_get_200_response_resultado_inner_beneficiarioFinal:
+      example:
+        nome: Lucas de Lima
+      properties:
+        nome:
+          description: Nome do Beneficário Final. Antigo Sacador Avalista. `Tamanho
+            máximo 50`
+          example: Lucas de Lima
+          type: string
+      type: object
+    _pagadores__numeroCpfCnpj__boletos_get_200_response_resultado_inner:
+      example:
+        valorPrimeiroDesconto: 1.0
+        dataPrimeiroDesconto: 2018-09-20
+        pagador:
+          numeroCpfCnpj: "98765432185"
+          nome: Marcelo dos Santos
+        numeroCliente: 25546454
+        beneficiarioFinal:
+          nome: Lucas de Lima
+        situacaoBoleto: Liquidado
+        dataEmissao: 2018-09-20
+        codigoEspecieDocumento: DM
+        seuNumero: "1235512"
+        qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+          PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+        codigoModalidade: 1
+        codigoProtesto: 1
+        linhaDigitavel: "42297115040000195441184217468127172300000023124"
+        valorMulta: 5.0
+        dataJurosMora: 2018-09-20
+        numeroParcela: 1
+        tipoDesconto: 1
+        codigoBarras: "07092501614004706610157633070651479470000006500"
+        aceite: true
+        identificacaoBoletoEmpresa: "4562"
+        valorSegundoDesconto: 0.0
+        valor: 156.23
+        tipoMulta: 1
+        valorAbatimento: 1.0
+        quantidadeDiasFloat: 2
+        codigoNegativacao: 2
+        dataTerceiroDesconto: 2018-09-20
+        dataSegundoDesconto: 2018-09-20
+        valorJurosMora: 4.0
+        tipoJurosMora: 1
+        numeroContaCorrente: 0
+        dataVencimento: 2018-09-20
+        valorTerceiroDesconto: 0.0
+        nossoNumero: 6
+        mensagensInstrucao:
+        - Descrição da Instrução 1
+        - Descrição da Instrução 2
+        - Descrição da Instrução 3
+        - Descrição da Instrução 4
+        - Descrição da Instrução 5
+        dataMulta: 2018-09-20
+        numeroContratoCobranca: 1
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: |-
+            Número que identifica a modalidade do boleto.
+            - 1 - SIMPLES COM REGISTRO
+            - 3 - CAUCIONADA
+            - 4 - VINCULADA
+            - 5 - CARNÊ DE PAGAMENTOS
+            - 8 - COBRANÇA CONTA CAPITAL
+          example: 1
+          format: int32
+          type: integer
+        numeroContaCorrente:
+          description: Número da Conta Corrente para crédito do boleto.
+          format: int32
+          type: integer
+        codigoEspecieDocumento:
+          description: |-
+            Espécie do documento
+              - CH - Cheque
+              - DM - Duplicata Mercantil
+              - DMI - Duplicata Mercantil Indicação
+              - DS - Duplicata de Serviço
+              - DSI - Duplicata Serviço Indicação
+              - DR - Duplicata Rural
+              - LC - Letra de Câmbio
+              - NCC - Nota de Crédito Comercial
+              - NCE - Nota de Crédito Exportação
+              - NCI - Nota de Crédito Industrial
+              - NCR - Nota de Crédito Rural
+              - NP - Nota Promissória
+              - NPR - Nota Promissória Rural
+              - TM - Triplicata Mercantil
+              - TS - Triplicata de Serviço
+              - NS - Nota de Seguro
+              - RC - Recibo
+              - FAT - Fatura
+              - ND - Nota de Débito
+              - AP - Apólice de Seguro
+              - ME - Mensalidade Escolar
+              - PC - Pagamento de Consórcio
+              - NF - Nota Fiscal
+              - DD - Documento de Dívida
+              - CC - Cartão de Crédito
+              - BDP - Boleto Proposta
+              - OU - Outros
+          example: DM
+          type: string
+        dataEmissao:
+          description: |
+            Data de emissão do boleto
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        nossoNumero:
+          description: Número que identifica o boleto.
+          format: int32
+          type: integer
+        seuNumero:
+          description: Informar o número que identifica o boleto no sistema do beneficiário.
+            `Tamanho máximo 18`
+          example: "1235512"
+          type: string
+        identificacaoBoletoEmpresa:
+          description: Destinado para uso da Empresa Cedente para identificação do
+            Boleto
+          example: "4562"
+          type: string
+        codigoBarras:
+          description: Número de código de barras do boleto com 44 posições.
+          example: "07092501614004706610157633070651479470000006500"
+          type: string
+        linhaDigitavel:
+          description: Número da linha digitável do boleto com 47 posições.
+          example: "42297115040000195441184217468127172300000023124"
+          type: string
+        valor:
+          description: Valor nominal do boleto.
+          example: 156.23
+          format: double
+          type: number
+        dataVencimento:
+          description: |
+            Data de vencimento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorAbatimento:
+          description: Valor do abatimento.
+          example: 1.0
+          format: double
+          type: number
+        dataPrimeiroDesconto:
+          description: |
+            Data do primeiro desconto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorPrimeiroDesconto:
+          description: Valor do primeiro desconto
+          example: 1.0
+          format: double
+          type: number
+        dataSegundoDesconto:
+          description: |
+            Data do segundo desconto
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorSegundoDesconto:
+          description: Valor do segundo desconto
+          example: 0.0
+          format: double
+          type: number
+        dataTerceiroDesconto:
+          description: |
+            Data do terceiro desconto
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorTerceiroDesconto:
+          description: Valor do terceiro desconto
+          example: 0.0
+          format: double
+          type: number
+        tipoMulta:
+          description: |-
+            Tipo de Multa
+              - 0 Isento
+              - 1 Valor Fixo
+              - 2 Percentual
+          example: 1
+          type: integer
+        dataMulta:
+          description: |
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorMulta:
+          description: Valor da multa.
+          example: 5.0
+          format: double
+          type: number
+        tipoJurosMora:
+          description: |-
+            Tipo de Juros de Mora
+            - 1 Valor por dia
+            - 2 Taxa Mensal
+            - 3 Isento
+          example: 1
+          type: integer
+        dataJurosMora:
+          description: |
+            Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorJurosMora:
+          description: Valor do Juros de Mora.
+          example: 4.0
+          format: double
+          type: number
+        numeroParcela:
+          description: Número da parcela.
+          example: 1
+          format: int64
+          type: integer
+        aceite:
+          description: Identificador do aceite do boleto.
+          example: true
+          type: boolean
+        codigoNegativacao:
+          description: |-
+            Código de Negativação do Boleto
+              - 2 Negativar Dias Úteis
+              - 3 Não Negativar
+          example: 2
+          type: integer
+        codigoProtesto:
+          description: |-
+            Código de Protesto do Boleto
+              - 1 Protestar Dias Corridos
+              - 2 Protestar Dias Úteis
+              - 3 Não Protestar
+          example: 1
+          type: integer
+        quantidadeDiasFloat:
+          description: Quantidade de Dias de Float.
+          example: 2
+          type: integer
+        pagador:
+          $ref: "#/components/schemas/_pagadores__numeroCpfCnpj__boletos_get_200_response_resultado_inner_pagador"
+        beneficiarioFinal:
+          $ref: "#/components/schemas/_pagadores__numeroCpfCnpj__boletos_get_200_response_resultado_inner_beneficiarioFinal"
+        mensagensInstrucao:
+          example:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          items:
+            description: Lista de mensagens de instrução.
+            type: string
+          type: array
+        situacaoBoleto:
+          description: Descreve a Situação atual do Boleto
+          example: Liquidado
+          type: string
+        qrCode:
+          description: QRCode para pagamento com PIX
+          example: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          type: string
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+        tipoDesconto:
+          description: |-
+            Informar o tipo de desconto a ser aplicado no boleto.
+            - 0 Sem Desconto
+            - 1 Valor Fixo Até a Data Informada
+            - 2 Percentual até a data informada
+            - 3 Valor por antecipação dia corrido
+            - 4 Valor por antecipação dia útil
+            - 5 Percentual por antecipação dia corrido
+            - 6 Percentual por antecipação dia útil
+          format: int64
+          type: integer
+      required:
+      - aceite
+      - codigoBarras
+      - codigoEspecieDocumento
+      - codigoModalidade
+      - codigoProtesto
+      - dataEmissao
+      - dataVencimento
+      - linhaDigitavel
+      - nossoNumero
+      - numeroCliente
+      - numeroParcela
+      - quantidadeDiasFloat
+      - seuNumero
+      - situacaoBoleto
+      - tipoJurosMora
+      - tipoMulta
+      - valor
+      - valorAbatimento
+      - valorJurosMora
+      - valorMulta
+      type: object
+    _pagadores__numeroCpfCnpj__boletos_get_200_response:
+      example:
+        resultado:
+        - valorPrimeiroDesconto: 1.0
+          dataPrimeiroDesconto: 2018-09-20
+          pagador:
+            numeroCpfCnpj: "98765432185"
+            nome: Marcelo dos Santos
+          numeroCliente: 25546454
+          beneficiarioFinal:
+            nome: Lucas de Lima
+          situacaoBoleto: Liquidado
+          dataEmissao: 2018-09-20
+          codigoEspecieDocumento: DM
+          seuNumero: "1235512"
+          qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          codigoModalidade: 1
+          codigoProtesto: 1
+          linhaDigitavel: "42297115040000195441184217468127172300000023124"
+          valorMulta: 5.0
+          dataJurosMora: 2018-09-20
+          numeroParcela: 1
+          tipoDesconto: 1
+          codigoBarras: "07092501614004706610157633070651479470000006500"
+          aceite: true
+          identificacaoBoletoEmpresa: "4562"
+          valorSegundoDesconto: 0.0
+          valor: 156.23
+          tipoMulta: 1
+          valorAbatimento: 1.0
+          quantidadeDiasFloat: 2
+          codigoNegativacao: 2
+          dataTerceiroDesconto: 2018-09-20
+          dataSegundoDesconto: 2018-09-20
+          valorJurosMora: 4.0
+          tipoJurosMora: 1
+          numeroContaCorrente: 0
+          dataVencimento: 2018-09-20
+          valorTerceiroDesconto: 0.0
+          nossoNumero: 6
+          mensagensInstrucao:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          dataMulta: 2018-09-20
+          numeroContratoCobranca: 1
+        - valorPrimeiroDesconto: 1.0
+          dataPrimeiroDesconto: 2018-09-20
+          pagador:
+            numeroCpfCnpj: "98765432185"
+            nome: Marcelo dos Santos
+          numeroCliente: 25546454
+          beneficiarioFinal:
+            nome: Lucas de Lima
+          situacaoBoleto: Liquidado
+          dataEmissao: 2018-09-20
+          codigoEspecieDocumento: DM
+          seuNumero: "1235512"
+          qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          codigoModalidade: 1
+          codigoProtesto: 1
+          linhaDigitavel: "42297115040000195441184217468127172300000023124"
+          valorMulta: 5.0
+          dataJurosMora: 2018-09-20
+          numeroParcela: 1
+          tipoDesconto: 1
+          codigoBarras: "07092501614004706610157633070651479470000006500"
+          aceite: true
+          identificacaoBoletoEmpresa: "4562"
+          valorSegundoDesconto: 0.0
+          valor: 156.23
+          tipoMulta: 1
+          valorAbatimento: 1.0
+          quantidadeDiasFloat: 2
+          codigoNegativacao: 2
+          dataTerceiroDesconto: 2018-09-20
+          dataSegundoDesconto: 2018-09-20
+          valorJurosMora: 4.0
+          tipoJurosMora: 1
+          numeroContaCorrente: 0
+          dataVencimento: 2018-09-20
+          valorTerceiroDesconto: 0.0
+          nossoNumero: 6
+          mensagensInstrucao:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          dataMulta: 2018-09-20
+          numeroContratoCobranca: 1
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/_pagadores__numeroCpfCnpj__boletos_get_200_response_resultado_inner"
+          type: array
+      type: object
+    _boletos_segunda_via_get_200_response_resultado:
+      example:
+        pdfBoleto: JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=
+        pagador:
+          uf: DF
+          numeroCpfCnpj: "98765432185"
+          cidade: Luziânia
+          endereco: Rua 87 Quadra 1 Lote 1 casa 1
+          bairro: Santa Rosa
+          nome: Marcelo dos Santos
+          email: pagador@dominio.com.br
+          cep: "72320000"
+        valor: 156.23
+        tipoMulta: 1
+        numeroCliente: 25546454
+        beneficiarioFinal:
+          numeroCpfCnpj: "98784978699"
+          nome: Lucas de Lima
+        valorAbatimento: 1.0
+        dataEmissao: 2018-09-20
+        codigoEspecieDocumento: DM
+        valorJurosMora: 4.0
+        seuNumero: "1235512"
+        qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+          PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+        codigoModalidade: 1
+        tipoJurosMora: 1
+        linhaDigitavel: "012345678901234567890123456789012345678901234567"
+        dataVencimento: 2018-09-20
+        nossoNumero: 0
+        valorMulta: 5.01
+        mensagensInstrucao:
+        - Descrição da Instrução 1
+        - Descrição da Instrução 2
+        - Descrição da Instrução 3
+        - Descrição da Instrução 4
+        - Descrição da Instrução 5
+        numeroParcela: 1
+        tipoDesconto: 6
+        codigoBarras: "01234567890123456789012345678901234567890123"
+        numeroContratoCobranca: 1
+        aceite: true
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário.
+          example: 25546454
+          format: int32
+          type: integer
+        codigoModalidade:
+          description: "Número que identifica a modalidade do boleto.\n- 1 - SIMPLES\
+            \ COM REGISTRO\n- 3 - CAUCIONADA\n- 4 - VINCULADA\n- 5 - CARNÊ DE PAGAMENTOS\
+            \ \n- 8 - COBRANÇA CONTA CAPITAL"
+          example: 1
+          format: int32
+          type: integer
+        codigoEspecieDocumento:
+          description: |-
+            Espécie do documento
+              - CH - Cheque
+              - DM - Duplicata Mercantil
+              - DMI - Duplicata Mercantil Indicação
+              - DS - Duplicata de Serviço
+              - DSI - Duplicata Serviço Indicação
+              - DR - Duplicata Rural
+              - LC - Letra de Câmbio
+              - NCC - Nota de Crédito Comercial
+              - NCE - Nota de Crédito Exportação
+              - NCI - Nota de Crédito Industrial
+              - NCR - Nota de Crédito Rural
+              - NP - Nota Promissória
+              - NPR - Nota Promissória Rural
+              - TM - Triplicata Mercantil
+              - TS - Triplicata de Serviço
+              - NS - Nota de Seguro
+              - RC - Recibo
+              - FAT - Fatura
+              - ND - Nota de Débito
+              - AP - Apólice de Seguro
+              - ME - Mensalidade Escolar
+              - PC - Pagamento de Consórcio
+              - NF - Nota Fiscal
+              - DD - Documento de Dívida
+              - CC - Cartão de Crédito
+              - BDP - Boleto Proposta
+              - OU - Outros
+          example: DM
+          type: string
+        dataEmissao:
+          description: |
+            Data de emissão do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        nossoNumero:
+          description: Número que identifica o boleto no Sisbr.
+          format: int32
+          type: integer
+        seuNumero:
+          description: Informar o número que identifica o boleto no sistema do beneficiário.
+          example: "1235512"
+          type: string
+        codigoBarras:
+          description: Número de código de barras do boleto com 44 posições.
+          example: "01234567890123456789012345678901234567890123"
+          type: string
+        linhaDigitavel:
+          description: Número da linha digitável do boleto com 47 posições.
+          example: "012345678901234567890123456789012345678901234567"
+          type: string
+        valor:
+          description: Valor nominal do boleto.
+          example: 156.23
+          format: double
+          type: number
+        dataVencimento:
+          description: |
+            Data de vencimento do boleto.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        valorAbatimento:
+          description: Valor do abatimento.
+          example: 1.0
+          format: double
+          type: number
+        numeroParcela:
+          description: Número da parcela do boleto.
+          example: 1
+          format: int64
+          type: integer
+        aceite:
+          description: Identificador do aceite do boleto.
+          example: true
+          type: boolean
+        tipoMulta:
+          description: |-
+            Tipo de Multa.
+              - 0 Isento
+              - 1 Valor Fixo
+              - 2 Percentual
+          example: 1
+          type: integer
+        valorMulta:
+          description: Valor da multa.
+          example: 5.01
+          format: double
+          type: number
+        tipoJurosMora:
+          description: |-
+            Tipo de Juros de Mora
+            - 1 Valor por dia
+            - 2 Taxa Mensal
+            - 3 Isento
+          example: 1
+          type: integer
+        valorJurosMora:
+          description: Valor do Juros de Mora.
+          example: 4.0
+          format: double
+          type: number
+        pagador:
+          $ref: "#/components/schemas/_boletos_get_200_response_resultado_pagador"
+        beneficiarioFinal:
+          $ref: "#/components/schemas/_boletos_get_200_response_resultado_beneficiarioFinal"
+        mensagensInstrucao:
+          example:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          items:
+            description: Lista de mensagens de instrução.
+            type: string
+          type: array
+        pdfBoleto:
+          description: String na Base64 do PDF do Boleto.
+          example: JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=
+          type: string
+        qrCode:
+          description: QRCode para pagamento com PIX
+          example: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          type: string
+        numeroContratoCobranca:
+          description: Indicar o id do contatroCobranca
+          example: 1
+          format: int64
+          type: integer
+        tipoDesconto:
+          description: |-
+            Informar o tipo de desconto a ser aplicado no boleto.
+            - 0 Sem Desconto
+            - 1 Valor Fixo Até a Data Informada
+            - 2 Percentual até a data informada
+            - 3 Valor por antecipação dia corrido
+            - 4 Valor por antecipação dia útil
+            - 5 Percentual por antecipação dia corrido
+            - 6 Percentual por antecipação dia útil
+          format: int64
+          type: integer
+      required:
+      - aceite
+      - codigoBarras
+      - codigoEspecieDocumento
+      - codigoModalidade
+      - dataEmissao
+      - dataVencimento
+      - linhaDigitavel
+      - nossoNumero
+      - numeroCliente
+      - numeroParcela
+      - pagador
+      - seuNumero
+      - tipoDesconto
+      - tipoJurosMora
+      - tipoMulta
+      - valor
+      - valorAbatimento
+      type: object
+    _boletos_segunda_via_get_200_response:
+      example:
+        resultado:
+          pdfBoleto: JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9JbWFnZS9XaWR0aCA1Nzgv+PgolaVRleHQtNS41LjExCnN0YXJ0eHJlZgoyNzAxOQolJUVPRgo=
+          pagador:
+            uf: DF
+            numeroCpfCnpj: "98765432185"
+            cidade: Luziânia
+            endereco: Rua 87 Quadra 1 Lote 1 casa 1
+            bairro: Santa Rosa
+            nome: Marcelo dos Santos
+            email: pagador@dominio.com.br
+            cep: "72320000"
+          valor: 156.23
+          tipoMulta: 1
+          numeroCliente: 25546454
+          beneficiarioFinal:
+            numeroCpfCnpj: "98784978699"
+            nome: Lucas de Lima
+          valorAbatimento: 1.0
+          dataEmissao: 2018-09-20
+          codigoEspecieDocumento: DM
+          valorJurosMora: 4.0
+          seuNumero: "1235512"
+          qrCode: 00020101021226950014br.gov.bcb.pix2573pix.sicoob.com.br/qr/payload/v2/cobv/e736df1b-1389-4b96-a070-c8dddac768de5204000053039865802BR5924JULIO
+            PEREIRA DE OLIVEIRA6008Brasilia62070503***630435A3
+          codigoModalidade: 1
+          tipoJurosMora: 1
+          linhaDigitavel: "012345678901234567890123456789012345678901234567"
+          dataVencimento: 2018-09-20
+          nossoNumero: 0
+          valorMulta: 5.01
+          mensagensInstrucao:
+          - Descrição da Instrução 1
+          - Descrição da Instrução 2
+          - Descrição da Instrução 3
+          - Descrição da Instrução 4
+          - Descrição da Instrução 5
+          numeroParcela: 1
+          tipoDesconto: 6
+          codigoBarras: "01234567890123456789012345678901234567890123"
+          numeroContratoCobranca: 1
+          aceite: true
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_boletos_segunda_via_get_200_response_resultado"
+      type: object
+    _boletos_faixas_nosso_numero_get_200_response:
+      example:
+        resultado:
+        - numeroFinal: 10
+          numeroCliente: 5224
+          validaDigitoVerificadorNossoNumero: true
+          nomeCliente: JOSE PEREIRA
+          numeroInicial: 1
+          quantidade: 10
+          numeroContratoCobranca: 1
+        - numeroFinal: 10
+          numeroCliente: 5224
+          validaDigitoVerificadorNossoNumero: true
+          nomeCliente: JOSE PEREIRA
+          numeroInicial: 1
+          quantidade: 10
+          numeroContratoCobranca: 1
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/FaixaNossoNumero"
+          type: array
+      type: object
+    _boletos_movimentacoes_get_200_response_resultado:
+      example:
+        quantidadeTotalRegistros: 0
+        quantidadeArquivo: 3
+        idArquivos:
+        - 30025254
+        - 30025255
+        - 30025256
+        quantidadeRegistrosArquivo: 500000
+      properties:
+        quantidadeTotalRegistros:
+          description: Quantidade Total de Registos encontrados para a movimentação
+            solicitada.
+          type: integer
+        quantidadeRegistrosArquivo:
+          description: Quantidade Máxima de registos por arquivo.
+          example: 500000
+          type: integer
+        quantidadeArquivo:
+          description: Quantidade de arquivo(s) da movimentação retornada na consulta.
+          example: 3
+          type: integer
+        idArquivos:
+          example:
+          - 30025254
+          - 30025255
+          - 30025256
+          items:
+            description: ID do(s) arquivo(s) para download.
+            format: int32
+            type: integer
+          type: array
+      required:
+      - idArquivos
+      - quantidadeArquivo
+      - quantidadeTotalRegistros
+      type: object
+    _boletos_movimentacoes_get_200_response:
+      example:
+        resultado:
+          quantidadeTotalRegistros: 0
+          quantidadeArquivo: 3
+          idArquivos:
+          - 30025254
+          - 30025255
+          - 30025256
+          quantidadeRegistrosArquivo: 500000
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_boletos_movimentacoes_get_200_response_resultado"
+      type: object
+    _boletos_movimentacoes_post_request:
+      properties:
+        numeroCliente:
+          description: Número que identifica o contrato do beneficiário no Sisbr.
+          example: 25546454
+          format: int32
+          type: integer
+        tipoMovimento:
+          description: |-
+            Informe o tipo do movimento.
+              1 - Entrada
+              2 - Prorrogação
+              3 - A Vencer
+              4 - Vencido
+              5 - Liquidação
+              6 - Baixa
+              7 - Vinculado Operações Crédito
+          example: 1
+          format: int32
+          type: integer
+        dataInicial:
+          description: |
+            Data inicial do movimento.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+        dataFinal:
+          description: |
+            Data final do movimento.
+            Formato: yyyy-MM-dd
+          example: 2018-09-20
+          format: date
+          type: string
+      required:
+      - dataFinal
+      - dataInicial
+      - numeroCliente
+      - tipoMovimento
+      type: object
+    _boletos_movimentacoes_post_200_response_resultado:
+      example:
+        codigoSolicitacao: 132
+        mensagem: Solicitação recebida com sucesso. Utilize o 'Código da Solicitação'
+          para verificar se já foi processada.
+      properties:
+        mensagem:
+          description: Mensagem da solicitação.
+          example: Solicitação recebida com sucesso. Utilize o 'Código da Solicitação'
+            para verificar se já foi processada.
+          type: string
+        codigoSolicitacao:
+          description: Código da Solicitação.
+          example: 132
+          format: int32
+          type: integer
+      required:
+      - codigoSolicitacao
+      - mensagem
+      type: object
+    _boletos_movimentacoes_post_200_response:
+      example:
+        resultado:
+          codigoSolicitacao: 132
+          mensagem: Solicitação recebida com sucesso. Utilize o 'Código da Solicitação'
+            para verificar se já foi processada.
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_boletos_movimentacoes_post_200_response_resultado"
+      type: object
+    _boletos_movimentacoes_download_get_200_response_resultado:
+      example:
+        nomeArquivo: ENTR_3066_189189_201904260922011189887_47_0.zip
+        arquivo: UEsDBBQAAAAIAMOUwp3Ci05RwpzCqzLDsQEAAMO5GwAAMAAAAEVOVFJfMzA2Nl8xODkxODlfMjAxOTA0MTAxODE0NDQzMjQ1MTM0XzI2XzAuanNvbsOtw5bDkWvDnCAYAMOwf2XDpDkZwp9GwqPDqcObw5rCu8Kxw4HCtcKUw7UowowxwoZEdwhJLCbDqcOLw5jDvz7Do13DmzBCw6NDS0pRcsOHw4V8w4bDr8OTH8KHP8O+JFrDnsKYWlfCuhfClTDDl8OWVMKqw6tEwqPDmsOeXMKae8OtfyRnwpjCpUk7NMKfDnbCuBPCpz5IwpPDisOIwr3CvsKbBsKiNMOpw7TCoRbCk8KuZHvCtcO/wpbCpMKJFMK9w7jDmsK6wpnDjMO0IQbDhDMoMwx7woAzf2XCkMK7w6/Dk8KIw4/CusKZDcOHw7PDoV/CjBVzw7U8DS8zIBlCw78Pw7fDtV3DlMOaBSpXBi/DnXXDrDNtb8KFG8O9w5jCqcOlwqXCkcKiw5ZSSMOlJsKQwoN/w6jCg8O3wrofanfCl1NUwrjChFRXw53CqMOhamjClB1nw5/CuHvDtzbCk8OtNsK7U8K+wrfCqsKtwo7DhcO5wqFPOcOSDMONwqzDiMK9wqjCjX3CiMOkw7QjwrjDpsK3QR/DjMK5wrBWdMOuBcKMFiVjHBPDsMKNUwDClENRAMKCYwljw6/CmMKhw6s/wqYxbsOXdixTwopJAmx+wonCt8KNditqNsKmGkI3ccKnG8OdwqtrccOwG8OxfMKRwo/Ciy4uwozCtcKnw60gGGN4KF9Yw717CgzDvDLDvE3Co8OlV8KywozDs1Utw5Nlw4s4wo/ClsKjw6UQw4s5wqxqOV/CtsKcQ8K0HC3Ch1gmfFXDi2jDmTLDocORcsK0HGLCmcOSwrduwpnDkmg5Wg7CsVzDoFUtw7Nlw4sFwo7ClsKjw6UQw4tsw53Ds3LDgMO/MsKLw6fDpWg5w4gyZ8KrWibDi8KWOcKLwpbCo8OlEMOLJVnDlTJewrZcwpJoOVoOwrBcw7DCmTPDhsOtw67DvMOXZsO7w73Dg8OYXsOAMn7DrsKMw4EJdsKGw53Ch8KScsOOwrLDi8Owwp3CnTF+w74DUEsBAj8AFAAAAAgAw5TCncKLTlHCnMKrMsOxAQAAw7kbAAAwACQAAAAAAAAAIAAAAAAAAABFTlRSXzMwNjZfMTg5MTg5XzIwMTkwNDEwMTgxNDQ0MzI0NTEzNF8yNl8wLmpzb24KACAAAAAAAAEAGADCsMKtw6pswrjDsMOUAQDDr8OJwofDrsOvw5QBAMOvw4nCh8Ouw6/DlAFQSwUGAAAAAAEAAQDCggAAAD8CAAAAAA==
+      properties:
+        arquivo:
+          description: "O arquivo será retornado na extensão ZIP e na Base64. UTF8\n\
+            \  - Exemplo decodificado (atributos serão retornados conforme tipo de\
+            \ movimento)\n    ```\n    [\n      {\n        \"codigoTipoMovimento\"\
+            : [[integer]]\n        \"siglaMovimento\": [[string]],\n        \"dataInicioMovimento\"\
+            : [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"dataFimMovimento\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n\
+            \        \"numeroCliente\": [[integer]],\n        \"numeroContrato\":\
+            \ [[integer]],\n        \"modalidade\": [[integer]],\n        \"numeroTitulo\"\
+            : [[integer]],\n        \"seuNumero\": [[string]],\n        \"dataVencimentoTitulo\"\
+            : [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"valorTitulo\": [[money]],\n\
+            \        \"codigoBarras\": [[string]],\n        \"dataMovimentoEntrada\"\
+            : [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"dataEmissaoDocumento\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n\
+            \        \"dataLimitePagamento\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n   \
+            \     \"numeroContaCorrente\": [[integer]],\n        \"valorTarifaMovimento\"\
+            : [[money]],\n        \"dataMovimentoProrrogacao\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n\
+            \        \"dataVencimentoAnterior\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n\
+            \        \"qtdDiasVencido\": [[integer]],\n        \"valorAbatimento\"\
+            : [[money]],\n        \"valorMultaAtual\": [[money]],\n        \"valorMoraAtual\"\
+            : [[money]],\n        \"valorTituloAtualizado\": [[money]],\n        \"\
+            dataMovimentoLiquidacao\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"\
+            dataLiquidacao\": [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"dataPrevisaoCredito\"\
+            : [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"numeroBancoRecebedor\": [[integer]],\n\
+            \        \"numeroAgenciaRecebedora\": [[integer]],\n        \"idTipoOpFinanceira\"\
+            : [[integer]],\n        \"tipoOpFinanceira\": [[string]],\n        \"\
+            valorDesconto\": [[money]],\n        \"valorMora\": [[money]],\n     \
+            \   \"valorLiquido\": [[money]],\n        \"qrCode\": [[string]],\n  \
+            \      \"tipoCarteiraOpCredito\": [[string]],\n        \"dataMovimentoOpCredito\"\
+            : [[yyyy-MM-ddTHH:mm:ss-03:00]],\n        \"descricaoMovimentoOpCredito\"\
+            : [[string]]\n      }\n    ]\n    ```\n\n    ---\n\n    # ENTRADA\n\n\
+            \    Campo | Descrição\n    --- | ---\n    siglaMovimento* | Sigla do\
+            \ tipo de movimento solicitado\n    dataInicioMovimento | Data de iní\
+            cio do movimento\n    dataFimMovimento | Data final do movimento\n   \
+            \ numeroCliente | Identificador do cliente\n    numeroContrato | Identificador\
+            \ do contrato\n    modalidade | Tipo de modalidade\n    numeroTitulo |\
+            \ Número do título\n    seuNumero | Descrição do seu número\n    dataVencimentoTitulo\
+            \ | Data de vencimento do título\n    valorTitulo | Valor do título\n\
+            \    codigoBarras | Código de barras\n    dataMovimentoEntrada | Data\
+            \ de movimento da entrada do título\n    dataEmissaoDocumento | Data de\
+            \ emissão do título\n    dataLimitePagamento | Data limite para pagamento\n\
+            \    numeroContaCorrente | Número da conta corrente\n    valorTarifaMovimento\
+            \ | Valor da tarifa\n    qrCode | QR code para pagamento com PIX\n   \
+            \ <br>\n    \\* siglaMovimento: ENTR (ENTRADA)\n\n    ---\n    # PRORROGACÕ\
+            ES\n\n    Campo | Descrição\n    --- | ---\n    siglaMovimento* | Sigla\
+            \ do tipo de movimento solicitado\n    dataInicioMovimento | Data de iní\
+            cio do movimento\n    dataFimMovimento | Data final do movimento\n   \
+            \ numeroCliente | Identificador do cliente\n    numeroContrato | Identificador\
+            \ do contrato\n    modalidade | Tipo de modalidade\n    numeroTitulo |\
+            \ Número do título\n    seuNumero | Descrição do seu número\n    dataVencimentoTitulo\
+            \ | Data de vencimento do título\n    valorTitulo | Valor do título\n\
+            \    codigoBarras | Código de barras\n    dataLimitePagamento | Data limite\
+            \ para pagamento\n    valorTarifaMovimento | Valor da tarifa\n    dataMovimentoProrrogacao\
+            \ | Data de movimento do processamento da prorrogação\n    dataVencimentoAnterior\
+            \ | Data de vencimento anterior\n    <br>\n    \\* siglaMovimento: PROR\
+            \ (PRORROGACOES)\n\n    ---\n    # A VENCER\n\n    Campo | Descrição\n\
+            \    --- | ---\n    siglaMovimento* | Sigla do tipo de movimento solicitado\n\
+            \    dataInicioMovimento | Data de início do movimento\n    dataFimMovimento\
+            \ | Data final do movimento\n    numeroCliente | Identificador do cliente\n\
+            \    numeroContrato | Identificador do contrato\n    modalidade | Tipo\
+            \ de modalidade\n    numeroTitulo | Número do título\n    seuNumero |\
+            \ Descrição do seu número\n    dataVencimentoTitulo | Data de vencimento\
+            \ do título\n    valorTitulo | Valor do título\n    codigoBarras | Có\
+            digo de barras\n    dataMovimentoEntrada | Data de movimento da entrada\
+            \ do título\n    dataEmissaoDocumento | Data de emissão do título\n  \
+            \  dataLimitePagamento | Data limite para pagamento\n    numeroContaCorrente\
+            \ | Número da conta corrente\n    <br>\n    \\* siglaMovimento: AVENC\
+            \ (A VENCER)\n\n    ---\n    # VENCIDO\n\n    Campo | Descrição\n    ---\
+            \ | ---\n    siglaMovimento* | Sigla do tipo de movimento solicitado\n\
+            \    dataInicioMovimento | Data de início do movimento\n    dataFimMovimento\
+            \ | Data final do movimento\n    numeroCliente | Identificador do cliente\n\
+            \    numeroContrato | Identificador do contrato\n    modalidade | Tipo\
+            \ de modalidade\n    numeroTitulo | Número do título\n    seuNumero |\
+            \ Descrição do seu número\n    dataVencimentoTitulo | Data de vencimento\
+            \ do título\n    valorTitulo | Valor do título\n    codigoBarras | Có\
+            digo de barras\n    dataLimitePagamento | Data limite para pagamento\n\
+            \    qtdDiasVencido | Quantidade de dias vencido\n    valorAbatimento\
+            \ | Valor do abatimento\n    valorMultaAtual | Valor da multa\n    valorMoraAtual\
+            \ | Valor da mora\n    valorTituloAtualizado | Valor atualizado do tí\
+            tulo\n    <br>\n    \\* siglaMovimento: VENC (VENCIDO)\n\n    ---\n  \
+            \  # LIQUIDAÇÕES\n\n    Campo | Descrição\n    --- | ---\n    siglaMovimento*\
+            \ | Sigla do tipo de movimento solicitado\n    dataInicioMovimento | Data\
+            \ de início do movimento\n    dataFimMovimento | Data final do movimento\n\
+            \    numeroCliente | Identificador do cliente\n    numeroContrato | Identificador\
+            \ do contrato\n    modalidade | Tipo de modalidade\n    numeroTitulo |\
+            \ Número do título\n    seuNumero | Descrição do seu número\n    dataVencimentoTitulo\
+            \ | Data de vencimento do título\n    valorTitulo | Valor do título\n\
+            \    codigoBarras | Código de barras\n    dataMovimentoLiquidacao | Data\
+            \ de movimento do processamento da liquidação\n    dataLiquidacao | Data\
+            \ de liquidação do título\n    dataPrevisaoCredito | Data de previsão\
+            \ para o crédito\n    numeroBancoRecebedor | Número do banco recebedor\
+            \ do pagamento\n    numeroAgenciaRecebedora | Número da agência recebedora\
+            \ do pagamento\n    numeroContaCorrente | Número da conta corrente\n \
+            \   idTipoOpFinanceira*** | Identificador do tipo de operação\n    tipoOpFinanceira****\
+            \ | Descrição do tipo de operação financeira\n    valorAbatimento | Valor\
+            \ do abatimento\n    valorDesconto | Valor de desconto\n    valorMora\
+            \ | Valor de mora\n    valorLiquido | Valor recebido\n    valorTarifaMovimento\
+            \ | Valor da tarifa\n    tipoCarteiraOpCredito** | Carteira em que a liquidaç\
+            ão foi realizada\n    <br>\n    \\* siglaMovimento: LIQUI (LIQUIDAÇÕES)\n\
+            \    \\** tipoCarteiraOpCredito: COBRANÇA, GARANTIA e DESCONTADO\n   \
+            \ \\*** idTipoOpFinanceira: 2, 51, 74, 75, 57, 58, 68, 212, 213 e 215\n\
+            \    \\**** tipoOpFinanceira:\n      - 01 - Via Caixa (idTipoOpFinanceira:\
+            \ 2 e 51);\n      - 02 - Via Correspondente Bancário (idTipoOpFinanceira:\
+            \ 74 e 75);\n      - 03 - Via Cartório (idTipoOpFinanceira: 57);\n   \
+            \   - 04 - Via Compensação (idTipoOpFinanceira: 58);\n      - 05 - Via\
+            \ Agendamento (idTipoOpFinanceira: 68);\n      - 07 - Via Pix (idTipoOpFinanceira:\
+            \ 212);\n      - 08 - Via Poupança (idTipoOpFinanceira: 213);\n      -\
+            \ 09 - Via Intercredis (idTipoOpFinanceira: 215)\n      - 06 - Via Retaguarda;\
+            \    \n\n    ---\n    # BAIXAS\n\n    Campo | Descrição\n    --- | ---\n\
+            \    siglaMovimento* | Sigla do tipo de movimento solicitado)\n    dataInicioMovimento\
+            \ | Data de início do movimento\n    dataFimMovimento | Data final do\
+            \ movimento\n    numeroCliente | Identificador do cliente\n    numeroContrato\
+            \ | Identificador do contrato\n    modalidade | Tipo de modalidade\n \
+            \   numeroTitulo | Número do título\n    seuNumero | Descrição do seu\
+            \ número\n    dataVencimentoTitulo | Data de vencimento do título\n  \
+            \  valorTitulo | Valor do título\n    codigoBarras | Código de barras\n\
+            \    dataMovimentoLiquidacao | Data de movimento do processamento da liquidaç\
+            ão\n    dataLiquidacao | Data de liquidação do título\n    idTipoOpFinanceira**\
+            \ | Identificador do tipo de operação\n    tipoOpFinanceira*** | Descriç\
+            ão do tipo de operação financeira\n    valorTarifaMovimento | Valor da\
+            \ tarifa\n    <br>\n    \\* siglaMovimento: BAIX (BAIXAS)\n    \\** idTipoOpFinanceira:\
+            \ 11, 80, 82, 196\n    \\*** tipoOpFinanceira:\n      - 01 - Por Decurso\
+            \ de Prazo (idTipoOpFinanceira: 11);\n      - 02 - A Pedido do Cedente\
+            \ (idTipoOpFinanceira: 82);\n      - 03 - Para Acerto (idTipoOpFinanceira:\
+            \ 80);\n      - 04 - Por Protesto (idTipoOpFinanceira: 196);\n      -\
+            \ 06 - Via Retaguarda.\n\n    ---\n    # VINCULADOS OPERAÇÕES CRÉDITO\n\
+            \     \n    Campo | Descrição\n    --- | ---\n    siglaMovimento* | Sigla\
+            \ do tipo de movimento solicitado\n    dataInicioMovimento | Data de iní\
+            cio do movimento\n    dataFimMovimento | Data final do movimento\n   \
+            \ numeroCliente | Identificador do cliente\n    numeroContrato | Identificador\
+            \ do contrato\n    modalidade | Tipo de modalidade\n    numeroTitulo |\
+            \ Número do título\n    seuNumero | Descrição do seu número\n    dataVencimentoTitulo\
+            \ | Data de vencimento do título\n    valorTitulo | Valor do título\n\
+            \    codigoBarras | Código de barras\n    dataEmissaoDocumento | Data\
+            \ de emissão do título\n    dataLimitePagamento | Data limite para pagamento\n\
+            \    numeroContaCorrente | Número da conta corrente\n    valorTarifaMovimento\
+            \ | Valor da tarifa\n    qrCode | QR code para pagamento com PIX\n   \
+            \ tipoCarteiraOpCredito** | Carteira da operação de crédito\n    dataMovimentoOpCredito\
+            \ | Data do movimento referente ao processo da operação de crédito\n \
+            \   descricaoMovimentoOpCredito*** | Descrição do movimento de operaçã\
+            o de crédito\n    <br>\n    \\* siglaMovimento: OCRED (VINCULADO OPERAÇ\
+            ÕES DE CREDITO)\n    \\** tipoCarteiraOpCredito: COBRANÇA, GARANTIA e\
+            \ DESCONTADO\n    \\*** descricaoMovimentoOpCredito: BLOQUEIO e DESBLOQUEIO"
+          example: UEsDBBQAAAAIAMOUwp3Ci05RwpzCqzLDsQEAAMO5GwAAMAAAAEVOVFJfMzA2Nl8xODkxODlfMjAxOTA0MTAxODE0NDQzMjQ1MTM0XzI2XzAuanNvbsOtw5bDkWvDnCAYAMOwf2XDpDkZwp9GwqPDqcObw5rCu8Kxw4HCtcKUw7UowowxwoZEdwhJLCbDqcOLw5jDvz7Do13DmzBCw6NDS0pRcsOHw4V8w4bDr8OTH8KHP8O+JFrDnsKYWlfCuhfClTDDl8OWVMKqw6tEwqPDmsOeXMKae8OtfyRnwpjCpUk7NMKfDnbCuBPCpz5IwpPDisOIwr3CvsKbBsKiNMOpw7TCoRbCk8KuZHvCtcO/wpbCpMKJFMK9w7jDmsK6wpnDjMO0IQbDhDMoMwx7woAzf2XCkMK7w6/Dk8KIw4/CusKZDcOHw7PDoV/CjBVzw7U8DS8zIBlCw78Pw7fDtV3DlMOaBSpXBi/DnXXDrDNtb8KFG8O9w5jCqcOlwqXCkcKiw5ZSSMOlJsKQwoN/w6jCg8O3wrofanfCl1NUwrjChFRXw53CqMOhamjClB1nw5/CuHvDtzbCk8OtNsK7U8K+wrfCqsKtwo7DhcO5wqFPOcOSDMONwqzDiMK9wqjCjX3CiMOkw7QjwrjDpsK3QR/DjMK5wrBWdMOuBcKMFiVjHBPDsMKNUwDClENRAMKCYwljw6/CmMKhw6s/wqYxbsOXdixTwopJAmx+wonCt8KNditqNsKmGkI3ccKnG8OdwqtrccOwG8OxfMKRwo/Ciy4uwozCtcKnw60gGGN4KF9Yw717CgzDvDLDvE3Co8OlV8KywozDs1Utw5Nlw4s4wo/ClsKjw6UQw4s5wqxqOV/CtsKcQ8K0HC3Ch1gmfFXDi2jDmTLDocORcsK0HGLCmcOSwrduwpnDkmg5Wg7CsVzDoFUtw7Nlw4sFwo7ClsKjw6UQw4tsw53Ds3LDgMO/MsKLw6fDpWg5w4gyZ8KrWibDi8KWOcKLwpbCo8OlEMOLJVnDlTJewrZcwpJoOVoOwrBcw7DCmTPDhsOtw67DvMOXZsO7w73Dg8OYXsOAMn7DrsKMw4EJdsKGw53Ch8KScsOOwrLDi8Owwp3CnTF+w74DUEsBAj8AFAAAAAgAw5TCncKLTlHCnMKrMsOxAQAAw7kbAAAwACQAAAAAAAAAIAAAAAAAAABFTlRSXzMwNjZfMTg5MTg5XzIwMTkwNDEwMTgxNDQ0MzI0NTEzNF8yNl8wLmpzb24KACAAAAAAAAEAGADCsMKtw6pswrjDsMOUAQDDr8OJwofDrsOvw5QBAMOvw4nCh8Ouw6/DlAFQSwUGAAAAAAEAAQDCggAAAD8CAAAAAA==
+          type: string
+        nomeArquivo:
+          description: Nome do Arquivo com extensão
+          example: ENTR_3066_189189_201904260922011189887_47_0.zip
+          type: string
+      required:
+      - arquivo
+      - nomeArquivo
+      type: object
+    _boletos_movimentacoes_download_get_200_response:
+      example:
+        resultado:
+          nomeArquivo: ENTR_3066_189189_201904260922011189887_47_0.zip
+          arquivo: UEsDBBQAAAAIAMOUwp3Ci05RwpzCqzLDsQEAAMO5GwAAMAAAAEVOVFJfMzA2Nl8xODkxODlfMjAxOTA0MTAxODE0NDQzMjQ1MTM0XzI2XzAuanNvbsOtw5bDkWvDnCAYAMOwf2XDpDkZwp9GwqPDqcObw5rCu8Kxw4HCtcKUw7UowowxwoZEdwhJLCbDqcOLw5jDvz7Do13DmzBCw6NDS0pRcsOHw4V8w4bDr8OTH8KHP8O+JFrDnsKYWlfCuhfClTDDl8OWVMKqw6tEwqPDmsOeXMKae8OtfyRnwpjCpUk7NMKfDnbCuBPCpz5IwpPDisOIwr3CvsKbBsKiNMOpw7TCoRbCk8KuZHvCtcO/wpbCpMKJFMK9w7jDmsK6wpnDjMO0IQbDhDMoMwx7woAzf2XCkMK7w6/Dk8KIw4/CusKZDcOHw7PDoV/CjBVzw7U8DS8zIBlCw78Pw7fDtV3DlMOaBSpXBi/DnXXDrDNtb8KFG8O9w5jCqcOlwqXCkcKiw5ZSSMOlJsKQwoN/w6jCg8O3wrofanfCl1NUwrjChFRXw53CqMOhamjClB1nw5/CuHvDtzbCk8OtNsK7U8K+wrfCqsKtwo7DhcO5wqFPOcOSDMONwqzDiMK9wqjCjX3CiMOkw7QjwrjDpsK3QR/DjMK5wrBWdMOuBcKMFiVjHBPDsMKNUwDClENRAMKCYwljw6/CmMKhw6s/wqYxbsOXdixTwopJAmx+wonCt8KNditqNsKmGkI3ccKnG8OdwqtrccOwG8OxfMKRwo/Ciy4uwozCtcKnw60gGGN4KF9Yw717CgzDvDLDvE3Co8OlV8KywozDs1Utw5Nlw4s4wo/ClsKjw6UQw4s5wqxqOV/CtsKcQ8K0HC3Ch1gmfFXDi2jDmTLDocORcsK0HGLCmcOSwrduwpnDkmg5Wg7CsVzDoFUtw7Nlw4sFwo7ClsKjw6UQw4tsw53Ds3LDgMO/MsKLw6fDpWg5w4gyZ8KrWibDi8KWOcKLwpbCo8OlEMOLJVnDlTJewrZcwpJoOVoOwrBcw7DCmTPDhsOtw67DvMOXZsO7w73Dg8OYXsOAMn7DrsKMw4EJdsKGw53Ch8KScsOOwrLDi8Owwp3CnTF+w74DUEsBAj8AFAAAAAgAw5TCncKLTlHCnMKrMsOxAQAAw7kbAAAwACQAAAAAAAAAIAAAAAAAAABFTlRSXzMwNjZfMTg5MTg5XzIwMTkwNDEwMTgxNDQ0MzI0NTEzNF8yNl8wLmpzb24KACAAAAAAAAEAGADCsMKtw6pswrjDsMOUAQDDr8OJwofDrsOvw5QBAMOvw4nCh8Ouw6/DlAFQSwUGAAAAAAEAAQDCggAAAD8CAAAAAA==
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_boletos_movimentacoes_download_get_200_response_resultado"
+      type: object
+    _webhooks_get_200_response:
+      example:
+        resultado:
+        - descricaoMotivoInativacao: Erro ao enviar notificação
+          descricaoTipoMovimento: Pagamento (Baixa operacional)
+          idWebhook: 4
+          codigoPeriodoMovimento: 1
+          descricaoPeriodoMovimento: Movimento atual (D0)
+          url: https://webhook.com
+          descricaoSituacao: Validado com sucesso
+          codigoTipoMovimento: 7
+          dataHoraInativacao: 2024-09-05T18:50:55.099Z
+          dataHoraCadastro: 2024-09-03T00:27:18.483Z
+          dataHoraUltimaAlteracao: 2024-09-06T12:24:11.296Z
+          email: webhook@email.com
+          codigoSituacao: 3
+        - descricaoMotivoInativacao: Erro ao enviar notificação
+          descricaoTipoMovimento: Pagamento (Baixa operacional)
+          idWebhook: 4
+          codigoPeriodoMovimento: 1
+          descricaoPeriodoMovimento: Movimento atual (D0)
+          url: https://webhook.com
+          descricaoSituacao: Validado com sucesso
+          codigoTipoMovimento: 7
+          dataHoraInativacao: 2024-09-05T18:50:55.099Z
+          dataHoraCadastro: 2024-09-03T00:27:18.483Z
+          dataHoraUltimaAlteracao: 2024-09-06T12:24:11.296Z
+          email: webhook@email.com
+          codigoSituacao: 3
+      properties:
+        resultado:
+          items:
+            $ref: "#/components/schemas/Webhook"
+          type: array
+      type: object
+    _webhooks_post_201_response_resultado:
+      example:
+        idWebhook: 1234
+      properties:
+        idWebhook:
+          description: Identificador único do webhook.
+          example: 1234
+          format: int64
+          type: integer
+      required:
+      - idWebhook
+      type: object
+    _webhooks_post_201_response:
+      example:
+        resultado:
+          idWebhook: 1234
+      properties:
+        resultado:
+          $ref: "#/components/schemas/_webhooks_post_201_response_resultado"
+      type: object
+    _webhooks__idWebhook__solicitacoes_get_200_response:
+      example:
+        resultado:
+          totalRegistros: 100
+          paginaAtual: 1
+          webhookSolicitacoes:
+          - descricaoSolicitacaoSituacao: Enviado com sucesso
+            descricaoErroProcessamento: Erro ao enviar notificação
+            descricaoTipoMovimento: Pagamento (Baixa operacional)
+            codigoWebhookSituacao: 3
+            codigoSolicitacaoSituacao: 3
+            codigoPeriodoMovimento: 1
+            descricaoPeriodoMovimento: Movimento atual (D0)
+            webhookNotificacoes:
+            - dataHoraInicio: 2024-09-08T15:50:38.077Z
+              tempoComunicao: 60
+              dataHoraFim: 2024-09-08T15:51:38.077Z
+              codigoStatusRequisicao: 200
+              url: https://webhook.com
+              descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+                \ sucesso!\"}"
+            - dataHoraInicio: 2024-09-08T15:50:38.077Z
+              tempoComunicao: 60
+              dataHoraFim: 2024-09-08T15:51:38.077Z
+              codigoStatusRequisicao: 200
+              url: https://webhook.com
+              descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+                \ sucesso!\"}"
+            validacaoWebhook: false
+            codigoTipoMovimento: 7
+            descricaoWebhookSituacao: Validado com sucesso
+            dataHoraCadastro: 2024-09-04T15:43:56Z
+            nossoNumero: 2588658
+            codigoBarras: "07092501614004706610157633070651479470000006500"
+          - descricaoSolicitacaoSituacao: Enviado com sucesso
+            descricaoErroProcessamento: Erro ao enviar notificação
+            descricaoTipoMovimento: Pagamento (Baixa operacional)
+            codigoWebhookSituacao: 3
+            codigoSolicitacaoSituacao: 3
+            codigoPeriodoMovimento: 1
+            descricaoPeriodoMovimento: Movimento atual (D0)
+            webhookNotificacoes:
+            - dataHoraInicio: 2024-09-08T15:50:38.077Z
+              tempoComunicao: 60
+              dataHoraFim: 2024-09-08T15:51:38.077Z
+              codigoStatusRequisicao: 200
+              url: https://webhook.com
+              descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+                \ sucesso!\"}"
+            - dataHoraInicio: 2024-09-08T15:50:38.077Z
+              tempoComunicao: 60
+              dataHoraFim: 2024-09-08T15:51:38.077Z
+              codigoStatusRequisicao: 200
+              url: https://webhook.com
+              descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com\
+                \ sucesso!\"}"
+            validacaoWebhook: false
+            codigoTipoMovimento: 7
+            descricaoWebhookSituacao: Validado com sucesso
+            dataHoraCadastro: 2024-09-04T15:43:56Z
+            nossoNumero: 2588658
+            codigoBarras: "07092501614004706610157633070651479470000006500"
+          totalPaginas: 2
+      properties:
+        resultado:
+          $ref: "#/components/schemas/WebhookSolicitacoes"
+      type: object
+    _health_get_200_response_RestHealthCheck:
+      example:
+        name: api-rest
+        description: Modulo WEB/REST da aplicacao.
+        status: UP
+      properties:
+        name:
+          description: Nome do componente verificado
+          example: api-rest
+          type: string
+        description:
+          description: Descrição do componente
+          example: Modulo WEB/REST da aplicacao.
+          type: string
+        status:
+          description: Status do componente
+          example: UP
+          type: string
+      type: object
+    _health_get_200_response:
+      example:
+        RestHealthCheck:
+          name: api-rest
+          description: Modulo WEB/REST da aplicacao.
+          status: UP
+        status: UP
+      properties:
+        status:
+          description: Status geral da aplicação
+          example: UP
+          type: string
+        RestHealthCheck:
+          $ref: "#/components/schemas/_health_get_200_response_RestHealthCheck"
+      type: object
+    WebhookSolicitacoes_webhookSolicitacoes_inner_webhookNotificacoes_inner:
+      example:
+        dataHoraInicio: 2024-09-08T15:50:38.077Z
+        tempoComunicao: 60
+        dataHoraFim: 2024-09-08T15:51:38.077Z
+        codigoStatusRequisicao: 200
+        url: https://webhook.com
+        descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com sucesso!\"\
+          }"
+      properties:
+        url:
+          description: URL do webhook
+          example: https://webhook.com
+          type: string
+        dataHoraInicio:
+          description: "Data e hora de início da notificação Formato: yyyy-MM-ddTHH:mm:ss.SSSZ"
+          example: 2024-09-08T15:50:38.077Z
+          format: date-time
+          type: string
+        dataHoraFim:
+          description: "Data e hora de fim da notificação Formato: yyyy-MM-ddTHH:mm:ss.SSSZ"
+          example: 2024-09-08T15:51:38.077Z
+          format: date-time
+          type: string
+        tempoComunicao:
+          description: Tempo de comunicação em segundos
+          example: 60
+          format: int32
+          type: integer
+        codigoStatusRequisicao:
+          description: Código do status da requisição
+          example: 200
+          format: int32
+          type: integer
+        descricaoCodigoStatusRequisicao:
+          description: Descrição do status de retorno
+          example: "{\"messsage\":\"Webhook recebido com sucesso!\"}"
+          type: string
+      required:
+      - dataHoraInicio
+      - url
+      type: object
+    WebhookSolicitacoes_webhookSolicitacoes_inner:
+      example:
+        descricaoSolicitacaoSituacao: Enviado com sucesso
+        descricaoErroProcessamento: Erro ao enviar notificação
+        descricaoTipoMovimento: Pagamento (Baixa operacional)
+        codigoWebhookSituacao: 3
+        codigoSolicitacaoSituacao: 3
+        codigoPeriodoMovimento: 1
+        descricaoPeriodoMovimento: Movimento atual (D0)
+        webhookNotificacoes:
+        - dataHoraInicio: 2024-09-08T15:50:38.077Z
+          tempoComunicao: 60
+          dataHoraFim: 2024-09-08T15:51:38.077Z
+          codigoStatusRequisicao: 200
+          url: https://webhook.com
+          descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com sucesso!\"\
+            }"
+        - dataHoraInicio: 2024-09-08T15:50:38.077Z
+          tempoComunicao: 60
+          dataHoraFim: 2024-09-08T15:51:38.077Z
+          codigoStatusRequisicao: 200
+          url: https://webhook.com
+          descricaoCodigoStatusRequisicao: "{\"messsage\":\"Webhook recebido com sucesso!\"\
+            }"
+        validacaoWebhook: false
+        codigoTipoMovimento: 7
+        descricaoWebhookSituacao: Validado com sucesso
+        dataHoraCadastro: 2024-09-04T15:43:56Z
+        nossoNumero: 2588658
+        codigoBarras: "07092501614004706610157633070651479470000006500"
+      properties:
+        codigoWebhookSituacao:
+          description: |
+            Código da situação do webhook
+            - 1 - Aguardando validação
+            - 2 - Validado com sucesso
+            - 3 - Inativo
+          example: 3
+          format: int32
+          type: integer
+        descricaoWebhookSituacao:
+          description: Descrição da situação do webhook
+          example: Validado com sucesso
+          type: string
+        codigoSolicitacaoSituacao:
+          description: |
+            Código da situação da solicitação do webhook.
+              - 2 - Aguardando envio
+              - 3 - Enviado com sucesso
+              - 6 - Erro no envio
+          example: 3
+          format: int32
+          type: integer
+        descricaoSolicitacaoSituacao:
+          description: Descrição da situação da solicitação
+          example: Enviado com sucesso
+          type: string
+        codigoTipoMovimento:
+          description: |
+            Código do tipo de movimento do webhook.
+              7 - Pagamento (Baixa operacional)
+          example: 7
+          format: int32
+          type: integer
+        descricaoTipoMovimento:
+          description: Descrição do tipo de movimento
+          example: Pagamento (Baixa operacional)
+          type: string
+        codigoPeriodoMovimento:
+          description: |
+            Código do período de movimento
+            - 1 - Movimento atual (D0)
+          example: 1
+          format: int32
+          type: integer
+        descricaoPeriodoMovimento:
+          description: Descrição do período de movimento
+          example: Movimento atual (D0)
+          type: string
+        descricaoErroProcessamento:
+          description: Descrição do erro de processamento da solicitação
+          example: Erro ao enviar notificação
+          type: string
+        dataHoraCadastro:
+          description: "Data e hora de cadastro Formato: yyyy-MM-ddTHH:mm:ss.SSSZ"
+          example: 2024-09-04T15:43:56Z
+          format: date-time
+          type: string
+        validacaoWebhook:
+          description: Indica se a solicitação é uma validação da url webhook
+          example: false
+          type: boolean
+        nossoNumero:
+          description: Número que identifica o boleto de cobrança no Sisbr.
+          example: 2588658
+          format: int64
+          type: integer
+        codigoBarras:
+          description: Número de código de barras do boleto com 44 posições.
+          example: "07092501614004706610157633070651479470000006500"
+          type: string
+        webhookNotificacoes:
+          items:
+            $ref: "#/components/schemas/WebhookSolicitacoes_webhookSolicitacoes_inner_webhookNotificacoes_inner"
+          type: array
+      required:
+      - codigoPeriodoMovimento
+      - codigoSolicitacaoSituacao
+      - codigoTipoMovimento
+      - codigoWebhookSituacao
+      - dataHoraCadastro
+      - descricaoPeriodoMovimento
+      - descricaoSolicitacaoSituacao
+      - descricaoTipoMovimento
+      - descricaoWebhookSituacao
+      - validacaoWebhook
+      type: object
+    Boleto_pagador:
+      example:
+        uf: OU
+        numeroCpfCnpj: "11122233300"
+        cidade: Cidade do pagador X
+        endereco: Endereço do pagador X
+        bairro: Bairro do pagador X
+        nome: Nome completo do pagador X
+        email: pagador@dominio.com br
+        cep: "00000000"
+      properties:
+        numeroCpfCnpj:
+          description: CPF ou CNPJ do pagador do boleto de cobrança. `Tamanho máximo
+            14`
+          example: "11122233300"
+          type: string
+        nome:
+          description: Nome completo do pagador do boleto de cobrança. `Tamanho máximo
+            50`
+          example: Nome completo do pagador X
+          type: string
+        endereco:
+          description: Endereço do pagador do boleto de cobrança. `Tamanho máximo
+            40`
+          example: Endereço do pagador X
+          type: string
+        bairro:
+          description: Bairro do pagador do boleto de cobrança. `Tamanho máximo 30`
+          example: Bairro do pagador X
+          type: string
+        cidade:
+          description: Cidade do pagador do boleto de cobrança. `Tamanho máximo 40`
+          example: Cidade do pagador X
+          type: string
+        cep:
+          description: CEP do pagador. `Tamanho máximo 8`
+          example: "00000000"
+          type: string
+        uf:
+          description: UF do pagador. `Tamanho máximo 2`
+          example: OU
+          type: string
+        email:
+          description: E-mail do pagador.
+          example: pagador@dominio.com br
+          type: string
+      required:
+      - bairro
+      - cep
+      - cidade
+      - endereco
+      - nome
+      - numeroCpfCnpj
+      - uf
+      type: object
+    BoletoAlteracao_especieDocumento:
+      example:
+        codigoEspecieDocumento: DM
+      properties:
+        codigoEspecieDocumento:
+          description: |-
+            Espécie do Documento.
+              - CH - Cheque
+              - DM - Duplicata Mercantil
+              - DMI - Duplicata Mercantil Indicação
+              - DS - Duplicata de Serviço
+              - DSI - Duplicata Serviço Indicação
+              - DR - Duplicata Rural
+              - LC - Letra de Câmbio
+              - NCC - Nota de Crédito Comercial
+              - NCE - Nota de Crédito Exportação
+              - NCI - Nota de Crédito Industrial
+              - NCR - Nota de Crédito Rural
+              - NP - Nota Promissória
+              - NPR - Nota Promissória Rural
+              - TM - Triplicata Mercantil
+              - TS - Triplicata de Serviço
+              - NS - Nota de Seguro
+              - RC - Recibo
+              - FAT - Fatura
+              - ND - Nota de Débito
+              - AP - Apólice de Seguro
+              - ME - Mensalidade Escolar
+              - PC - Pagamento de Consórcio
+              - NF - Nota Fiscal
+              - DD - Documento de Dívida
+              - CC - Cartão de Crédito
+              - BDP - Boleto Proposta
+              - OU - Outros
+          example: DM
+          type: string
+      required:
+      - codigoEspecieDocumento
+      type: object
+    BoletoAlteracao_seuNumero:
+      example:
+        seuNumero: "209"
+        identificacaoBoletoEmpresa: "209"
+      properties:
+        seuNumero:
+          description: Número do boleto no sistema do beneficiário. `Tamanho máximo
+            18`
+          example: "209"
+          type: string
+        identificacaoBoletoEmpresa:
+          description: Número de controle do boleto determinado pelo beneficiário.
+          example: "209"
+          type: string
+      required:
+      - seuNumero
+      type: object
+    BoletoAlteracao_desconto:
+      example:
+        dataTerceiroDesconto: 2018-09-20
+        valorPrimeiroDesconto: 1.0
+        dataSegundoDesconto: 2018-09-20
+        dataPrimeiroDesconto: 2018-09-20
+        valorSegundoDesconto: 0.0
+        valorTerceiroDesconto: 0.0
+        tipoDesconto: 1
+      properties:
+        tipoDesconto:
+          description: |-
+            Informar o tipo de desconto atribuido ao boleto.
+              - 0 Sem Desconto
+              - 1 Valor Fixo Até a Data Informada
+              - 2 Percentual até a data informada
+              - 3 Valor por antecipação dia corrido
+              - 4 Valor por antecipação dia útil
+              - 5 Percentual por antecipação dia corrido
+              - 6 Percentual por antecipação dia útil
+          example: 1
+          format: int64
+          type: integer
+        dataPrimeiroDesconto:
+          description: Data do primeiro desconto.
+          example: 2018-09-20
+          format: date
+          type: string
+        valorPrimeiroDesconto:
+          description: Valor do primeiro desconto.
+          example: 1.0
+          format: double
+          type: number
+        dataSegundoDesconto:
+          description: Data do segundo desconto.
+          example: 2018-09-20
+          format: date
+          type: string
+        valorSegundoDesconto:
+          description: Valor do segundo desconto.
+          example: 0.0
+          format: double
+          type: number
+        dataTerceiroDesconto:
+          description: Data do terceiro desconto.
+          example: 2018-09-20
+          format: date
+          type: string
+        valorTerceiroDesconto:
+          description: Valor do terceiro desconto.
+          example: 0.0
+          format: double
+          type: number
+      required:
+      - tipoDesconto
+      type: object
+    BoletoAlteracao_abatimento:
+      example:
+        valorAbatimento: 156.23
+      properties:
+        valorAbatimento:
+          description: Valor do abatimento.
+          example: 156.23
+          format: double
+          type: number
+      required:
+      - valorAbatimento
+      type: object
+    BoletoAlteracao_multa:
+      example:
+        tipoMulta: 1
+        valorMulta: 5.0
+        dataMulta: 2018-09-20
+      properties:
+        tipoMulta:
+          description: |-
+            Tipo de Multa
+              - 0 Isento
+              - 1 Valor Fixo
+              - 2 Percentual
+          example: 1
+          type: integer
+        dataMulta:
+          description: Deve ser maior que a data de vencimento do boleto e menor ou
+            igual que data limite de pagamento.
+          example: 2018-09-20
+          format: date
+          type: string
+        valorMulta:
+          description: Valor da multa.
+          example: 5.0
+          format: double
+          type: number
+      required:
+      - tipoMulta
+      type: object
+    BoletoAlteracao_jurosMora:
+      example:
+        valorJurosMora: 4.0
+        tipoJurosMora: 1
+        dataJurosMora: 2018-09-20
+      properties:
+        tipoJurosMora:
+          description: |-
+            Tipo de Juros de Mora
+              - 1 Valor por dia
+              - 2 Taxa Mensal
+              - 3 Isento
+          example: 1
+          type: integer
+        dataJurosMora:
+          description: Deve ser maior que a data de vencimento do boleto e menor ou
+            igual que data limite de pagamento.
+          example: 2018-09-20
+          format: date
+          type: string
+        valorJurosMora:
+          description: Valor do Juros de Mora.
+          example: 4.0
+          format: double
+          type: number
+      required:
+      - tipoJurosMora
+      type: object
+    BoletoAlteracao_rateioCredito:
+      example:
+        tipoOperacao: 2
+        rateioCreditos:
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+        - codigoTipoContaDestinoTed: CC
+          nomeTitular: Nome completo do titular X
+          codigoFinalidadeTed: "10"
+          valorRateio: "100"
+          quantidadeDiasFloat: 1
+          dataFloatCredito: 2020-12-30
+          numeroBanco: 33
+          contaPrincipal: true
+          numeroCpfCnpjTitular: "11122233300"
+          codigoTipoValorRateio: 1
+          numeroContaCorrente: "987654"
+          numeroAgencia: 1
+          codigoTipoCalculoRateio: 1
+      properties:
+        tipoOperacao:
+          description: |-
+            Identificador da Operação de Rateio de Crédito
+              - 2 Alterar o Rateio de Crédito feito na Inclusão do Boleto
+              - 3 Excluir o Rateio de Crédito.
+          example: 2
+          format: int32
+          type: integer
+        rateioCreditos:
+          items:
+            $ref: "#/components/schemas/RateioCredito"
+          type: array
+      required:
+      - rateioCreditos
+      - tipoOperacao
+      type: object
+    BoletoAlteracao_pix:
+      example:
+        utilizarPix: false
+      properties:
+        utilizarPix:
+          description: Indica se vai utilizar ou não o PIX.
+          example: false
+          type: boolean
+      required:
+      - utilizarPix
+      type: object
+    BoletoAlteracao_prorrogacaoVencimento:
+      example:
+        dataVencimento: 2018-09-20
+      properties:
+        dataVencimento:
+          description: Nova data de vencimento do boleto.
+          example: 2018-09-20
+          format: date
+          type: string
+      required:
+      - dataVencimento
+      type: object
+    BoletoAlteracao_prorrogacaoLimitePagamento:
+      example:
+        dataLimitePagamento: 2018-09-20
+      properties:
+        dataLimitePagamento:
+          description: Nova data limite para pagamento do boleto.
+          example: 2018-09-20
+          format: date
+          type: string
+      required:
+      - dataLimitePagamento
+      type: object
+    BoletoAlteracao_valorNominal:
+      example:
+        valor: 156.23
+      properties:
+        valor:
+          description: Valor do boleto.
+          example: 156.23
+          format: double
+          type: number
+      required:
+      - valor
+      type: object
+  securitySchemes:
+    oauth2:
+      flows:
+        clientCredentials:
+          scopes:
+            cco_transferencias: Transferências
+            cco_consulta: Consulta
+            openid: OpenID
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+x-original-swagger-version: "2.0"
+

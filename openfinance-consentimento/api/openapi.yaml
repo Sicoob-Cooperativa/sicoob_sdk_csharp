@@ -1,0 +1,1083 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: tiago.santos@sicoob.com.br
+    name: Tiago Arruda dos Santos
+  description: |-
+    <pre>[ Base URL: https://api.sicoob.com.br/payments/v2/itp ]</pre>
+    A API tem como propósito viabiliza a criação, consulta e autorização dos consentimentos para pagamento entre bancos, instituições financeiras e é acessível também à estabelecimentos comerciais participantes do Open Finance Brasil.
+  license:
+    name: Sicoob
+    url: http://www.sicoob.com.br/licenses/LICENSE-2.0.html
+  title: ' Open Finance - Iniciação de Pagamento '
+  version: 2.1.2.0
+  x-ibm-name: consentimento-pagamento
+  x-sicoob-category: FINANCEIRA
+servers:
+- url: https://api.sicoob.com.br/payments/v2/itp
+security:
+- oauth:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+paths:
+  /consents:
+    get:
+      description: Operação para listar os consentimentos de pagamento.
+      operationId: listarUsingGET_3
+      parameters:
+      - description: cnpj
+        in: query
+        name: cnpj
+        schema:
+          type: string
+      - description: cpf
+        in: query
+        name: cpf
+        required: true
+        schema:
+          type: string
+      - description: Numero de conta
+        in: query
+        name: account-numbe
+        schema:
+          type: string
+      - description: pagina
+        in: query
+        name: page
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: tamanho da pagina
+        in: query
+        name: page-size
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Situacao do Pagamento
+        in: query
+        name: status
+        required: true
+        schema:
+          enum:
+          - AGENDADO
+          - AGUARDANDO_APROVACAO
+          - CANCELADO
+          - CONCLUIDO
+          - EM_PROCESSAMENTO
+          - EM_PROCESSAMENTO_INICIADORA
+          - NAO_CONCLUIDO
+          - SOLICITADO
+          - TODOS
+          type: string
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Page%C2%ABConsentimentoPagamentoIniciacao%C2%BB"
+          description: Gerado com sucesso
+        "400":
+          content: {}
+          description: Dados inválidos
+        "401":
+          content: {}
+          description: Unauthorized
+        "403":
+          content: {}
+          description: Forbidden
+        "404":
+          content: {}
+          description: Dados não encontrados
+      summary: Listar consentimento de pagamento.
+      tags:
+      - Iniciador de Transações de Pagamento
+      x-sicoob-category: FINANCEIRA
+    post:
+      description: Método de criação do consentimento para a iniciação de pagamento.
+      operationId: criarConsentimentoUsingPOST_1
+      parameters:
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsentimentoSolicitacaoIniciacao"
+        description: solicitacao
+        required: true
+      responses:
+        "201":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RetornoConsentimentoPagamentoIniciadoraIniciacao"
+          description: Consentimento solicitado com sucesso
+        "400":
+          content: {}
+          description: Dados inválidos
+        "401":
+          content: {}
+          description: Unauthorized
+        "403":
+          content: {}
+          description: Forbidden
+        "404":
+          content: {}
+          description: Not Found
+      summary: Criar consentimento para a iniciação de pagamento.
+      tags:
+      - Iniciador de Transações de Pagamento
+      x-sicoob-category: FINANCEIRA
+      x-codegen-request-body-name: solicitacao
+  /consents/callback:
+    put:
+      description: Callback para consulta do status do consentimento de pagamento.
+      operationId: retornoAutorizacaoUsingPOST_1
+      parameters:
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CallbackDataRequest"
+        description: CallbackDataRequest
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConsentimentoPagamentoIniciacaoRetorno"
+          description: Status atual do consentimento de pagamento
+        "400":
+          content: {}
+          description: Dados inválidos
+        "401":
+          content: {}
+          description: Unauthorized
+        "403":
+          content: {}
+          description: Forbidden
+        "404":
+          content: {}
+          description: Not Found
+      summary: Atualizar consentimento de pagamento callback
+      tags:
+      - Iniciador de Transações de Pagamento
+      x-sicoob-category: FINANCEIRA
+      x-codegen-request-body-name: CallbackDataRequest
+  /consents/{consent-id}:
+    get:
+      description: Operação para buscar o consentimento de pagamento.
+      operationId: buscarConsentimentoExternoIniciadoraUsingGET
+      parameters:
+      - description: cnpj
+        in: query
+        name: cnpj
+        schema:
+          type: string
+      - description: cpf
+        in: query
+        name: cpf
+        required: true
+        schema:
+          type: string
+      - description: Identificador do consentimento
+        in: path
+        name: consent-id
+        required: true
+        schema:
+          type: string
+      - description: ClientId utilizado na utilização do TOKEN
+        in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ConsentimentoPagamentoIniciacao"
+          description: Informações recuperadas com sucesso
+        "401":
+          content: {}
+          description: Unauthorized
+        "403":
+          content: {}
+          description: Forbidden
+        "404":
+          content: {}
+          description: Dados não encontrados
+      summary: Buscar consentimento de pagamento.
+      tags:
+      - Iniciador de Transações de Pagamento
+      x-sicoob-category: FINANCEIRA
+components:
+  schemas:
+    Agendamento:
+      example:
+        single:
+          date: date
+      properties:
+        single:
+          $ref: "#/components/schemas/AgendamentoUnico"
+      title: Agendamento
+      type: object
+    AgendamentoUnico:
+      example:
+        date: date
+      properties:
+        date:
+          type: string
+      title: AgendamentoUnico
+      type: object
+    ConsentimentoPagamentoIniciacao:
+      example:
+        debtorAccount:
+          number: number
+          accountType: CACC
+          ispb: ispb
+          issuer: issuer
+        consentId: consentId
+        expirationDateTime: 2000-01-23T04:56:07.000+00:00
+        statusUpdateDateTime: 2000-01-23T04:56:07.000+00:00
+        statusPayment: RCVD
+        loggedUser:
+          document:
+            identification: identification
+            rel: rel
+        creditor:
+          name: name
+          cpfCnpj: cpfCnpj
+          personType: PESSOA_JURIDICA
+        payment:
+          date: date
+          schedule:
+            single:
+              date: date
+          amount: amount
+          currency: AED
+          details:
+            proxy: proxy
+            localInstrument: DICT
+            qrCode: qrCode
+            creditorAccount:
+              number: number
+              accountType: CACC
+              ispb: ispb
+              issuer: issuer
+          ibgeTownCode: ibgeTownCode
+          type: PIX
+          paymentDescription: paymentDescription
+        businessEntity:
+          document:
+            identification: identification
+            rel: rel
+        creationDateTime: 2000-01-23T04:56:07.000+00:00
+        status: AUTHORISED
+      properties:
+        consentId:
+          type: string
+        creationDateTime:
+          format: date-time
+          type: string
+        expirationDateTime:
+          format: date-time
+          type: string
+        statusUpdateDateTime:
+          format: date-time
+          type: string
+        status:
+          enum:
+          - AUTHORISED
+          - AWAITING_AUTHORISATION
+          - CONSUMED
+          - REJECTED
+          - REVOKED
+          type: string
+        statusPayment:
+          enum:
+          - RCVD
+          - PATC
+          - CANC
+          - ACCP
+          - ACPD
+          - RJCT
+          - ACSC
+          - PDNG
+          - SCHD
+          type: string
+        loggedUser:
+          $ref: "#/components/schemas/Documento"
+        businessEntity:
+          $ref: "#/components/schemas/Documento"
+        creditor:
+          $ref: "#/components/schemas/DestinoPagamentoIniciacao"
+        payment:
+          $ref: "#/components/schemas/Pagamento"
+        debtorAccount:
+          $ref: "#/components/schemas/DadosConta"
+      title: ConsentimentoPagamentoIniciacao
+      type: object
+    ConsentimentoPagamentoIniciacaoRetorno:
+      example:
+        debtorAccount:
+          number: number
+          accountType: CACC
+          ispb: ispb
+          issuer: issuer
+        expirationDateTime: 2000-01-23T04:56:07.000+00:00
+        cnpjIniciador: cnpjIniciador
+        loggedUser:
+          document:
+            identification: identification
+            rel: rel
+        businessEntity:
+          document:
+            identification: identification
+            rel: rel
+        accessToken: accessToken
+        consentId: consentId
+        statusUpdateDateTime: 2000-01-23T04:56:07.000+00:00
+        cnpjInitiator: cnpjInitiator
+        creditor:
+          name: name
+          cpfCnpj: cpfCnpj
+          personType: PESSOA_JURIDICA
+        payment:
+          date: date
+          schedule:
+            single:
+              date: date
+          amount: amount
+          currency: AED
+          details:
+            proxy: proxy
+            localInstrument: DICT
+            qrCode: qrCode
+            creditorAccount:
+              number: number
+              accountType: CACC
+              ispb: ispb
+              issuer: issuer
+          ibgeTownCode: ibgeTownCode
+          type: PIX
+          paymentDescription: paymentDescription
+        creationDateTime: 2000-01-23T04:56:07.000+00:00
+        status: AUTHORISED
+      properties:
+        accessToken:
+          type: string
+        cnpjIniciador:
+          type: string
+        cnpjInitiator:
+          type: string
+        consentId:
+          type: string
+        creationDateTime:
+          format: date-time
+          type: string
+        creditor:
+          $ref: "#/components/schemas/DestinoPagamentoIniciacao"
+        debtorAccount:
+          $ref: "#/components/schemas/DadosConta"
+        expirationDateTime:
+          format: date-time
+          type: string
+        loggedUser:
+          $ref: "#/components/schemas/Documento"
+        businessEntity:
+          $ref: "#/components/schemas/Documento"
+        payment:
+          $ref: "#/components/schemas/Pagamento"
+        status:
+          enum:
+          - AUTHORISED
+          - AWAITING_AUTHORISATION
+          - CONSUMED
+          - REJECTED
+          - REVOKED
+          type: string
+        statusUpdateDateTime:
+          format: date-time
+          type: string
+      title: ConsentimentoPagamentoIniciacaoRetorno
+      type: object
+    ConsentimentoSolicitacaoIniciacao:
+      example:
+        data:
+          debtorAccount:
+            number: number
+            accountType: CACC
+            ispb: ispb
+            issuer: issuer
+          loggedUser:
+            document:
+              identification: identification
+              rel: rel
+          creditor:
+            name: name
+            cpfCnpj: cpfCnpj
+            personType: PESSOA_JURIDICA
+          payment:
+            date: date
+            schedule:
+              single:
+                date: date
+            amount: amount
+            currency: AED
+            details:
+              proxy: proxy
+              localInstrument: DICT
+              qrCode: qrCode
+              creditorAccount:
+                number: number
+                accountType: CACC
+                ispb: ispb
+                issuer: issuer
+            ibgeTownCode: ibgeTownCode
+            type: PIX
+            paymentDescription: paymentDescription
+          businessEntity:
+            document:
+              identification: identification
+              rel: rel
+        brandId: brandId
+      properties:
+        brandId:
+          type: string
+        data:
+          $ref: "#/components/schemas/DadosSolicitacaoIniciacao"
+      required:
+      - brandId
+      - data
+      title: ConsentimentoSolicitacaoIniciacao
+      type: object
+    DadosConta:
+      example:
+        number: number
+        accountType: CACC
+        ispb: ispb
+        issuer: issuer
+      properties:
+        accountType:
+          enum:
+          - CACC
+          - SLRY
+          - SVGS
+          - TRAN
+          type: string
+        ispb:
+          maxLength: 8
+          minLength: 8
+          pattern: "^[0-9]{8}$"
+          type: string
+        issuer:
+          maxLength: 4
+          minLength: 0
+          pattern: "^\\d{4}$"
+          type: string
+        number:
+          type: string
+      required:
+      - accountType
+      title: DadosConta
+      type: object
+    CallbackDataRequest:
+      example:
+        code: code
+        errorDescription: errorDescription
+        idToken: idToken
+        state: state
+        error: error
+      properties:
+        code:
+          type: string
+        errorDescription:
+          type: string
+        error:
+          type: string
+        state:
+          type: string
+        idToken:
+          type: string
+      title: CallbackDataRequest
+      type: object
+    DadosSolicitacaoIniciacao:
+      example:
+        debtorAccount:
+          number: number
+          accountType: CACC
+          ispb: ispb
+          issuer: issuer
+        loggedUser:
+          document:
+            identification: identification
+            rel: rel
+        creditor:
+          name: name
+          cpfCnpj: cpfCnpj
+          personType: PESSOA_JURIDICA
+        payment:
+          date: date
+          schedule:
+            single:
+              date: date
+          amount: amount
+          currency: AED
+          details:
+            proxy: proxy
+            localInstrument: DICT
+            qrCode: qrCode
+            creditorAccount:
+              number: number
+              accountType: CACC
+              ispb: ispb
+              issuer: issuer
+          ibgeTownCode: ibgeTownCode
+          type: PIX
+          paymentDescription: paymentDescription
+        businessEntity:
+          document:
+            identification: identification
+            rel: rel
+      properties:
+        loggedUser:
+          $ref: "#/components/schemas/Documento"
+        businessEntity:
+          $ref: "#/components/schemas/Documento"
+        creditor:
+          $ref: "#/components/schemas/DestinoPagamentoIniciacao"
+        debtorAccount:
+          $ref: "#/components/schemas/DadosConta"
+        payment:
+          $ref: "#/components/schemas/Pagamento"
+      required:
+      - creditor
+      - loggedUser
+      - payment
+      title: DadosSolicitacaoIniciacao
+      type: object
+    DestinoPagamentoIniciacao:
+      example:
+        name: name
+        cpfCnpj: cpfCnpj
+        personType: PESSOA_JURIDICA
+      properties:
+        cpfCnpj:
+          pattern: "^\\d{11}$|^\\d{14}$"
+          type: string
+        name:
+          type: string
+        personType:
+          enum:
+          - PESSOA_JURIDICA
+          - PESSOA_NATURAL
+          type: string
+      required:
+      - personType
+      title: DestinoPagamentoIniciacao
+      type: object
+    Documento:
+      example:
+        document:
+          identification: identification
+          rel: rel
+      properties:
+        document:
+          $ref: "#/components/schemas/DocumentoUsuarioLogado"
+      type: object
+    DocumentoUsuarioLogado:
+      example:
+        identification: identification
+        rel: rel
+      properties:
+        identification:
+          type: string
+        rel:
+          pattern: "^[A-Z]{3,4}$"
+          type: string
+      title: DocumentoUsuarioLogado
+      type: object
+    InfoPagamentoDetalhes:
+      example:
+        proxy: proxy
+        localInstrument: DICT
+        qrCode: qrCode
+        creditorAccount:
+          number: number
+          accountType: CACC
+          ispb: ispb
+          issuer: issuer
+      properties:
+        creditorAccount:
+          $ref: "#/components/schemas/DadosConta"
+        localInstrument:
+          enum:
+          - DICT
+          - INIC
+          - MANU
+          - QRDN
+          - QRES
+          type: string
+        proxy:
+          maxLength: 77
+          minLength: 0
+          pattern: "[\\w\\W\\s]*"
+          type: string
+        qrCode:
+          maxLength: 512
+          minLength: 0
+          pattern: "[\\w\\W\\s]*"
+          type: string
+      required:
+      - creditorAccount
+      - localInstrument
+      title: InfoPagamentoDetalhes
+      type: object
+    Pagamento:
+      example:
+        date: date
+        schedule:
+          single:
+            date: date
+        amount: amount
+        currency: AED
+        details:
+          proxy: proxy
+          localInstrument: DICT
+          qrCode: qrCode
+          creditorAccount:
+            number: number
+            accountType: CACC
+            ispb: ispb
+            issuer: issuer
+        ibgeTownCode: ibgeTownCode
+        type: PIX
+        paymentDescription: paymentDescription
+      properties:
+        amount:
+          pattern: "^((\\d{1,16}\\.\\d{2}))$"
+          type: string
+        currency:
+          enum:
+          - AED
+          - AFN
+          - ALL
+          - AMD
+          - ANG
+          - AOA
+          - ARS
+          - AUD
+          - AWG
+          - AZN
+          - BAM
+          - BBD
+          - BDT
+          - BGN
+          - BHD
+          - BIF
+          - BMD
+          - BND
+          - BOB
+          - BRL
+          - BSD
+          - BTN
+          - BWP
+          - BYR
+          - BZD
+          - CAD
+          - CDF
+          - CHF
+          - CLP
+          - CNY
+          - COP
+          - CRC
+          - CUC
+          - CUP
+          - CVE
+          - CZK
+          - DJF
+          - DKK
+          - DOP
+          - DZD
+          - EGP
+          - ERN
+          - ETB
+          - EUR
+          - FJD
+          - FKP
+          - GBP
+          - GEL
+          - GGP
+          - GHS
+          - GIP
+          - GMD
+          - GNF
+          - GTQ
+          - GYD
+          - HKD
+          - HNL
+          - HRK
+          - HTG
+          - HUF
+          - IDR
+          - ILS
+          - IMP
+          - INR
+          - IQD
+          - IRR
+          - ISK
+          - JEP
+          - JMD
+          - JOD
+          - JPY
+          - KES
+          - KGS
+          - KHR
+          - KMF
+          - KPW
+          - KRW
+          - KWD
+          - KYD
+          - KZT
+          - LAK
+          - LBP
+          - LKR
+          - LRD
+          - LSL
+          - LYD
+          - MAD
+          - MDL
+          - MGA
+          - MKD
+          - MMK
+          - MNT
+          - MOP
+          - MRO
+          - MUR
+          - MVR
+          - MWK
+          - MXN
+          - MYR
+          - MZN
+          - NAD
+          - NGN
+          - NIO
+          - NOK
+          - NPR
+          - NZD
+          - OMR
+          - PAB
+          - PEN
+          - PGK
+          - PHP
+          - PKR
+          - PLN
+          - PYG
+          - QAR
+          - RON
+          - RSD
+          - RUB
+          - RWF
+          - SAR
+          - SBD
+          - SCR
+          - SDG
+          - SEK
+          - SGD
+          - SHP
+          - SLL
+          - SOS
+          - SPL
+          - SRD
+          - STD
+          - SVC
+          - SYP
+          - SZL
+          - THB
+          - TJS
+          - TMT
+          - TND
+          - TOP
+          - TRY
+          - TTD
+          - TVD
+          - TWD
+          - TZS
+          - UAH
+          - UGX
+          - USD
+          - UYU
+          - UZS
+          - VEF
+          - VND
+          - VUV
+          - WST
+          - XAF
+          - XCD
+          - XDR
+          - XOF
+          - XPF
+          - YER
+          - ZAR
+          - ZMW
+          - ZWD
+          type: string
+        date:
+          type: string
+        details:
+          $ref: "#/components/schemas/InfoPagamentoDetalhes"
+        ibgeTownCode:
+          type: string
+        paymentDescription:
+          type: string
+        schedule:
+          $ref: "#/components/schemas/Agendamento"
+        type:
+          enum:
+          - PIX
+          - TED
+          - TEF
+          type: string
+      required:
+      - amount
+      - currency
+      - details
+      - type
+      title: Pagamento
+      type: object
+    Pageable:
+      example:
+        paged: true
+        pageNumber: 5
+        offset: 1
+        pageSize: 5
+        unpaged: true
+        sort:
+          unsorted: true
+          sorted: true
+          empty: true
+      properties:
+        offset:
+          format: int64
+          type: integer
+        pageNumber:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+        paged:
+          type: boolean
+        sort:
+          $ref: "#/components/schemas/Sort"
+        unpaged:
+          type: boolean
+      title: Pageable
+      type: object
+    Page«ConsentimentoPagamentoIniciacao»:
+      example:
+        number: 0
+        last: true
+        numberOfElements: 6
+        size: 2
+        totalPages: 9
+        pageable:
+          paged: true
+          pageNumber: 5
+          offset: 1
+          pageSize: 5
+          unpaged: true
+          sort:
+            unsorted: true
+            sorted: true
+            empty: true
+        sort:
+          unsorted: true
+          sorted: true
+          empty: true
+        content:
+        - debtorAccount:
+            number: number
+            accountType: CACC
+            ispb: ispb
+            issuer: issuer
+          consentId: consentId
+          expirationDateTime: 2000-01-23T04:56:07.000+00:00
+          statusUpdateDateTime: 2000-01-23T04:56:07.000+00:00
+          statusPayment: RCVD
+          loggedUser:
+            document:
+              identification: identification
+              rel: rel
+          creditor:
+            name: name
+            cpfCnpj: cpfCnpj
+            personType: PESSOA_JURIDICA
+          payment:
+            date: date
+            schedule:
+              single:
+                date: date
+            amount: amount
+            currency: AED
+            details:
+              proxy: proxy
+              localInstrument: DICT
+              qrCode: qrCode
+              creditorAccount:
+                number: number
+                accountType: CACC
+                ispb: ispb
+                issuer: issuer
+            ibgeTownCode: ibgeTownCode
+            type: PIX
+            paymentDescription: paymentDescription
+          businessEntity:
+            document:
+              identification: identification
+              rel: rel
+          creationDateTime: 2000-01-23T04:56:07.000+00:00
+          status: AUTHORISED
+        - debtorAccount:
+            number: number
+            accountType: CACC
+            ispb: ispb
+            issuer: issuer
+          consentId: consentId
+          expirationDateTime: 2000-01-23T04:56:07.000+00:00
+          statusUpdateDateTime: 2000-01-23T04:56:07.000+00:00
+          statusPayment: RCVD
+          loggedUser:
+            document:
+              identification: identification
+              rel: rel
+          creditor:
+            name: name
+            cpfCnpj: cpfCnpj
+            personType: PESSOA_JURIDICA
+          payment:
+            date: date
+            schedule:
+              single:
+                date: date
+            amount: amount
+            currency: AED
+            details:
+              proxy: proxy
+              localInstrument: DICT
+              qrCode: qrCode
+              creditorAccount:
+                number: number
+                accountType: CACC
+                ispb: ispb
+                issuer: issuer
+            ibgeTownCode: ibgeTownCode
+            type: PIX
+            paymentDescription: paymentDescription
+          businessEntity:
+            document:
+              identification: identification
+              rel: rel
+          creationDateTime: 2000-01-23T04:56:07.000+00:00
+          status: AUTHORISED
+        first: true
+        empty: true
+        totalElements: 7
+      properties:
+        content:
+          items:
+            $ref: "#/components/schemas/ConsentimentoPagamentoIniciacao"
+          type: array
+        empty:
+          type: boolean
+        first:
+          type: boolean
+        last:
+          type: boolean
+        number:
+          format: int32
+          type: integer
+        numberOfElements:
+          format: int32
+          type: integer
+        pageable:
+          $ref: "#/components/schemas/Pageable"
+        size:
+          format: int32
+          type: integer
+        sort:
+          $ref: "#/components/schemas/Sort"
+        totalElements:
+          format: int64
+          type: integer
+        totalPages:
+          format: int32
+          type: integer
+      title: Page«ConsentimentoPagamentoIniciacao»
+      type: object
+    RetornoConsentimentoPagamentoIniciadoraIniciacao:
+      example:
+        consentId: consentId
+        redirectUrl: redirectUrl
+      properties:
+        redirectUrl:
+          type: string
+        consentId:
+          type: string
+      title: RetornoConsentimentoPagamentoIniciadoraIniciacao
+      type: object
+    Sort:
+      example:
+        unsorted: true
+        sorted: true
+        empty: true
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+      title: Sort
+      type: object
+  securitySchemes:
+    oauth:
+      flows:
+        clientCredentials:
+          scopes:
+            sicoob_consentimento_pagamento_itp_escrita: Permissão para Escrita do
+              Consetimento de Pagamento
+            sicoob_consentimento_pagamento_itp_leitura: Permissão para Leitura do
+              Consetimento de Pagamento
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+      x-ibm-oauth-provider: sso-cooperado
+    client_id:
+      in: header
+      name: client_id
+      type: apiKey
+      x-key-type: client_id
+x-original-swagger-version: "2.0"
+

@@ -1,0 +1,46 @@
+# Sicoob.CobrancaV3.Model.PagadoresNumeroCpfCnpjBoletosGet200ResponseResultadoInner
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**NumeroCliente** | **int** | Número que identifica o contrato do beneficiário. | 
+**CodigoModalidade** | **int** | Número que identifica a modalidade do boleto. - 1 - SIMPLES COM REGISTRO - 3 - CAUCIONADA - 4 - VINCULADA - 5 - CARNÊ DE PAGAMENTOS - 8 - COBRANÇA CONTA CAPITAL | 
+**CodigoEspecieDocumento** | **string** | Espécie do documento   - CH - Cheque   - DM - Duplicata Mercantil   - DMI - Duplicata Mercantil Indicação   - DS - Duplicata de Serviço   - DSI - Duplicata Serviço Indicação   - DR - Duplicata Rural   - LC - Letra de Câmbio   - NCC - Nota de Crédito Comercial   - NCE - Nota de Crédito Exportação   - NCI - Nota de Crédito Industrial   - NCR - Nota de Crédito Rural   - NP - Nota Promissória   - NPR - Nota Promissória Rural   - TM - Triplicata Mercantil   - TS - Triplicata de Serviço   - NS - Nota de Seguro   - RC - Recibo   - FAT - Fatura   - ND - Nota de Débito   - AP - Apólice de Seguro   - ME - Mensalidade Escolar   - PC - Pagamento de Consórcio   - NF - Nota Fiscal   - DD - Documento de Dívida   - CC - Cartão de Crédito   - BDP - Boleto Proposta   - OU - Outros | 
+**DataEmissao** | **DateOnly** | Data de emissão do boleto Formato: yyyy-MM-dd  | 
+**NossoNumero** | **int** | Número que identifica o boleto. | 
+**SeuNumero** | **string** | Informar o número que identifica o boleto no sistema do beneficiário. &#x60;Tamanho máximo 18&#x60; | 
+**CodigoBarras** | **string** | Número de código de barras do boleto com 44 posições. | 
+**LinhaDigitavel** | **string** | Número da linha digitável do boleto com 47 posições. | 
+**Valor** | **double** | Valor nominal do boleto. | 
+**DataVencimento** | **DateOnly** | Data de vencimento do boleto. Formato: yyyy-MM-dd  | 
+**ValorAbatimento** | **double** | Valor do abatimento. | 
+**TipoMulta** | **int** | Tipo de Multa   - 0 Isento   - 1 Valor Fixo   - 2 Percentual | 
+**ValorMulta** | **double** | Valor da multa. | 
+**TipoJurosMora** | **int** | Tipo de Juros de Mora - 1 Valor por dia - 2 Taxa Mensal - 3 Isento | 
+**ValorJurosMora** | **double** | Valor do Juros de Mora. | 
+**NumeroParcela** | **long** | Número da parcela. | 
+**Aceite** | **bool** | Identificador do aceite do boleto. | 
+**CodigoProtesto** | **int** | Código de Protesto do Boleto   - 1 Protestar Dias Corridos   - 2 Protestar Dias Úteis   - 3 Não Protestar | 
+**QuantidadeDiasFloat** | **int** | Quantidade de Dias de Float. | 
+**SituacaoBoleto** | **string** | Descreve a Situação atual do Boleto | 
+**NumeroContaCorrente** | **int** | Número da Conta Corrente para crédito do boleto. | [optional] 
+**IdentificacaoBoletoEmpresa** | **string** | Destinado para uso da Empresa Cedente para identificação do Boleto | [optional] 
+**DataPrimeiroDesconto** | **DateOnly** | Data do primeiro desconto. Formato: yyyy-MM-dd  | [optional] 
+**ValorPrimeiroDesconto** | **double** | Valor do primeiro desconto | [optional] 
+**DataSegundoDesconto** | **DateOnly** | Data do segundo desconto Formato: yyyy-MM-dd  | [optional] 
+**ValorSegundoDesconto** | **double** | Valor do segundo desconto | [optional] 
+**DataTerceiroDesconto** | **DateOnly** | Data do terceiro desconto Formato: yyyy-MM-dd  | [optional] 
+**ValorTerceiroDesconto** | **double** | Valor do terceiro desconto | [optional] 
+**DataMulta** | **DateOnly** | Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.  Formato: yyyy-MM-dd  | [optional] 
+**DataJurosMora** | **DateOnly** | Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.  Formato: yyyy-MM-dd  | [optional] 
+**CodigoNegativacao** | **int** | Código de Negativação do Boleto   - 2 Negativar Dias Úteis   - 3 Não Negativar | [optional] 
+**Pagador** | [**PagadoresNumeroCpfCnpjBoletosGet200ResponseResultadoInnerPagador**](PagadoresNumeroCpfCnpjBoletosGet200ResponseResultadoInnerPagador.md) |  | [optional] 
+**BeneficiarioFinal** | [**PagadoresNumeroCpfCnpjBoletosGet200ResponseResultadoInnerBeneficiarioFinal**](PagadoresNumeroCpfCnpjBoletosGet200ResponseResultadoInnerBeneficiarioFinal.md) |  | [optional] 
+**MensagensInstrucao** | **List&lt;string&gt;** |  | [optional] 
+**QrCode** | **string** | QRCode para pagamento com PIX | [optional] 
+**NumeroContratoCobranca** | **long** | Indicar o id do contatroCobranca | [optional] 
+**TipoDesconto** | **long** | Informar o tipo de desconto a ser aplicado no boleto. - 0 Sem Desconto - 1 Valor Fixo Até a Data Informada - 2 Percentual até a data informada - 3 Valor por antecipação dia corrido - 4 Valor por antecipação dia útil - 5 Percentual por antecipação dia corrido - 6 Percentual por antecipação dia útil | [optional] 
+
+[[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
+

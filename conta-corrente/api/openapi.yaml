@@ -1,0 +1,439 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: rafael.alves@sicoob.com.br
+    name: Rafael Antonio Alves
+  description: "<pre>[ Base URL: https://api.sicoob.com.br/conta-corrente/v4 ]</pre>\
+    \ \n# Conta Corrente API A API de Contas Correntes permite o acesso a dados de\
+    \ conta corrente como Saldo e Extrato.\n"
+  license:
+    name: Sicoob
+    url: http://www.sicoob.com.br/licenses/LICENSE-2.0.html
+  title: Conta Corrente
+  version: 2.1.1.43
+  x-ibm-name: conta-corrente-api-v4
+  x-sicoob-category: FINANCEIRA
+servers:
+- url: https://api.sicoob.com.br/conta-corrente/v4
+security:
+- oauth:
+  - cco_transferencias
+  - cco_consulta
+  - openid
+paths:
+  /extrato/{mes}/{ano}:
+    get:
+      description: Extrato bancario
+      operationId: obterExtratoCompleto
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Mes de referencia para o extrato.
+        in: path
+        name: mes
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: Ano de referencia para o extrato.
+        in: path
+        name: ano
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: Dia inicial para o extrato.
+        in: query
+        name: diaInicial
+        schema:
+          format: int32
+          type: integer
+      - description: Dia final para o extrato.
+        in: query
+        name: diaFinal
+        schema:
+          format: int32
+          type: integer
+      - description: Agrupar movimento proveniente do CNAB
+        in: query
+        name: agruparCNAB
+        schema:
+          type: boolean
+      - description: Numero da conta corrente.
+        in: query
+        name: numeroContaCorrente
+        required: true
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ExtratoSpuOpenBankingRestDTO"
+          description: Consulta realizada com sucesso
+        "400":
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/SicoobMensagem"
+          description: Ocorreu um erro negocial
+        "500":
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/SicoobMensagem"
+          description: Erro interno de servidor
+      security:
+      - client_id: []
+        oauth:
+        - cco_consulta
+      summary: "Recupera o extrato de todas as transacoes ocorridas em uma conta corrente\
+        \ no devido mes, ano e dia agrupado de acordo com o tipo."
+      tags:
+      - Extrato
+      x-sicoob-category: FINANCEIRA
+  /saldo:
+    get:
+      description: Saldo bancario
+      operationId: obterSaldo
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Numero da conta corrente (pessoa juridica).
+        in: query
+        name: numeroContaCorrente
+        schema:
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Saldo"
+          description: Consulta realizada com sucesso
+        "400":
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/SicoobMensagem"
+          description: Ocorreu um erro negocial
+        "500":
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/SicoobMensagem"
+          description: Erro interno de servidor
+      security:
+      - client_id: []
+        oauth:
+        - cco_consulta
+      summary: "O recurso de Saldo retorna o valor disponivel atual, o limite de credito\
+        \ (cheque especial) e o saldo bloqueado de uma conta corrente."
+      tags:
+      - Saldo
+      x-sicoob-category: FINANCEIRA
+  /transferencias:
+    post:
+      operationId: transferirUsingPOST
+      parameters:
+      - in: header
+        name: client_id
+        required: true
+        schema:
+          type: string
+      - description: Objeto destinado a autenticação do OpenBanking
+        in: header
+        name: id_token
+        required: true
+        schema:
+          type: string
+      - description: Objeto destinado para a validação do LimitControl. Não pode ser
+          duplicado.
+        in: header
+        name: x-idempotency-key
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferenciaEntreContaDTO"
+        description: Objeto destinado a Transferencia de valores
+        required: true
+      responses:
+        "201":
+          content: {}
+          description: Created
+        "401":
+          content: {}
+          description: Unauthorized
+        "403":
+          content: {}
+          description: Forbidden
+        "404":
+          content: {}
+          description: Not Found
+      security:
+      - client_id: []
+        oauth:
+        - cco_transferencias
+      summary: Método que transfere os valores entre contas.
+      tags:
+      - Transferencia entre contas
+      x-sicoob-category: FINANCEIRA
+      x-codegen-request-body-name: transferenciaEntreContaDTO
+components:
+  schemas:
+    ExtratoSpuOpenBankingRestDTO:
+      description: "Extrato e saldo de todas as transacoes ocorridas em uma conta\
+        \ corrente no devido mes, ano e dia agrupado de acordo com o tipo."
+      example:
+        saldoLimite: saldoLimite
+        transacoes:
+        - dataLote: dataLote
+          tipo: tipo
+          data: data
+          valor: valor
+          numeroDocumento: numeroDocumento
+          cpfCnpj: cpfCnpj
+          descInfComplementar: descInfComplementar
+          transactionId: transactionId
+          descricao: descricao
+        - dataLote: dataLote
+          tipo: tipo
+          data: data
+          valor: valor
+          numeroDocumento: numeroDocumento
+          cpfCnpj: cpfCnpj
+          descInfComplementar: descInfComplementar
+          transactionId: transactionId
+          descricao: descricao
+        saldoBloqueioJudicialAnterior: saldoBloqueioJudicialAnterior
+        saldoAnterior: saldoAnterior
+        saldoBloqueado: saldoBloqueado
+        saldoBloqueioJudicial: saldoBloqueioJudicial
+        saldoAtual: saldoAtual
+      properties:
+        saldoAtual:
+          description: Valor de saldo atual disponivel em conta.
+          type: string
+        saldoBloqueado:
+          description: Valor bloqueado em conta.
+          type: string
+        saldoLimite:
+          description: Valor do limite disponivel para utilização.
+          type: string
+        saldoAnterior:
+          description: Valor do saldo anterior será apresentado conforme a informação
+            do campo Mês e Ano.
+          type: string
+        saldoBloqueioJudicial:
+          description: Valor do saldo bloqueado judicialmente conforme a informação
+            do campo Mês e Ano.
+          type: string
+        saldoBloqueioJudicialAnterior:
+          description: Valor do saldo bloqueado judicialmente anterior conforme a
+            informação do campo Mês e Ano.
+          type: string
+        transacoes:
+          description: Lista de transações realizadas referente ao período informado.
+          items:
+            $ref: "#/components/schemas/LancamentoSpuOpenBankingRestDTO"
+          type: array
+      type: object
+    LancamentoSpuOpenBankingRestDTO:
+      description: "Transacoes ocorridas em uma conta corrente no devido mes, ano\
+        \ e dia agrupado de acordo com o tipo."
+      example:
+        dataLote: dataLote
+        tipo: tipo
+        data: data
+        valor: valor
+        numeroDocumento: numeroDocumento
+        cpfCnpj: cpfCnpj
+        descInfComplementar: descInfComplementar
+        transactionId: transactionId
+        descricao: descricao
+      properties:
+        transactionId:
+          description: Identificador único de transação.
+          type: string
+        tipo:
+          description: Informação do tipo de transação (Crédito ou Débito).
+          type: string
+        valor:
+          description: Valor referente a transação realizada.
+          type: string
+        data:
+          description: Data e hora que foi realizado a transação.
+          type: string
+        dataLote:
+          description: Data de lançamento da transação.
+          type: string
+        descricao:
+          description: Descrição da forma de transação utilizada.
+          type: string
+        numeroDocumento:
+          description: Número identificador da transação.
+          type: string
+        cpfCnpj:
+          description: Identificador (CPF ou CNPJ) da pessoa ou estabelecimento da
+            transação.
+          type: string
+        descInfComplementar:
+          description: Descrição complementar será apresentada conforme lançamento
+            da transação. Para transação PIX a informação será apresentada conforme
+            descrição informada pelo cooperado.
+          type: string
+      type: object
+    Saldo:
+      example:
+        saldoLimite: 6.027456183070403
+        saldoBloqueado: 1.4658129805029452
+        saldo: 0.8008281904610115
+      properties:
+        saldo:
+          type: number
+        saldoLimite:
+          type: number
+        saldoBloqueado:
+          type: number
+      type: object
+    SicoobMensagem:
+      example:
+        codigo: codigo
+        mensagem: mensagem
+      properties:
+        mensagem:
+          type: string
+        codigo:
+          type: string
+      type: object
+    SicoobMensagemOpenbanking:
+      properties:
+        mensagem:
+          type: string
+        codigo:
+          type: string
+        dataHoraOcorrencia:
+          type: string
+        severity:
+          format: int32
+          type: integer
+      type: object
+    SicoobResposta:
+      properties:
+        mensagens:
+          items:
+            $ref: "#/components/schemas/SicoobMensagem"
+          type: array
+        resultado:
+          properties: {}
+          type: object
+        erro:
+          $ref: "#/components/schemas/SicoobMensagem"
+      type: object
+    TransferenciaEntreContaDTO:
+      example:
+        date: 2000-01-23T04:56:07.000+00:00
+        debtorAccount:
+          number: number
+          accountType: 6
+          personType: 1
+          issuer: issuer
+        amount: 0.8008281904610115
+        creditorAccount:
+          number: number
+          accountType: 5
+          personType: 5
+          issuer: issuer
+      properties:
+        amount:
+          description: Quantidade a ser transferida
+          type: number
+        date:
+          description: Data da Transferência
+          format: date-time
+          type: string
+        debtorAccount:
+          $ref: "#/components/schemas/TransferenciaEntreContaDTO_debtorAccount"
+        creditorAccount:
+          $ref: "#/components/schemas/TransferenciaEntreContaDTO_creditorAccount"
+      type: object
+    TransferenciaEntreContaDTO_debtorAccount:
+      example:
+        number: number
+        accountType: 6
+        personType: 1
+        issuer: issuer
+      properties:
+        issuer:
+          description: Numero da Cooperativa de Debito
+          type: string
+        number:
+          description: Numero da Conta Corrente de Debito
+          type: string
+        accountType:
+          description: Tipo de Conta de Debito
+          type: integer
+        personType:
+          description: Tipo de Pessoa de Debito
+          type: integer
+      type: object
+    TransferenciaEntreContaDTO_creditorAccount:
+      example:
+        number: number
+        accountType: 5
+        personType: 5
+        issuer: issuer
+      properties:
+        issuer:
+          description: Numero da Cooperativa de Crédito
+          type: string
+        number:
+          description: Numero da Conta Corrente de Crédito
+          type: string
+        accountType:
+          description: Tipo de Conta de Crédito
+          type: integer
+        personType:
+          description: Tipo de Pessoa de Crédito
+          type: integer
+      type: object
+  securitySchemes:
+    oauth:
+      flows:
+        clientCredentials:
+          scopes:
+            cco_consulta: ""
+            cco_transferencias: ""
+          tokenUrl: https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token
+      type: oauth2
+      x-ibm-oauth-provider: sso-cooperado
+    client_id:
+      in: header
+      name: client_id
+      type: apiKey
+      x-key-type: client_id
+    id_token:
+      in: header
+      name: id_token
+      type: apiKey
+      x-key-type: client_id
+    x-idempotency-key:
+      in: header
+      name: x-idempotency-key
+      type: apiKey
+      x-key-type: client_id
+x-original-swagger-version: "2.0"
+
