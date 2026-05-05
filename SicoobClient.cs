@@ -3,6 +3,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Sicoob.Auth.Api;
 using Sicoob.Pix.Api;
 using Sicoob.PagamentosPix.Api;
@@ -26,23 +28,37 @@ namespace Sicoob
         private string CurrentScopes;
         private bool IsSandbox;
 
-        private HttpClient _httpClient;
+        private IServiceProvider _serviceProvider;
 
         // Custom DelegatingHandler for 401 retries
         private class RetryUnauthorizedHandler : DelegatingHandler
         {
             private readonly SicoobClient _sicoobClient;
 
-            public RetryUnauthorizedHandler(SicoobClient sicoobClient, HttpMessageHandler innerHandler) : base(innerHandler)
+            public RetryUnauthorizedHandler(SicoobClient sicoobClient)
             {
                 _sicoobClient = sicoobClient;
             }
 
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
+                if (_sicoobClient.AccessToken != null)
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _sicoobClient.AccessToken);
+                }
+
+                // Inject client_id header globally for all APIs
+                if (!string.IsNullOrEmpty(_sicoobClient.ClientId))
+                {
+                    if (request.Headers.Contains("client_id"))
+                    {
+                        request.Headers.Remove("client_id");
+                    }
+                    request.Headers.Add("client_id", _sicoobClient.ClientId);
+                }
+
                 var response = await base.SendAsync(request, cancellationToken);
 
-                // If 401 Unauthorized and it's not a request to the auth token endpoint itself
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && !request.RequestUri.AbsolutePath.Contains("/token"))
                 {
                     if (_sicoobClient.IsSandbox)
@@ -52,19 +68,16 @@ namespace Sicoob
 
                     try
                     {
-                        // Renew token
                         string newToken = _sicoobClient.Authenticate();
-
-                        // Clone request and set new Bearer token
+                        _sicoobClient.AccessToken = newToken;
+                        
                         var newRequest = await CloneRequestAsync(request);
                         newRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", newToken);
 
-                        // Retry with new request
                         response = await base.SendAsync(newRequest, cancellationToken);
                     }
                     catch (Exception)
                     {
-                        // If token renewal fails, just return original 401 response
                     }
                 }
 
@@ -74,49 +87,46 @@ namespace Sicoob
             private async Task<HttpRequestMessage> CloneRequestAsync(HttpRequestMessage req)
             {
                 HttpRequestMessage clone = new HttpRequestMessage(req.Method, req.RequestUri);
-
                 if (req.Content != null)
                 {
                     var stream = new System.IO.MemoryStream();
                     await req.Content.CopyToAsync(stream);
                     stream.Position = 0;
                     clone.Content = new StreamContent(stream);
-
                     if (req.Content.Headers != null)
                     {
                         foreach (var h in req.Content.Headers)
                             clone.Content.Headers.Add(h.Key, h.Value);
                     }
                 }
-
                 clone.Version = req.Version;
-
-                foreach (System.Collections.Generic.KeyValuePair<string, object> prop in req.Properties)
-                    clone.Properties.Add(prop);
-
-                foreach (System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.IEnumerable<string>> header in req.Headers)
+                // Avoid using deprecated Properties
+#if NET5_0_OR_GREATER
+                foreach (var prop in req.Options)
+                    clone.Options.Set(new HttpRequestOptionsKey<object?>(prop.Key), prop.Value);
+#endif
+                foreach (var header in req.Headers)
                     clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
 
                 return clone;
             }
         }
 
-        // APIs
-        public IAutenticaoApi AuthApi { get; private set; }
-        public IPixApi PixApi { get; private set; }
-        public ICobApi PixCobApi { get; private set; }
-        public IAPIDePagamentosPIXApi PagamentosPixApi { get; private set; }
-        public IPagamentoApi PagamentosV3Api { get; private set; }
-        public IBoletosApi CobrancaV3BoletosApi { get; private set; }
-        public IExtratoApi ContaCorrenteExtratoApi { get; private set; }
-        public ISaldoApi ContaCorrenteSaldoApi { get; private set; }
-        public IArrecadaoApi ArrecadacaoApi { get; private set; }
-        public IInvestimentosApi InvestimentosApi { get; private set; }
-        public IIniciadorDeTransaesDePagamentoApi OpenFinanceConsentsApi { get; private set; }
-        public Sicoob.Poupanca.Api.ISaldoApi PoupancaSaldoApi { get; private set; }
-        public ITEDsApi SpbTedsApi { get; private set; }
+        public IAutenticaoApi AuthApi => _serviceProvider.GetRequiredService<IAutenticaoApi>();
+        public IPixApi PixApi => _serviceProvider.GetRequiredService<IPixApi>();
+        public ICobApi PixCobApi => _serviceProvider.GetRequiredService<ICobApi>();
+        public IAPIDePagamentosPIXApi PagamentosPixApi => _serviceProvider.GetRequiredService<IAPIDePagamentosPIXApi>();
+        public IPagamentoApi PagamentosV3Api => _serviceProvider.GetRequiredService<IPagamentoApi>();
+        public IBoletoApi CobrancaV3BoletosApi => _serviceProvider.GetRequiredService<IBoletoApi>();
+        public Sicoob.ContaCorrente.Api.IExtratoApi ContaCorrenteExtratoApi => _serviceProvider.GetRequiredService<Sicoob.ContaCorrente.Api.IExtratoApi>();
+        public Sicoob.ContaCorrente.Api.ISaldoApi ContaCorrenteSaldoApi => _serviceProvider.GetRequiredService<Sicoob.ContaCorrente.Api.ISaldoApi>();
+        public IArrecadaoApi ArrecadacaoApi => _serviceProvider.GetRequiredService<IArrecadaoApi>();
+        public IInvestimentosApi InvestimentosApi => _serviceProvider.GetRequiredService<IInvestimentosApi>();
+        public IIniciadorDeTransaesDePagamentoApi OpenFinanceConsentsApi => _serviceProvider.GetRequiredService<IIniciadorDeTransaesDePagamentoApi>();
+        public Sicoob.Poupanca.Api.ISaldoApi PoupancaSaldoApi => _serviceProvider.GetRequiredService<Sicoob.Poupanca.Api.ISaldoApi>();
+        public ITEDsApi SpbTedsApi => _serviceProvider.GetRequiredService<ITEDsApi>();
 
-        public SicoobClient(string clientId, string pfxPath, string pfxPassword) : this(clientId, pfxPath, pfxPassword, false)
+        public SicoobClient(string clientId, string pfxPath, string pfxPassword, string) : this(clientId, pfxPath, pfxPassword, false)
         {
         }
 
@@ -126,79 +136,112 @@ namespace Sicoob
             this.PfxPath = pfxPath;
             this.PfxPassword = pfxPassword;
             this.IsSandbox = isSandbox;
+            
+            // Allow empty for compilation issues
+            this.AccessToken = string.Empty;
+            this.CurrentScopes = string.Empty;
 
-            this._httpClient = CreateHttpClient();
+            var services = new ServiceCollection();
+            services.AddLogging(builder => builder.AddConsole());
 
             string baseUrl = this.IsSandbox ? "https://sandbox.sicoob.com.br/sicoob/sandbox" : "https://api.sicoob.com.br";
             string authUrl = this.IsSandbox ? "https://sandbox.sicoob.com.br/sicoob/sandbox" : "https://auth.sicoob.com.br";
 
-            // Configura Auth
-            var authConfig = new Sicoob.Auth.Client.Configuration { BasePath = authUrl };
-            this.AuthApi = new AutenticaoApi(_httpClient, authConfig);
+            services.AddTransient<RetryUnauthorizedHandler>(sp => new RetryUnauthorizedHandler(this));
 
-            // Configura Pix
-            var pixConfig = new Sicoob.Pix.Client.Configuration { BasePath = $"{baseUrl}/pix/api/v2" };
-            this.PixApi = new PixApi(_httpClient, pixConfig);
-            this.PixCobApi = new CobApi(_httpClient, pixConfig);
+            var configureClient = (HttpClient client, string path) => {
+                client.BaseAddress = new Uri(path);
+            };
 
-            // Configura Pagamentos Pix
-            var pagPixConfig = new Sicoob.PagamentosPix.Client.Configuration { BasePath = $"{baseUrl}/pix-pagamentos/v2" };
-            this.PagamentosPixApi = new APIDePagamentosPIXApi(_httpClient, pagPixConfig);
+            var configureBuilder = (IHttpClientBuilder builder) => {
+                builder.ConfigurePrimaryHttpMessageHandler(() => {
+                    var handler = new HttpClientHandler();
+                    if (!string.IsNullOrEmpty(this.PfxPath))
+                    {
+                        var certificate = new X509Certificate2(this.PfxPath, this.PfxPassword);
+                        handler.ClientCertificates.Add(certificate);
+                    }
+                    return handler;
+                });
+                builder.AddHttpMessageHandler<RetryUnauthorizedHandler>();
+            };
 
-            // Configura Pagamentos V3
-            var pagV3Config = new Sicoob.PagamentosV3.Client.Configuration { BasePath = $"{baseUrl}/pagamentos/v3" };
-            this.PagamentosV3Api = new PagamentoApi(_httpClient, pagV3Config);
 
-            // Configura Cobrança V3
-            var cobV3Config = new Sicoob.CobrancaV3.Client.Configuration { BasePath = $"{baseUrl}/cobranca-bancaria/v3" };
-            this.CobrancaV3BoletosApi = new BoletosApi(_httpClient, cobV3Config);
+            // Configura APIs
+            new Sicoob.Auth.Client.HostConfiguration(services)
+                .AddApiHttpClients(c => configureClient(c, authUrl), configureBuilder);
 
-            // Configura Conta Corrente
-            var contaConfig = new Sicoob.ContaCorrente.Client.Configuration { BasePath = $"{baseUrl}/conta-corrente/v4" };
-            this.ContaCorrenteExtratoApi = new ExtratoApi(_httpClient, contaConfig);
-            this.ContaCorrenteSaldoApi = new SaldoApi(_httpClient, contaConfig);
+            new Sicoob.Pix.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.Pix.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.Pix.Client.RateLimitProvider<Sicoob.Pix.Client.OAuthToken>, Sicoob.Pix.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/pix/api/v2"), configureBuilder);
 
-            // Configura Convenio
-            var convenioConfig = new Sicoob.ConvenioPagamentos.Client.Configuration { BasePath = $"{baseUrl}/convenios-pagamentos/v2" };
-            this.ArrecadacaoApi = new ArrecadaoApi(_httpClient, convenioConfig);
+            new Sicoob.PagamentosPix.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.PagamentosPix.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.PagamentosPix.Client.RateLimitProvider<Sicoob.PagamentosPix.Client.OAuthToken>, Sicoob.PagamentosPix.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/pix-pagamentos/v2"), configureBuilder);
 
-            // Configura Investimentos
-            var investConfig = new Sicoob.Investimentos.Client.Configuration { BasePath = $"{baseUrl}/investimentos/v2" };
-            this.InvestimentosApi = new InvestimentosApi(_httpClient, investConfig);
+            new Sicoob.PagamentosV3.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.PagamentosV3.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.PagamentosV3.Client.RateLimitProvider<Sicoob.PagamentosV3.Client.OAuthToken>, Sicoob.PagamentosV3.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/pagamentos/v3"), configureBuilder);
 
-            // Configura Open Finance
-            var openConfig = new Sicoob.OpenFinance.Client.Configuration { BasePath = $"{baseUrl}/payments/v2/itp" };
-            this.OpenFinanceConsentsApi = new IniciadorDeTransaesDePagamentoApi(_httpClient, openConfig);
+            new Sicoob.CobrancaV3.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.CobrancaV3.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.CobrancaV3.Client.RateLimitProvider<Sicoob.CobrancaV3.Client.OAuthToken>, Sicoob.CobrancaV3.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/cobranca-bancaria/v3"), configureBuilder);
 
-            // Configura Poupanca
-            var poupancaConfig = new Sicoob.Poupanca.Client.Configuration { BasePath = $"{baseUrl}/poupanca/v3" };
-            this.PoupancaSaldoApi = new Sicoob.Poupanca.Api.SaldoApi(_httpClient, poupancaConfig);
+            new Sicoob.ContaCorrente.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.ContaCorrente.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.ContaCorrente.Client.RateLimitProvider<Sicoob.ContaCorrente.Client.OAuthToken>, Sicoob.ContaCorrente.Client.OAuthToken>()
+                .AddTokens(new Sicoob.ContaCorrente.Client.ApiKeyToken(this.ClientId, Sicoob.ContaCorrente.Client.ClientUtils.ApiKeyHeader.Client_id, ""))
+                .UseProvider<Sicoob.ContaCorrente.Client.RateLimitProvider<Sicoob.ContaCorrente.Client.ApiKeyToken>, Sicoob.ContaCorrente.Client.ApiKeyToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/conta-corrente/v4"), configureBuilder);
 
-            // Configura SPB
-            var spbConfig = new Sicoob.SpbTransferencias.Client.Configuration { BasePath = $"{baseUrl}/spb/v2" };
-            this.SpbTedsApi = new TEDsApi(_httpClient, spbConfig);
-        }
+            new Sicoob.ConvenioPagamentos.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.ConvenioPagamentos.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.ConvenioPagamentos.Client.RateLimitProvider<Sicoob.ConvenioPagamentos.Client.OAuthToken>, Sicoob.ConvenioPagamentos.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/convenios-pagamentos/v2"), configureBuilder);
 
-        private HttpClient CreateHttpClient()
-        {
-            var handler = new HttpClientHandler();
+            new Sicoob.Investimentos.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.Investimentos.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.Investimentos.Client.RateLimitProvider<Sicoob.Investimentos.Client.OAuthToken>, Sicoob.Investimentos.Client.OAuthToken>()
+                .AddTokens(new Sicoob.Investimentos.Client.ApiKeyToken(this.ClientId, Sicoob.Investimentos.Client.ClientUtils.ApiKeyHeader.Client_id, ""))
+                .UseProvider<Sicoob.Investimentos.Client.RateLimitProvider<Sicoob.Investimentos.Client.ApiKeyToken>, Sicoob.Investimentos.Client.ApiKeyToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/investimentos/v2"), configureBuilder);
 
-            if (!string.IsNullOrEmpty(this.PfxPath))
+            new Sicoob.OpenFinance.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.OpenFinance.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.OpenFinance.Client.RateLimitProvider<Sicoob.OpenFinance.Client.OAuthToken>, Sicoob.OpenFinance.Client.OAuthToken>()
+                .AddTokens(new Sicoob.OpenFinance.Client.ApiKeyToken(this.ClientId, Sicoob.OpenFinance.Client.ClientUtils.ApiKeyHeader.Client_id, ""))
+                .UseProvider<Sicoob.OpenFinance.Client.RateLimitProvider<Sicoob.OpenFinance.Client.ApiKeyToken>, Sicoob.OpenFinance.Client.ApiKeyToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/payments/v2/itp"), configureBuilder);
+
+            new Sicoob.Poupanca.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.Poupanca.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.Poupanca.Client.RateLimitProvider<Sicoob.Poupanca.Client.OAuthToken>, Sicoob.Poupanca.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/poupanca/v3"), configureBuilder);
+
+            new Sicoob.SpbTransferencias.Client.HostConfiguration(services)
+                .AddTokens(new Sicoob.SpbTransferencias.Client.OAuthToken("token"))
+                .UseProvider<Sicoob.SpbTransferencias.Client.RateLimitProvider<Sicoob.SpbTransferencias.Client.OAuthToken>, Sicoob.SpbTransferencias.Client.OAuthToken>()
+                .AddApiHttpClients(c => configureClient(c, $"{baseUrl}/spb/v2"), configureBuilder);
+
+            _serviceProvider = services.BuildServiceProvider();
+            
+            // Events hook
+            var boletoEvents = _serviceProvider.GetRequiredService<Sicoob.CobrancaV3.Api.BoletoApiEvents>();
+            boletoEvents.OnBoletosPost += (sender, args) =>
             {
-                var certificate = new X509Certificate2(this.PfxPath, this.PfxPassword);
-                handler.ClientCertificates.Add(certificate);
-            }
-
-            // Wrap inner handler with RetryUnauthorizedHandler
-            var retryHandler = new RetryUnauthorizedHandler(this, handler);
-
-            return new HttpClient(retryHandler);
+                var response = args.ApiResponse;
+                Console.WriteLine($"[BoletosPost] StatusCode: {(int)response.StatusCode} {response.StatusCode}");
+                Console.WriteLine($"[BoletosPost] Response Body: {response.RawContent}");
+            };
         }
 
         public void SetSandboxToken(string token)
         {
             this.AccessToken = token;
-            this._httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", this.AccessToken);
         }
 
         public string Authenticate(string scopes = null)
@@ -213,16 +256,29 @@ namespace Sicoob
                 this.CurrentScopes = scopes;
             }
 
-            if (this.CurrentScopes == null)
+            if (string.IsNullOrEmpty(this.CurrentScopes))
             {
                 throw new Exception("Scopes must be provided on the first authentication.");
             }
 
-            var response = this.AuthApi.AuthRealmsCooperadoProtocolOpenidConnectTokenPost("client_credentials", this.ClientId, this.CurrentScopes);
-            this.AccessToken = response.AccessToken;
-
-            // Injeta o token como Default Request Header no HttpClient (global para a instancia)
-            this._httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", this.AccessToken);
+            // Sync call
+            var task = this.AuthApi.AuthRealmsCooperadoProtocolOpenidConnectTokenPostAsync("client_credentials", this.ClientId, this.CurrentScopes);
+            task.Wait();
+            var response = task.Result;
+            
+            // Allow accessing .Ok() securely based on ApiResponse layout
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Ok();
+                if (content != null)
+                {
+                    this.AccessToken = content.AccessToken;
+                }
+            }
+            else
+            {
+                throw new Exception($"Authentication failed with status: {response.StatusCode} - {response.RawContent}");
+            }
 
             return this.AccessToken;
         }

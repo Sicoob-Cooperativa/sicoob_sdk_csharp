@@ -86,16 +86,15 @@ namespace ExemploSicoob
 O SDK possui inteligência embutida (`DelegatingHandler` customizado do `HttpClient`) para lidar com a expiração do token OAuth2. 
 Ao receber um erro `401 Unauthorized` de qualquer API de negócio, o Client intercepta a falha, utiliza os escopos informados na primeira autenticação para gerar um novo token de acesso, e refaz a requisição original de forma 100% transparente. Você não precisa se preocupar com caches ou temporizadores na sua aplicação!
 
-## Instalação e Compilação
+## Instalação
 
-Para compilar e unificar o SDK, recomenda-se criar uma `Sicoob.sln` na raiz e adicionar os sub-projetos gerados para o Visual Studio / `dotnet build`. 
+Para utilizar todo o SDK unificado (junto do orquestrador `SicoobClient`), você deve instalar o pacote NuGet unificado `Sicoob.Sdk`.
 
-O C# requer que você referencie os projetos em que vai trabalhar ou que publique-os como pacotes NuGet locais.
-
-Exemplo adicionando num projeto:
 ```bash
-dotnet add reference /caminho/sicoob_sdk_csharp/pix/src/Sicoob.Pix/Sicoob.Pix.csproj
+dotnet add package Sicoob.Sdk
 ```
+
+Ao fazer isso, todas as abstrações, classes, modelos e APIs do Sicoob estarão disponíveis na sua aplicação, sem precisar instalar cada módulo individualmente.
 
 
 ## Escopos (Scopes) por API
