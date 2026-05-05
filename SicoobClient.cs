@@ -126,7 +126,7 @@ namespace Sicoob
         public Sicoob.Poupanca.Api.ISaldoApi PoupancaSaldoApi => _serviceProvider.GetRequiredService<Sicoob.Poupanca.Api.ISaldoApi>();
         public ITEDsApi SpbTedsApi => _serviceProvider.GetRequiredService<ITEDsApi>();
 
-        public SicoobClient(string clientId, string pfxPath, string pfxPassword, string) : this(clientId, pfxPath, pfxPassword, false)
+        public SicoobClient(string clientId, string pfxPath, string pfxPassword) : this(clientId, pfxPath, pfxPassword, false)
         {
         }
 
