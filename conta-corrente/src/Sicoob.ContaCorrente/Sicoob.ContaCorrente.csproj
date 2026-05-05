@@ -16,12 +16,13 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.ContaCorrente.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Minor update</PackageReleaseNotes>
+    <PackageIcon>icon.png</PackageIcon>
     <Nullable>enable</Nullable>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\images\icon.png" Pack="true" PackagePath="\"/>
     <PackageReference Include="Microsoft.Extensions.Http" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.20" />
