@@ -229,14 +229,7 @@ namespace Sicoob
 
             _serviceProvider = services.BuildServiceProvider();
             
-            // Events hook
-            var boletoEvents = _serviceProvider.GetRequiredService<Sicoob.CobrancaV3.Api.BoletoApiEvents>();
-            boletoEvents.OnBoletosPost += (sender, args) =>
             {
-                var response = args.ApiResponse;
-                Console.WriteLine($"[BoletosPost] StatusCode: {(int)response.StatusCode} {response.StatusCode}");
-                Console.WriteLine($"[BoletosPost] Response Body: {response.RawContent}");
-            };
         }
 
         public void SetSandboxToken(string token)
