@@ -259,7 +259,7 @@ namespace Sicoob.Auth.Api
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
-                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://auth.sicoob.com.br");
+                    Uri urlLocalVar = httpRequestMessageLocalVar.RequestUri = new Uri("https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token");
                     uriBuilderLocalVar.Host = urlLocalVar.Authority;
                     uriBuilderLocalVar.Scheme = urlLocalVar.Scheme;
                     uriBuilderLocalVar.Path = urlLocalVar.AbsolutePath;

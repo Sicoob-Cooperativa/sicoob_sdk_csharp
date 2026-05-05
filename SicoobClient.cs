@@ -132,6 +132,7 @@ namespace Sicoob
 
         public SicoobClient(string clientId, string pfxPath, string pfxPassword, bool isSandbox)
         {
+
             this.ClientId = clientId;
             this.PfxPath = pfxPath;
             this.PfxPassword = pfxPassword;
@@ -255,7 +256,7 @@ namespace Sicoob
             }
 
             // Sync call
-            var task = this.AuthApi.AuthRealmsCooperadoProtocolOpenidConnectTokenPostAsync("client_credentials", this.ClientId, this.CurrentScopes);
+            var task = this.AuthApi.AuthRealmsCooperadoProtocolOpenidConnectTokenPostAsync(this.ClientId, "client_credentials", this.CurrentScopes);
             task.Wait();
             var response = task.Result;
             

@@ -51,7 +51,7 @@ namespace ExemploSicoob
                 // O último parâmetro (isSandbox) define se vai rodar em Prod ou Sandbox (false = Produção)
                 var sicoob = new SicoobClient(
                     "SEU_CLIENT_ID",
-                    "/caminho/para/certificado/KA5 TELECON E-CNPJ A1 2026.pfx",
+                    "cert.pfx",
                     "SENHA_DO_PFX",
                     false
                 );
