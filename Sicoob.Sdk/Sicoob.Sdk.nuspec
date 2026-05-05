@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Sicoob.Sdk</id>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <authors>Sicoob</authors>
     <description>SDK Oficial do Sicoob em C#. Inclui o SicoobClient e todos os modulos de APIs.</description>
     <dependencies>
