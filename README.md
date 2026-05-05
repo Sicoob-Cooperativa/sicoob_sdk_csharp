@@ -88,6 +88,8 @@ Ao receber um erro `401 Unauthorized` de qualquer API de negócio, o Client inte
 
 ## Instalação
 
+URL do pacote no NuGet: https://www.nuget.org/packages/Sicoob.Sdk
+
 Para utilizar todo o SDK unificado (junto do orquestrador `SicoobClient`), você deve instalar o pacote NuGet unificado `Sicoob.Sdk`.
 
 ```bash
