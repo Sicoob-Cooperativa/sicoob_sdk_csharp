@@ -187,10 +187,10 @@ namespace Sicoob.Pix.Model
                 throw new ArgumentNullException(nameof(modalidade), "Property is not nullable for class DescontosAplicados.");
 
             if (descontosAplicadosOneOf != null)
-                return new DescontosAplicados(descontosAplicadosOneOf, modalidadeParsedValue);
+                return new DescontosAplicados(descontosAplicadosOneOf, modalidade.Value!.Value);
 
             if (descontosAplicadosOneOf1 != null)
-                return new DescontosAplicados(descontosAplicadosOneOf1, modalidadeParsedValue);
+                return new DescontosAplicados(descontosAplicadosOneOf1, modalidade.Value!.Value);
 
             throw new JsonException();
         }

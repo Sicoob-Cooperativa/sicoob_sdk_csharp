@@ -87,7 +87,7 @@ namespace Sicoob.Pix.Test.Api
             string e2eid = default!;
             var response = await _instance.PixE2eidGetAsync(e2eid);
             var model = response.Ok();
-            Assert.IsType<Pix>(model);
+            Assert.IsType<Sicoob.Pix.Model.Pix>(model);
         }
 
         /// <summary>
