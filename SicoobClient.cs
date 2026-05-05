@@ -132,7 +132,6 @@ namespace Sicoob
 
         public SicoobClient(string clientId, string pfxPath, string pfxPassword, bool isSandbox)
         {
-
             this.ClientId = clientId;
             this.PfxPath = pfxPath;
             this.PfxPassword = pfxPassword;
@@ -230,7 +229,6 @@ namespace Sicoob
 
             _serviceProvider = services.BuildServiceProvider();
             
-            {
         }
 
         public void SetSandboxToken(string token)
