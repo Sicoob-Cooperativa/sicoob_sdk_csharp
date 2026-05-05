@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Sicoob.Sdk</AssemblyName>
+    <PackageId>Sicoob.Sdk</PackageId>
+    <Version>1.0.0</Version>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
+    <Description>SDK Oficial do Sicoob em C#. Inclui o SicoobClient e todos os modulos de APIs.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sentry" Version="4.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\auth\src\Sicoob.Auth\Sicoob.Auth.csproj" />
+    <ProjectReference Include="..\cobrancav3\src\Sicoob.CobrancaV3\Sicoob.CobrancaV3.csproj" />
+    <ProjectReference Include="..\conta-corrente\src\Sicoob.ContaCorrente\Sicoob.ContaCorrente.csproj" />
+    <ProjectReference Include="..\convenio-pagamentos\src\Sicoob.ConvenioPagamentos\Sicoob.ConvenioPagamentos.csproj" />
+    <ProjectReference Include="..\investimentos\src\Sicoob.Investimentos\Sicoob.Investimentos.csproj" />
+    <ProjectReference Include="..\openfinance-consentimento\src\Sicoob.OpenFinance\Sicoob.OpenFinance.csproj" />
+    <ProjectReference Include="..\pagamentos-pix\src\Sicoob.PagamentosPix\Sicoob.PagamentosPix.csproj" />
+    <ProjectReference Include="..\pagamentosv3\src\Sicoob.PagamentosV3\Sicoob.PagamentosV3.csproj" />
+    <ProjectReference Include="..\pix\src\Sicoob.Pix\Sicoob.Pix.csproj" />
+    <ProjectReference Include="..\poupanca-api\src\Sicoob.Poupanca\Sicoob.Poupanca.csproj" />
+    <ProjectReference Include="..\spb-transferencias\src\Sicoob.SpbTransferencias\Sicoob.SpbTransferencias.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\SicoobClient.cs" Link="SicoobClient.cs" />
+  </ItemGroup>
+</Project>
