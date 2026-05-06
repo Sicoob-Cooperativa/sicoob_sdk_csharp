@@ -818,7 +818,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.RetornoPagamento>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.RetornoPagamento>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.RetornoPagamento)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -856,7 +856,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -894,7 +894,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1148,7 +1148,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.RetornoPagamento>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.RetornoPagamento>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.RetornoPagamento)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1186,7 +1186,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1224,7 +1224,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1262,7 +1262,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1528,7 +1528,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.PagamentoIniciadoDict>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.PagamentoIniciadoDict>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.PagamentoIniciadoDict)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1566,7 +1566,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1604,7 +1604,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1870,7 +1870,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.PagamentoIniciadoQRCodeResponse>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.PagamentoIniciadoQRCodeResponse>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.PagamentoIniciadoQRCodeResponse)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1908,7 +1908,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1946,7 +1946,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2181,7 +2181,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2219,7 +2219,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2257,7 +2257,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2487,7 +2487,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.WebhookCompleto>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.WebhookCompleto>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.WebhookCompleto)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2525,7 +2525,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2563,7 +2563,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2601,7 +2601,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2872,7 +2872,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2910,7 +2910,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2948,7 +2948,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2986,7 +2986,7 @@ namespace Sicoob.PagamentosPix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.PagamentosPix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.PagamentosPix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 

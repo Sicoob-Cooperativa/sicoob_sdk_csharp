@@ -770,7 +770,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.WebhooksGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.WebhooksGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.WebhooksGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -814,7 +814,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -852,7 +852,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotAcceptable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -890,7 +890,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1136,7 +1136,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1174,7 +1174,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotAcceptable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1212,7 +1212,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1490,7 +1490,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1528,7 +1528,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotAcceptable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1566,7 +1566,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1812,7 +1812,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1850,7 +1850,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotAcceptable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1888,7 +1888,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2189,7 +2189,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.WebhooksIdWebhookSolicitacoesGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.WebhooksIdWebhookSolicitacoesGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.WebhooksIdWebhookSolicitacoesGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2227,7 +2227,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2265,7 +2265,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotAcceptable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2303,7 +2303,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2568,7 +2568,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsCreated
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.WebhooksPost201Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.WebhooksPost201Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.WebhooksPost201Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2606,7 +2606,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2644,7 +2644,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotAcceptable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2682,7 +2682,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 

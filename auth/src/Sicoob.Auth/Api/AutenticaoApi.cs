@@ -382,7 +382,7 @@ namespace Sicoob.Auth.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Auth.Model.AuthRealmsCooperadoProtocolOpenidConnectTokenPost200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Auth.Model.AuthRealmsCooperadoProtocolOpenidConnectTokenPost200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Auth.Model.AuthRealmsCooperadoProtocolOpenidConnectTokenPost200Response)), _jsonSerializerOptions)
                     : null;
             }
 

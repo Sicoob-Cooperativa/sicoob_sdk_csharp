@@ -362,5 +362,29 @@ namespace Sicoob.ContaCorrente.Client
         /// The format to use for DateTime serialization
         /// </summary>
         public const string ISO8601_DATETIME_FORMAT = "o";
+
+        /// <summary>
+        /// Unwraps the "resultado" property from the JSON if the type doesn't expect it.
+        /// </summary>
+        public static string UnwrapResultado(string rawContent, Type type)
+        {
+            if (string.IsNullOrWhiteSpace(rawContent)) return rawContent;
+            if (type.Name.Contains("Response") || type.Name.Contains("Resposta"))
+                return rawContent;
+            try
+            {
+                using (var document = System.Text.Json.JsonDocument.Parse(rawContent))
+                {
+                    if (document.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object &&
+                        document.RootElement.TryGetProperty("resultado", out var resultado) &&
+                        resultado.ValueKind != System.Text.Json.JsonValueKind.Null)
+                    {
+                        return resultado.GetRawText();
+                    }
+                }
+            }
+            catch { }
+            return rawContent;
+        }
     }
 }

@@ -339,7 +339,7 @@ namespace Sicoob.CobrancaV3.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.HealthGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.CobrancaV3.Model.HealthGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.CobrancaV3.Model.HealthGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 

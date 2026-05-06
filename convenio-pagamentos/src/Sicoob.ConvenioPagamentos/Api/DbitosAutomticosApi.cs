@@ -1219,7 +1219,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.RetornoDebitoAutomatico>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.RetornoDebitoAutomatico>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.RetornoDebitoAutomatico)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1257,7 +1257,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1295,7 +1295,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1547,7 +1547,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.ConciliacaoDebitoAutomatico>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.ConciliacaoDebitoAutomatico>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.ConciliacaoDebitoAutomatico)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1585,7 +1585,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1623,7 +1623,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1884,7 +1884,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.Debitos>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.Debitos>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.Debitos)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1922,7 +1922,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1960,7 +1960,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2219,7 +2219,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitosMovimento>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitosMovimento>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.DebitosMovimento)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2257,7 +2257,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2295,7 +2295,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2560,7 +2560,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsMultiStatus
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.RetornoDebitoAutomaticoLote>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.RetornoDebitoAutomaticoLote>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.RetornoDebitoAutomaticoLote)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2598,7 +2598,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2636,7 +2636,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2901,7 +2901,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsCreated
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoDebitosPost201Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoDebitosPost201Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoDebitosPost201Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2939,7 +2939,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2977,7 +2977,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3231,7 +3231,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.RetornoAlteracoesOptante>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.RetornoAlteracoesOptante>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.RetornoAlteracoesOptante)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3269,7 +3269,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3307,7 +3307,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3561,7 +3561,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.Convenios>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.Convenios>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.Convenios)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3599,7 +3599,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3637,7 +3637,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3935,7 +3935,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.Historico>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.Historico>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.Historico)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -3973,7 +3973,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4011,7 +4011,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4276,7 +4276,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsCreated
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesPost201Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesPost201Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesPost201Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4314,7 +4314,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4352,7 +4352,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4617,7 +4617,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsCreated
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesPost201Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesPost201Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesPost201Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4655,7 +4655,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4693,7 +4693,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4947,7 +4947,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.OcorrenciasCadastroOptante>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.OcorrenciasCadastroOptante>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.OcorrenciasCadastroOptante)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -4985,7 +4985,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -5023,7 +5023,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -5288,7 +5288,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsCreated
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesValidacoesPost201Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesValidacoesPost201Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.DebitoAutomaticoOptantesValidacoesPost201Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -5326,7 +5326,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -5364,7 +5364,7 @@ namespace Sicoob.ConvenioPagamentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ConvenioPagamentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ConvenioPagamentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 

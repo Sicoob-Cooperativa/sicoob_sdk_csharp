@@ -616,7 +616,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -654,7 +654,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -692,7 +692,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -946,7 +946,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.WebhookCompleto>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.WebhookCompleto>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.WebhookCompleto)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -984,7 +984,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1022,7 +1022,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1060,7 +1060,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1342,7 +1342,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1380,7 +1380,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1418,7 +1418,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1456,7 +1456,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1730,7 +1730,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.WebhooksConsultados>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.WebhooksConsultados>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.WebhooksConsultados)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1768,7 +1768,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsForbidden
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1806,7 +1806,7 @@ namespace Sicoob.Pix.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Pix.Model.Problema>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Pix.Model.Problema)), _jsonSerializerOptions)
                     : null;
             }
 

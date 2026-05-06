@@ -559,7 +559,7 @@ namespace Sicoob.SpbTransferencias.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.SpbTransferencias.Model.TransferenciasAgendamentosIdAgendamentoDelete200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.SpbTransferencias.Model.TransferenciasAgendamentosIdAgendamentoDelete200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.SpbTransferencias.Model.TransferenciasAgendamentosIdAgendamentoDelete200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -912,7 +912,7 @@ namespace Sicoob.SpbTransferencias.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.SpbTransferencias.Model.TransferenciasCodigoGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.SpbTransferencias.Model.TransferenciasCodigoGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.SpbTransferencias.Model.TransferenciasCodigoGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1289,7 +1289,7 @@ namespace Sicoob.SpbTransferencias.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNoContent
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.SpbTransferencias.Model.PaymentTransactionRetorno>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.SpbTransferencias.Model.PaymentTransactionRetorno>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.SpbTransferencias.Model.PaymentTransactionRetorno)), _jsonSerializerOptions)
                     : null;
             }
 

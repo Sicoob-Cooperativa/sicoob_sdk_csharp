@@ -714,7 +714,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaCarteirasGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaCarteirasGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.RendaFixaCarteirasGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -752,7 +752,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -790,7 +790,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1074,7 +1074,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaCarteirasIdCarteiraModalidadesGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaCarteirasIdCarteiraModalidadesGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.RendaFixaCarteirasIdCarteiraModalidadesGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1112,7 +1112,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1150,7 +1150,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1441,7 +1441,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaCarteirasIdCarteiraModalidadesIdModalidadeAplicacoesGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaCarteirasIdCarteiraModalidadesIdModalidadeAplicacoesGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.RendaFixaCarteirasIdCarteiraModalidadesIdModalidadeAplicacoesGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1479,7 +1479,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1517,7 +1517,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1819,7 +1819,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaExtratoNumeroContaCorrenteIdAplicacaoIdModalidadeGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaExtratoNumeroContaCorrenteIdAplicacaoIdModalidadeGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.RendaFixaExtratoNumeroContaCorrenteIdAplicacaoIdModalidadeGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1857,7 +1857,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNoContent
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1895,7 +1895,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1933,7 +1933,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2210,7 +2210,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaSaldosGet200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaSaldosGet200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.RendaFixaSaldosGet200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2248,7 +2248,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -2286,7 +2286,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 

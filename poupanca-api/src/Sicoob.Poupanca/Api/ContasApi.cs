@@ -384,7 +384,7 @@ namespace Sicoob.Poupanca.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.ListaContas>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.ListaContas>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Poupanca.Model.ListaContas)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -422,7 +422,7 @@ namespace Sicoob.Poupanca.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsNotFound
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Poupanca.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -460,7 +460,7 @@ namespace Sicoob.Poupanca.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Poupanca.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -498,7 +498,7 @@ namespace Sicoob.Poupanca.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsServiceUnavailable
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.MensagensErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Poupanca.Model.MensagensErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Poupanca.Model.MensagensErro)), _jsonSerializerOptions)
                     : null;
             }
 

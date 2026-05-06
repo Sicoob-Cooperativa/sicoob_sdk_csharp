@@ -454,7 +454,7 @@ namespace Sicoob.ContaCorrente.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ContaCorrente.Model.ExtratoSpuOpenBankingRestDTO>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ContaCorrente.Model.ExtratoSpuOpenBankingRestDTO>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ContaCorrente.Model.ExtratoSpuOpenBankingRestDTO)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -492,7 +492,7 @@ namespace Sicoob.ContaCorrente.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ContaCorrente.Model.SicoobMensagem>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ContaCorrente.Model.SicoobMensagem>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ContaCorrente.Model.SicoobMensagem)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -530,7 +530,7 @@ namespace Sicoob.ContaCorrente.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ContaCorrente.Model.SicoobMensagem>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.ContaCorrente.Model.SicoobMensagem>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.ContaCorrente.Model.SicoobMensagem)), _jsonSerializerOptions)
                     : null;
             }
 

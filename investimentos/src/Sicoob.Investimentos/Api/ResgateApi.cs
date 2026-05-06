@@ -426,7 +426,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaResgatesPost200Response>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.RendaFixaResgatesPost200Response>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.RendaFixaResgatesPost200Response)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -464,7 +464,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsBadRequest
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.CapRemSicoobMensagemErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -502,7 +502,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsUnauthorized
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.CapRemSicoobMensagemErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -540,7 +540,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsUnsupportedMediaType
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.CapRemSicoobMensagemErro)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -578,7 +578,7 @@ namespace Sicoob.Investimentos.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsInternalServerError
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.Investimentos.Model.CapRemSicoobMensagemErro>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.Investimentos.Model.CapRemSicoobMensagemErro)), _jsonSerializerOptions)
                     : null;
             }
 

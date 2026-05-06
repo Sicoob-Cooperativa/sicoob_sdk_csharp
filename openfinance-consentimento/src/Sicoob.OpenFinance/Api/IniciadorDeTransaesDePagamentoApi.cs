@@ -690,7 +690,7 @@ namespace Sicoob.OpenFinance.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.ConsentimentoPagamentoIniciacao>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.ConsentimentoPagamentoIniciacao>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.OpenFinance.Model.ConsentimentoPagamentoIniciacao)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -985,7 +985,7 @@ namespace Sicoob.OpenFinance.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsCreated
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.RetornoConsentimentoPagamentoIniciadoraIniciacao>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.RetornoConsentimentoPagamentoIniciadoraIniciacao>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.OpenFinance.Model.RetornoConsentimentoPagamentoIniciadoraIniciacao)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1334,7 +1334,7 @@ namespace Sicoob.OpenFinance.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.PageConsentimentoPagamentoIniciacao>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.PageConsentimentoPagamentoIniciacao>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.OpenFinance.Model.PageConsentimentoPagamentoIniciacao)), _jsonSerializerOptions)
                     : null;
             }
 
@@ -1635,7 +1635,7 @@ namespace Sicoob.OpenFinance.Api
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.ConsentimentoPagamentoIniciacaoRetorno>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Sicoob.OpenFinance.Model.ConsentimentoPagamentoIniciacaoRetorno>(ClientUtils.UnwrapResultado(RawContent, typeof(Sicoob.OpenFinance.Model.ConsentimentoPagamentoIniciacaoRetorno)), _jsonSerializerOptions)
                     : null;
             }
 
