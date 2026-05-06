@@ -12,7 +12,7 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.Pix</RootNamespace>
-    <Version>2.0.23.29</Version>
+    <Version>2.0.23.30</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.Pix.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

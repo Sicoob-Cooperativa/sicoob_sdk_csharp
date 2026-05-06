@@ -12,7 +12,7 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.Investimentos</RootNamespace>
-    <Version>1.0.3.4</Version>
+    <Version>1.0.3.5</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.Investimentos.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
