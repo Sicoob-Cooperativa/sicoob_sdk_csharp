@@ -8,7 +8,6 @@
     <Nullable>enable</Nullable>
     <Description>SDK Oficial do Sicoob em C#. Inclui o SicoobClient e todos os modulos de APIs.</Description>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     
   </PropertyGroup>
