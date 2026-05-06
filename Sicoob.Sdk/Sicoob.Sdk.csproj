@@ -8,9 +8,11 @@
     <Nullable>enable</Nullable>
     <Description>SDK Oficial do Sicoob em C#. Inclui o SicoobClient e todos os modulos de APIs.</Description>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\images\icon.png" Pack="true" PackagePath="\" />
     <PackageReference Include="Sentry" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
