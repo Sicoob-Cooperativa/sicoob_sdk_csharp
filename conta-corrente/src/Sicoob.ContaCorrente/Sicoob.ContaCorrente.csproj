@@ -12,12 +12,12 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.ContaCorrente</RootNamespace>
-    <Version>2.1.1.45</Version>
+    <Version>2.1.1.46</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.ContaCorrente.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
     <Nullable>enable</Nullable>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>

@@ -12,12 +12,12 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.Poupanca</RootNamespace>
-    <Version>3.0.4.2</Version>
+    <Version>3.0.4.3</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.Poupanca.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
     <Nullable>enable</Nullable>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>

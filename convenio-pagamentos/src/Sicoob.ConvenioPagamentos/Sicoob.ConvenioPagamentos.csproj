@@ -12,12 +12,12 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.ConvenioPagamentos</RootNamespace>
-    <Version>2.0.11.3</Version>
+    <Version>2.0.11.4</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.ConvenioPagamentos.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
     <Nullable>enable</Nullable>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>

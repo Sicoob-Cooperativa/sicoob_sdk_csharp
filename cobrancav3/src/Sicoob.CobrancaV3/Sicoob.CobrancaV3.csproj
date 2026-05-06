@@ -12,12 +12,12 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.CobrancaV3</RootNamespace>
-    <Version>3.0.8.2</Version>
+    <Version>3.0.8.3</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.CobrancaV3.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
     <Nullable>enable</Nullable>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>

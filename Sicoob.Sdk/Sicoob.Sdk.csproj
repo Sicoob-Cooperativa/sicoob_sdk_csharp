@@ -3,12 +3,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Sicoob.Sdk</AssemblyName>
     <PackageId>Sicoob.Sdk</PackageId>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
     <Description>SDK Oficial do Sicoob em C#. Inclui o SicoobClient e todos os modulos de APIs.</Description>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
   </PropertyGroup>
 
   <ItemGroup>
