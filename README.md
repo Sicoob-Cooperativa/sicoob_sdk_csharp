@@ -68,9 +68,21 @@ namespace ExemploSicoob
 
                 // Exemplo: Consultar Conta Corrente
                 // Nota: Substituir o 12345L pelo número correto da conta corrente
-                Saldo responseSaldo = sicoob.ContaCorrenteSaldoApi.ContasNumeroContaCorrenteSaldoGet(12345L);
-                Console.WriteLine("Saldo: " + responseSaldo.Resultado.SaldoDisponivel);
+                var responseSaldo = await sicoob.ContaCorrenteSaldoApi.ObterSaldoAsync(sicoob.ClientId, 12345L);
                 
+                if (responseSaldo.IsOk)
+                {
+                    Console.WriteLine(responseSaldo.RawContent);
+                    var saldoObj = responseSaldo.Ok();
+                    Console.WriteLine("=== Debugging Raw Response ===");
+                    Console.WriteLine(responseSaldo.RawContent);
+                    Console.WriteLine("==============================");
+                }
+                else
+                {
+                    Console.WriteLine("Falha ao obter saldo. Status: " + responseSaldo.StatusCode);
+                    Console.WriteLine(responseSaldo.RawContent);
+                }                
             }
             catch (Exception ex)
             {
