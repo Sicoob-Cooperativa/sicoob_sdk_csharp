@@ -12,7 +12,7 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.OpenFinance</RootNamespace>
-    <Version>2.1.2.0</Version>
+    <Version>2.1.2.1</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.OpenFinance.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

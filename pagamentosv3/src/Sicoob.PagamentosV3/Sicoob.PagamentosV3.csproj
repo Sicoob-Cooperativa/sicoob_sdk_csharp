@@ -12,7 +12,7 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.PagamentosV3</RootNamespace>
-    <Version>3.0.2.0</Version>
+    <Version>3.0.2.1</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.PagamentosV3.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

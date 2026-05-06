@@ -12,7 +12,7 @@
     <Description>SDK Oficial em C# para integração com as APIs do Sicoob</Description>
     <Copyright>No Copyright</Copyright>
     <RootNamespace>Sicoob.SpbTransferencias</RootNamespace>
-    <Version>1.0.4.2</Version>
+    <Version>1.0.4.3</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Sicoob.SpbTransferencias.xml</DocumentationFile>
     <RepositoryUrl>https://github.com/Sicoob-Cooperativa/sicoob_sdk_csharp.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
